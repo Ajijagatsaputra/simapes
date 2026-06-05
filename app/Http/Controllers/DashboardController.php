@@ -45,6 +45,7 @@ class DashboardController extends Controller
         $pesananDiproses = Pesanan::whereIn('status', ['diproses', 'dikerjakan'])->count();
         $pesananSelesai = Pesanan::where('status', 'selesai')->count();
         $pesananTerbaru = Pesanan::with('user')->latest()->take(5)->get();
+        $activityLogs = \App\Models\ActivityLog::with('user')->latest()->take(5)->get();
 
         return view('dashboard', compact(
             'chartPesanan',
@@ -55,6 +56,7 @@ class DashboardController extends Controller
             'pesananDiproses',
             'pesananSelesai',
             'pesananTerbaru',
+            'activityLogs',
         ));
     }
 }

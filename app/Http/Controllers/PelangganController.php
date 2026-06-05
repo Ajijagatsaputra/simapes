@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 
 class PelangganController extends Controller
@@ -30,7 +31,7 @@ class PelangganController extends Controller
             'nama_sekolah' => 'nullable|string|max:255',
         ]);
 
-        User::create([
+        $pelanggan = User::create([
             'name' => $validated['name'],
             'email' => $validated['name'] . '_' . time() . '@pelanggan.local',
             'password' => bcrypt('password'),
@@ -38,6 +39,8 @@ class PelangganController extends Controller
             'alamat' => $validated['alamat'] ?? null,
             'nama_sekolah' => $validated['nama_sekolah'] ?? null,
         ]);
+
+        ActivityLog::log('Menambahkan pelanggan baru: ' . $pelanggan->name, 'User', $pelanggan->id);
 
         return redirect()->route('pelanggan.index')
             ->with('success', 'Pelanggan berhasil ditambahkan.');
@@ -63,6 +66,8 @@ class PelangganController extends Controller
             'nama_sekolah' => $validated['nama_sekolah'] ?? null,
         ]);
 
+        ActivityLog::log('Memperbarui data pelanggan: ' . $pelanggan->name, 'User', $pelanggan->id);
+
         return redirect()->route('pelanggan.index')
             ->with('success', 'Pelanggan berhasil diperbarui.');
     }
@@ -72,7 +77,11 @@ class PelangganController extends Controller
      */
     public function destroy($id)
     {
-        User::findOrFail($id)->delete();
+        $pelanggan = User::findOrFail($id);
+        $name = $pelanggan->name;
+        $pelanggan->delete();
+
+        ActivityLog::log('Menghapus pelanggan: ' . $name, 'User', $id);
 
         return redirect()->route('pelanggan.index')
             ->with('success', 'Pelanggan berhasil dihapus.');

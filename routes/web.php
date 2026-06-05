@@ -5,6 +5,7 @@ use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\PrediksiController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -45,12 +46,17 @@ Route::middleware('auth')->group(function () {
     // Pesanan
     Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
     Route::post('/pesanan', [PesananController::class, 'store'])->name('pesanan.store');
+    Route::get('/pesanan/{id}/nota', [PesananController::class, 'nota'])->name('pesanan.nota');
     Route::put('/pesanan/{id}', [PesananController::class, 'update'])->name('pesanan.update');
     Route::patch('/pesanan/{id}/status', [PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
     Route::delete('/pesanan/{id}', [PesananController::class, 'destroy'])->name('pesanan.destroy');
 
     // Prediksi
     Route::get('/prediksi', [PrediksiController::class, 'index'])->name('prediksi.index');
+
+    // Laporan
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
 
 });
 

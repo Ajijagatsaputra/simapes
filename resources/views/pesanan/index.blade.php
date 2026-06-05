@@ -70,11 +70,12 @@
 
     /* ── Aksi ── */
     .aksi-wrap { display: flex; gap: 6px; justify-content: center; }
-    .btn-edit, .btn-hapus, .btn-status { width: 30px; height: 30px; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .15s, transform .15s; }
+    .btn-edit, .btn-hapus, .btn-status, .btn-print { width: 30px; height: 30px; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .15s, transform .15s; }
     .btn-status { background: #e8f0fd; color: #4A90D9; }
     .btn-edit  { background: #4A90D9; color: #fff; }
     .btn-hapus { background: #e05a5a; color: #fff; }
-    .btn-edit:hover, .btn-hapus:hover, .btn-status:hover { opacity: .85; transform: scale(1.08); }
+    .btn-print { background: #8a63d2; color: #fff; text-decoration: none; }
+    .btn-edit:hover, .btn-hapus:hover, .btn-status:hover, .btn-print:hover { opacity: .85; transform: scale(1.08); }
 
     /* ── Form Panel ── */
     .form-panel .panel-title { font-size: .95rem; font-weight: 700; color: #1a2b4a; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid #f0f4fb; }
@@ -295,6 +296,14 @@
                                         </svg>
                                     </button>
                                 </form>
+                                
+                                <a href="{{ route('pesanan.nota', $p->id) }}" target="_blank" class="btn-print" title="Cetak Nota">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="6 9 6 2 18 2 18 9"/>
+                                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                                        <rect x="6" y="14" width="12" height="8"/>
+                                    </svg>
+                                </a>
 
                                 <button class="btn-edit" title="Edit"
                                     onclick="editPesanan(

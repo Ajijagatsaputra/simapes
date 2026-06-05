@@ -6,6 +6,7 @@ use App\Models\Pesanan;
 use App\Models\DetailPesanan;
 use App\Models\Produk;
 use App\Models\User;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -100,6 +101,8 @@ class PesananController extends Controller
             // 3. Update Total Harga di Header
             $pesanan->update(['total_harga' => $totalHarga]);
 
+            ActivityLog::log('Membuat pesanan baru: ' . $pesanan->no_pesanan, 'Pesanan', $pesanan->id);
+
             DB::commit();
             return redirect()->route('pesanan.index')->with('success', 'Pesanan berhasil ditambahkan.');
         } catch (\Exception $e) {
@@ -155,6 +158,8 @@ class PesananController extends Controller
             // 4. Update Total Harga akhir
             $pesanan->update(['total_harga' => $totalHarga]);
 
+            ActivityLog::log('Memperbarui data pesanan: ' . $pesanan->no_pesanan, 'Pesanan', $pesanan->id);
+
             DB::commit();
             return redirect()->route('pesanan.index')->with('success', 'Pesanan berhasil diperbarui.');
         } catch (\Exception $e) {
@@ -166,7 +171,10 @@ class PesananController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate(['status' => 'required|in:diproses,dikerjakan,selesai']);
-        Pesanan::findOrFail($id)->update(['status' => $request->status]);
+        $pesanan = Pesanan::findOrFail($id);
+        $pesanan->update(['status' => $request->status]);
+
+        ActivityLog::log('Mengubah status pesanan ' . $pesanan->no_pesanan . ' menjadi ' . $request->status, 'Pesanan', $pesanan->id);
 
         return redirect()->route('pesanan.index')->with('success', 'Status pesanan berhasil diperbarui.');
     }
@@ -177,6 +185,14 @@ class PesananController extends Controller
         $no = $pesanan->no_pesanan;
         $pesanan->delete();
 
+        ActivityLog::log('Menghapus pesanan: ' . $no, 'Pesanan', $id);
+
         return redirect()->route('pesanan.index')->with('success', "Pesanan {$no} berhasil dihapus.");
+    }
+
+    public function nota($id)
+    {
+        $pesanan = Pesanan::with(['user', 'details.produk'])->findOrFail($id);
+        return view('pesanan.nota', compact('pesanan'));
     }
 }

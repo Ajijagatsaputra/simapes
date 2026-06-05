@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produk;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 
 class ProdukController extends Controller
@@ -31,7 +32,9 @@ class ProdukController extends Controller
             'stok' => 'required|integer|min:0',
         ]);
 
-        Produk::create($validated);
+        $produk = Produk::create($validated);
+
+        ActivityLog::log('Menambahkan produk baru: ' . $produk->nama_produk, 'Produk', $produk->id);
 
         return redirect()->route('produk.index')
             ->with('success', 'Produk berhasil ditambahkan.');
@@ -50,7 +53,10 @@ class ProdukController extends Controller
             'stok' => 'required|integer|min:0',
         ]);
 
-        Produk::findOrFail($id)->update($validated);
+        $produk = Produk::findOrFail($id);
+        $produk->update($validated);
+
+        ActivityLog::log('Memperbarui data produk: ' . $produk->nama_produk, 'Produk', $produk->id);
 
         return redirect()->route('produk.index')
             ->with('success', 'Produk berhasil diperbarui.');
@@ -61,7 +67,11 @@ class ProdukController extends Controller
      */
     public function destroy($id)
     {
-        Produk::findOrFail($id)->delete();
+        $produk = Produk::findOrFail($id);
+        $name = $produk->nama_produk;
+        $produk->delete();
+
+        ActivityLog::log('Menghapus produk: ' . $name, 'Produk', $id);
 
         return redirect()->route('produk.index')
             ->with('success', 'Produk berhasil dihapus.');

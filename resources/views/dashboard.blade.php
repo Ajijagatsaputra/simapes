@@ -328,6 +328,57 @@ Scoped Styles
             height: 100%;
             min-height: 220px;
         }
+
+        /* ── Activity Logs ── */
+        .activity-card {
+            margin-top: 24px;
+        }
+
+        .activity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            border-bottom: 1px solid #f0f4fb;
+            font-size: .8rem;
+            color: #2d4060;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-user {
+            font-weight: 700;
+            color: #4A90D9;
+        }
+
+        .activity-text {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .activity-time {
+            font-size: .72rem;
+            color: #8ca0bf;
+            margin-left: 14px;
+        }
+
+        .activity-ip {
+            font-size: .68rem;
+            background: #f0f6ff;
+            color: #4A90D9;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: monospace;
+            margin-left: 10px;
+        }
     </style>
 @endpush
 
@@ -505,9 +556,9 @@ Page Content
                             <td>
                                 @php $s = strtolower($pesanan->status ?? ''); @endphp
                                 <span class="badge
-                                        @if($s === 'diproses') badge-diproses
-                                        @elseif($s === 'dikerjakan') badge-dikerjakan
-                                        @else badge-selesai @endif">
+                                                @if($s === 'diproses') badge-diproses
+                                                @elseif($s === 'dikerjakan') badge-dikerjakan
+                                                @else badge-selesai @endif">
                                     {{ ucfirst($pesanan->status ?? 'selesai') }}
                                 </span>
                             </td>
@@ -575,111 +626,142 @@ Page Content
                 @endif
             </div>
         </div>
-
     </div>
+
+    {{-- ── Activity Log (Audit Trail) ── --}}
+    <div class="card activity-card">
+                <div class="card-header" style="margin-bottom: 16px;">
+                    <span class="card-title" style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" style="color: #8a63d2;">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        Log Aktivitas Sistem Terbaru (Audit Trail)
+                    </span>
+                </div>
+                <ul class="activity-list">
+                    @forelse($activityLogs ?? [] as $log)
+                        <li class="activity-item">
+                            <div style="display: flex; align-items: center; flex: 1;">
+                                <span class="activity-user">{{ $log->user->name ?? 'System' }}</span>
+                                <span class="activity-text">{{ $log->activity }}</span>
+                                @if($log->ip_address)
+                                    <span class="activity-ip">{{ $log->ip_address }}</span>
+                                @endif
+                            </div>
+                            <span class="activity-time">{{ $log->created_at->diffForHumans() }}</span>
+                        </li>
+                    @empty
+                        <li style="text-align: center; color: #8ca0bf; padding: 20px; font-size: 0.8rem;">
+                            Belum ada aktivitas yang dicatat.
+                        </li>
+                    @endforelse
+                </ul>
+            </div>
 
 @endsection
 
-{{-- ══════════════════════════════════════════
-Scripts — Chart.js
-══════════════════════════════════════════ --}}
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <script>
-        // ── Data dari server ─────────────────────────────────────────────────
-        const allDataPesanan = @json($chartPesanan ?? []);
-        const allDataPrediksi = @json($chartPrediksi ?? []);
+        {{-- ══════════════════════════════════════════
+        Scripts — Chart.js
+        ══════════════════════════════════════════ --}}
+        @push('scripts')
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+            <script>
+                // ── Data dari server ─────────────────────────────────────────────────
+                const allDataPesanan = @json($chartPesanan ?? []);
+                const allDataPrediksi = @json($chartPrediksi ?? []);
 
-        function sliceLast(arr, n) { return arr.slice(-n); }
+                function sliceLast(arr, n) { return arr.slice(-n); }
 
-        // ── Chart Pesanan ────────────────────────────────────────────────────
-        const ctxP = document.getElementById('chartPesanan').getContext('2d');
-        let chartPesananObj;
+                // ── Chart Pesanan ────────────────────────────────────────────────────
+                const ctxP = document.getElementById('chartPesanan').getContext('2d');
+                let chartPesananObj;
 
-        function buildChartPesanan(n) {
-            const slice = sliceLast(allDataPesanan, n);
-            const labels = slice.map(d => d.label);
-            const data = slice.map(d => d.count);
+                function buildChartPesanan(n) {
+                    const slice = sliceLast(allDataPesanan, n);
+                    const labels = slice.map(d => d.label);
+                    const data = slice.map(d => d.count);
 
-            const gradient = ctxP.createLinearGradient(0, 0, 0, 200);
-            gradient.addColorStop(0, 'rgba(74,144,217,.25)');
-            gradient.addColorStop(1, 'rgba(74,144,217,0)');
+                    const gradient = ctxP.createLinearGradient(0, 0, 0, 200);
+                    gradient.addColorStop(0, 'rgba(74,144,217,.25)');
+                    gradient.addColorStop(1, 'rgba(74,144,217,0)');
 
-            return new Chart(ctxP, {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [{
-                        data,
-                        borderColor: '#4A90D9',
-                        backgroundColor: gradient,
-                        borderWidth: 2.5,
-                        pointBackgroundColor: '#4A90D9',
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        tension: 0.35,
-                        fill: true,
-                    }]
-                },
-                options: {
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#8ca0bf' } },
-                        y: { grid: { color: '#f0f4fb' }, ticks: { font: { size: 10 }, color: '#8ca0bf' } }
-                    },
-                    interaction: { mode: 'index', intersect: false },
+                    return new Chart(ctxP, {
+                        type: 'line',
+                        data: {
+                            labels,
+                            datasets: [{
+                                data,
+                                borderColor: '#4A90D9',
+                                backgroundColor: gradient,
+                                borderWidth: 2.5,
+                                pointBackgroundColor: '#4A90D9',
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                tension: 0.35,
+                                fill: true,
+                            }]
+                        },
+                        options: {
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#8ca0bf' } },
+                                y: { grid: { color: '#f0f4fb' }, ticks: { font: { size: 10 }, color: '#8ca0bf' } }
+                            },
+                            interaction: { mode: 'index', intersect: false },
+                        }
+                    });
                 }
-            });
-        }
-        chartPesananObj = buildChartPesanan(12);
-        function updateChartPesanan(n) {
-            chartPesananObj.destroy();
-            chartPesananObj = buildChartPesanan(parseInt(n));
-        }
-
-        // ── Chart Prediksi ───────────────────────────────────────────────────
-        const ctxPr = document.getElementById('chartPrediksi').getContext('2d');
-        let chartPrediksiObj;
-
-        function buildChartPrediksi(n) {
-            const slice = sliceLast(allDataPrediksi, n);
-            const labels = slice.map(d => d.label);
-            const data = slice.map(d => d.count);
-
-            const gradient = ctxPr.createLinearGradient(0, 0, 0, 200);
-            gradient.addColorStop(0, 'rgba(138,99,210,.25)');
-            gradient.addColorStop(1, 'rgba(138,99,210,0)');
-
-            return new Chart(ctxPr, {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [{
-                        data,
-                        borderColor: '#8a63d2',
-                        backgroundColor: gradient,
-                        borderWidth: 2.5,
-                        pointBackgroundColor: '#8a63d2',
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        tension: 0.35,
-                        fill: true,
-                    }]
-                },
-                options: {
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#8ca0bf' } },
-                        y: { grid: { color: '#f0f4fb' }, ticks: { font: { size: 10 }, color: '#8ca0bf' } }
-                    },
-                    interaction: { mode: 'index', intersect: false },
+                chartPesananObj = buildChartPesanan(12);
+                function updateChartPesanan(n) {
+                    chartPesananObj.destroy();
+                    chartPesananObj = buildChartPesanan(parseInt(n));
                 }
-            });
-        }
-        chartPrediksiObj = buildChartPrediksi(6);
-        function updateChartPrediksi(n) {
-            chartPrediksiObj.destroy();
-            chartPrediksiObj = buildChartPrediksi(parseInt(n));
-        }
-    </script>
-@endpush
+
+                // ── Chart Prediksi ───────────────────────────────────────────────────
+                const ctxPr = document.getElementById('chartPrediksi').getContext('2d');
+                let chartPrediksiObj;
+
+                function buildChartPrediksi(n) {
+                    const slice = sliceLast(allDataPrediksi, n);
+                    const labels = slice.map(d => d.label);
+                    const data = slice.map(d => d.count);
+
+                    const gradient = ctxPr.createLinearGradient(0, 0, 0, 200);
+                    gradient.addColorStop(0, 'rgba(138,99,210,.25)');
+                    gradient.addColorStop(1, 'rgba(138,99,210,0)');
+
+                    return new Chart(ctxPr, {
+                        type: 'line',
+                        data: {
+                            labels,
+                            datasets: [{
+                                data,
+                                borderColor: '#8a63d2',
+                                backgroundColor: gradient,
+                                borderWidth: 2.5,
+                                pointBackgroundColor: '#8a63d2',
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                tension: 0.35,
+                                fill: true,
+                            }]
+                        },
+                        options: {
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#8ca0bf' } },
+                                y: { grid: { color: '#f0f4fb' }, ticks: { font: { size: 10 }, color: '#8ca0bf' } }
+                            },
+                            interaction: { mode: 'index', intersect: false },
+                        }
+                    });
+                }
+                chartPrediksiObj = buildChartPrediksi(6);
+                function updateChartPrediksi(n) {
+                    chartPrediksiObj.destroy();
+                    chartPrediksiObj = buildChartPrediksi(parseInt(n));
+                }
+            </script>
+        @endpush

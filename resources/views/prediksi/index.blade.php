@@ -69,7 +69,7 @@
             margin-bottom: 24px;
             box-shadow: 0 2px 8px rgba(74, 144, 217, .04);
         }
-        
+
         .form-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -490,8 +490,12 @@
                 <div class="form-group">
                     <label for="alpha">
                         &alpha; (Alpha)
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#8ca0bf; cursor:pointer;" title="Parameter pemulusan untuk Level data aktual. Nilai: 0 - 1.">
-                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            style="color:#8ca0bf; cursor:pointer;"
+                            title="Parameter pemulusan untuk Level data aktual. Nilai: 0 - 1.">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="16" x2="12" y2="12" />
+                            <line x1="12" y1="8" x2="12.01" y2="8" />
                         </svg>
                     </label>
                     <input type="number" step="0.0001" min="0" max="1" name="alpha" id="alpha" value="{{ $alpha }}">
@@ -499,8 +503,11 @@
                 <div class="form-group">
                     <label for="beta">
                         &beta; (Beta)
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#8ca0bf; cursor:pointer;" title="Parameter pemulusan untuk Tren. Nilai: 0 - 1.">
-                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            style="color:#8ca0bf; cursor:pointer;" title="Parameter pemulusan untuk Tren. Nilai: 0 - 1.">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="16" x2="12" y2="12" />
+                            <line x1="12" y1="8" x2="12.01" y2="8" />
                         </svg>
                     </label>
                     <input type="number" step="0.0001" min="0" max="1" name="beta" id="beta" value="{{ $beta }}">
@@ -508,17 +515,22 @@
                 <div class="form-group">
                     <label for="gamma">
                         &gamma; (Gamma)
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#8ca0bf; cursor:pointer;" title="Parameter pemulusan untuk Seasonal (Pola Musiman). Nilai: 0 - 1.">
-                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            style="color:#8ca0bf; cursor:pointer;"
+                            title="Parameter pemulusan untuk Seasonal (Pola Musiman). Nilai: 0 - 1.">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="16" x2="12" y2="12" />
+                            <line x1="12" y1="8" x2="12.01" y2="8" />
                         </svg>
                     </label>
                     <input type="number" step="0.0001" min="0" max="1" name="gamma" id="gamma" value="{{ $gamma }}">
                 </div>
                 <div>
                     <button type="submit" class="btn-hitung">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <polyline points="12 6 12 12 16 14"/>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
                         </svg>
                         Hitung Prediksi
                     </button>
@@ -533,16 +545,17 @@
             <div class="warning-icon">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                    <line x1="12" y1="9" x2="12" y2="13"/>
-                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
                 </svg>
             </div>
             <div>
                 <h3 class="warning-title">Data Historis Tidak Mencukupi</h3>
                 <p class="warning-desc">{{ $message }}</p>
                 <div class="warning-desc" style="margin-top: 8px;">
-                    Untuk melakukan simulasi data 3 tahun penuh secara otomatis di database, silakan jalankan command artisan seeder di terminal proyek Anda:
+                    Untuk melakukan simulasi data 3 tahun penuh secara otomatis di database, silakan jalankan command artisan
+                    seeder di terminal proyek Anda:
                 </div>
                 <div class="seeder-hint">
                     php artisan db:seed --class=PesananHistorisSeeder
@@ -579,297 +592,355 @@
                             <line x1="6" y1="20" x2="6" y2="14" />
                             <line x1="2" y1="20" x2="22" y2="20" />
                         </svg>
+                    </div>
+                    <span class="stat-label">Bulan Puncak Prediksi</span>
                 </div>
-                <span class="stat-label">Bulan Puncak Prediksi</span>
-            </div>
-            <div class="stat-value" style="font-size: 1.35rem; font-weight: 800; padding: 2px 0;">{{ $puncakPrediksi }}</div>
-            <div class="stat-desc">Est. Permintaan Tertinggi</div>
-        </div>
-
-        {{-- Card 3: Total Prediksi Pesanan --}}
-        <div class="stat-card">
-            <div class="stat-header">
-                <div class="stat-icon blue">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                        <line x1="16" y1="13" x2="8" y2="13" />
-                        <line x1="16" y1="17" x2="8" y2="17" />
-                        <polyline points="10 9 9 9 8 9" />
-                    </svg>
+                <div class="stat-value" style="font-size: 1.35rem; font-weight: 800; padding: 2px 0;">{{ $puncakPrediksi }}
                 </div>
-                <span class="stat-label">Total Est. Pesanan</span>
+                <div class="stat-desc">Est. Permintaan Tertinggi</div>
             </div>
-            <div class="stat-value">{{ $totalPrediksiTahunDepan }}</div>
-            <div class="stat-desc">12 Bulan ke Depan</div>
-        </div>
 
-        {{-- Card 4: Rata-Rata Bulanan --}}
-        <div class="stat-card">
-            <div class="stat-header">
-                <div class="stat-icon orange">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10" />
-                        <polyline points="12 6 12 12 16 14" />
-                    </svg>
+            {{-- Card 3: Total Prediksi Pesanan --}}
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon blue">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                            <polyline points="10 9 9 9 8 9" />
+                        </svg>
+                    </div>
+                    <span class="stat-label">Total Est. Pesanan</span>
                 </div>
-                <span class="stat-label">Rata-Rata Bulanan</span>
+                <div class="stat-value">{{ $totalPrediksiTahunDepan }}</div>
+                <div class="stat-desc">12 Bulan ke Depan</div>
             </div>
-            <div class="stat-value">{{ $rataRataPesananPrediksi }} / bln</div>
-            <div class="stat-desc">Berdasarkan hasil proyeksi</div>
-        </div>
-    </div>
 
-    {{-- ── Main Layout: Chart + Tabel ── --}}
-    <div class="prediksi-layout">
-        {{-- Chart Visualisasi --}}
-        <div class="card">
-            <div class="card-title-wrap">
-                <span class="card-title">Grafik Proyeksi Permintaan Pesanan (Historis vs Prediksi)</span>
-            </div>
-            <div style="position: relative; height: 350px;">
-                <canvas id="chartPrediksiTahunan"></canvas>
+            {{-- Card 4: Rata-Rata Bulanan --}}
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon orange">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                    </div>
+                    <span class="stat-label">Rata-Rata Bulanan</span>
+                </div>
+                <div class="stat-value">{{ $rataRataPesananPrediksi }} / bln</div>
+                <div class="stat-desc">Berdasarkan hasil proyeksi</div>
             </div>
         </div>
 
-        {{-- Tabel Data Prediksi --}}
-        <div class="card">
-            <div class="card-title-wrap">
-                <span class="card-title">Tabel Hasil Prediksi (12 Bulan Ke Depan)</span>
+        {{-- ── Main Layout: Chart + Tabel ── --}}
+        <div class="prediksi-layout">
+            {{-- Chart Visualisasi --}}
+            <div class="card">
+                <div class="card-title-wrap">
+                    <span class="card-title">Grafik Proyeksi Permintaan Pesanan (Historis vs Prediksi)</span>
+                </div>
+                <div style="position: relative; height: 350px;">
+                    <canvas id="chartPrediksiTahunan"></canvas>
+                </div>
             </div>
-            <div class="pred-table-wrap">
-                <table class="pred-table">
-                    <thead>
-                        <tr>
-                            <th>Bulan</th>
-                            <th style="text-align: right;">Jumlah Prediksi</th>
-                            <th style="text-align: center;">Tingkat Volume</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($prediksi as $p)
+
+            {{-- Tabel Data Prediksi --}}
+            <div class="card">
+                <div class="card-title-wrap">
+                    <span class="card-title">Tabel Hasil Prediksi (12 Bulan Ke Depan)</span>
+                </div>
+                <div class="pred-table-wrap">
+                    <table class="pred-table">
+                        <thead>
                             <tr>
-                                <td style="font-weight: 600;">{{ $p['label'] }}</td>
-                                <td style="text-align: right; font-weight: 700; color: #1a2b4a;">
-                                    {{ $p['count'] }} Pesanan
-                                </td>
-                                <td style="text-align: center;">
-                                    @if($p['count'] >= 18)
-                                        <span class="badge-status tinggi">Volume Tinggi</span>
-                                    @elseif($p['count'] >= 8)
-                                        <span class="badge-status sedang">Volume Sedang</span>
-                                    @else
-                                        <span class="badge-status rendah">Volume Rendah</span>
-                                    @endif
-                                </td>
+                                <th>Bulan</th>
+                                <th style="text-align: right;">Jumlah Prediksi</th>
+                                <th style="text-align: center;">Tingkat Volume</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach($prediksi as $p)
+                                <tr>
+                                    <td style="font-weight: 600;">{{ $p['label'] }}</td>
+                                    <td style="text-align: right; font-weight: 700; color: #1a2b4a;">
+                                        {{ $p['count'] }} Pesanan
+                                    </td>
+                                    <td style="text-align: center;">
+                                        @if($p['count'] >= 18)
+                                            <span class="badge-status tinggi">Volume Tinggi</span>
+                                        @elseif($p['count'] >= 8)
+                                            <span class="badge-status sedang">Volume Sedang</span>
+                                        @else
+                                            <span class="badge-status rendah">Volume Rendah</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-    </div>
 
-    {{-- ── Teori & Metode Perhitungan (Kebutuhan Sidang TA) ── --}}
-    <div class="theory-card">
-        <h3 class="card-title" style="margin-bottom: 14px; font-size: 1.05rem;">
-            Metodologi Prediksi: Holt-Winters Triple Exponential Smoothing (Multiplicative)
-        </h3>
-        
-        <p style="font-size: .83rem; color: #4a5a7a; line-height: 1.6; margin-bottom: 12px;">
-            Aplikasi ini menggunakan metode <strong>Holt-Winters (Triple Exponential Smoothing)</strong> tipe Multiplikatif. Metode ini sangat ideal untuk memproyeksikan data pesanan konveksi jasa pembuatan seragam karena mampu secara simultan menangani tiga komponen utama time-series: <strong>Level</strong> (Nilai Rata-rata), <strong>Trend</strong> (Peningkatan/Penurunan secara jangka panjang), dan <strong>Seasonality</strong> (Musiman bulanan seperti tahun ajaran baru sekolah).
-        </p>
+            {{-- ── Material Requirement Planning (MRP) ── --}}
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="card-title-wrap">
+                    <span class="card-title" style="display: flex; align-items: center; gap: 8px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" style="color: #4A90D9;">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                            <line x1="7" y1="7" x2="7.01" y2="7" />
+                        </svg>
+                        Perencanaan Kebutuhan Bahan Baku (Material Requirement Planning - MRP)
+                    </span>
+                    <span
+                        style="font-size: 0.72rem; color: #8ca0bf; font-weight: 600; background: #e8f0fd; padding: 4px 10px; border-radius: 20px;">
+                        Est. untuk {{ $totalPrediksiTahunDepan }} Pesanan ({{ $totalPrediksiTahunDepan * 20 }} Pcs)
+                    </span>
+                </div>
+                <p style="font-size: .8rem; color: #6b7e9f; line-height: 1.5; margin-bottom: 18px;">
+                    Berikut adalah kalkulasi kebutuhan bahan baku mentah yang diproyeksikan untuk menyelesaikan total volume
+                    pesanan ramalan selama 12 bulan ke depan. Estimasi didasarkan pada rata-rata porsi item per pesanan (20
+                    pcs/order) dan rasio penggunaan bahan standar konveksi.
+                </p>
 
-        <h4 style="font-size: .83rem; font-weight: 700; color: #1a2b4a; margin-top: 18px; margin-bottom: 6px;">
-            Parameter Penghalusan (Smoothing Parameters) yang Digunakan:
-        </h4>
-        <div class="parameter-grid">
-            <div class="param-card">
-                <div class="param-symbol">&alpha; (Alpha)</div>
-                <div class="param-value">{{ $parameters['alpha'] }}</div>
-                <div class="param-desc">Faktor penghalus untuk Level dasar data aktual</div>
+                <div class="pred-table-wrap" style="max-height: none; overflow: visible;">
+                    <table class="pred-table">
+                        <thead>
+                            <tr>
+                                <th>Nama Bahan Baku</th>
+                                <th style="text-align: right;">Total Kebutuhan</th>
+                                <th>Satuan</th>
+                                <th>Keterangan / Alokasi Penggunaan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($mrp as $key => $val)
+                                <tr>
+                                    <td style="font-weight: 700; color: #1a2b4a;">{{ $val['nama'] }}</td>
+                                    <td style="text-align: right; font-weight: 800; color: #4A90D9; font-size: 0.95rem;">
+                                        {{ number_format($val['jumlah'], 0, ',', '.') }}
+                                    </td>
+                                    <td style="font-weight: 600; color: #5a7090;">{{ $val['satuan'] }}</td>
+                                    <td style="color: #8ca0bf; font-size: 0.78rem;">{{ $val['keterangan'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="param-card">
-                <div class="param-symbol">&beta; (Beta)</div>
-                <div class="param-value">{{ $parameters['beta'] }}</div>
-                <div class="param-desc">Faktor penghalus untuk memperbarui Tren pertumbuhan</div>
-            </div>
-            <div class="param-card">
-                <div class="param-symbol">&gamma; (Gamma)</div>
-                <div class="param-value">{{ $parameters['gamma'] }}</div>
-                <div class="param-desc">Faktor penghalus indeks Musiman (Seasonal) bulanan</div>
-            </div>
-        </div>
 
-        <h4 style="font-size: .83rem; font-weight: 700; color: #1a2b4a; margin-top: 20px; margin-bottom: 8px;">
-            Persamaan Matematika Holt-Winters Multiplikatif:
-        </h4>
-        <div class="formula-box">
-            1. Persamaan Level (L_t)     : L_t = &alpha; * (Y_t / S_{t-p}) + (1 - &alpha;) * (L_{t-1} + T_{t-1})<br>
-            2. Persamaan Tren (T_t)      : T_t = &beta; * (L_t - L_{t-1}) + (1 - &beta;) * T_{t-1}<br>
-            3. Persamaan Musiman (S_t)   : S_t = &gamma; * (Y_t / L_t) + (1 - &gamma;) * S_{t-p}<br>
-            4. Rumus Prediksi (F_{t+m})  : F_{t+m} = (L_t + m * T_t) * S_{t-p+m}
-        </div>
+            {{-- ── Teori & Metode Perhitungan (Kebutuhan Sidang TA) ── --}}
+            <div class="theory-card">
+                <h3 class="card-title" style="margin-bottom: 14px; font-size: 1.05rem;">
+                    Metodologi Prediksi: Holt-Winters Triple Exponential Smoothing (Multiplicative)
+                </h3>
 
-        <h4 style="font-size: .83rem; font-weight: 700; color: #1a2b4a; margin-top: 18px; margin-bottom: 8px;">
-            Langkah-Langkah Perhitungan Sistem:
-        </h4>
-        <ul class="step-list">
-            <li>
-                <strong>Inisialisasi Data:</strong> Menghitung nilai dasar rata-rata (*Level*) awal, nilai peningkatan awal (*Trend*), serta menghitung 12 indeks musiman awal (*Seasonal Indices*) berdasarkan data 2 tahun pertama.
-            </li>
-            <li>
-                <strong>Iterasi Evaluasi:</strong> Melakukan perulangan (*looping*) baris demi baris data dari bulan pertama hingga bulan terakhir (bulan ke-{{ count($historis) }}) untuk memperbarui nilai parameter $L_t$, $T_t$, dan $S_t$ agar menyesuaikan fluktuasi riil.
-            </li>
-            <li>
-                <strong>Proyeksi Prediksi:</strong> Menggunakan nilai akhir Level dan Trend terakhir dikalikan dengan bobot musiman bulan yang bersangkutan untuk meramalkan volume pesanan di 12 bulan ke depan secara presisi.
-            </li>
-        </ul>
-    </div>
+                <p style="font-size: .83rem; color: #4a5a7a; line-height: 1.6; margin-bottom: 12px;">
+                    Aplikasi ini menggunakan metode <strong>Holt-Winters (Triple Exponential Smoothing)</strong> tipe
+                    Multiplikatif. Metode ini sangat ideal untuk memproyeksikan data pesanan konveksi jasa pembuatan seragam
+                    karena mampu secara simultan menangani tiga komponen utama time-series: <strong>Level</strong> (Nilai
+                    Rata-rata), <strong>Trend</strong> (Peningkatan/Penurunan secara jangka panjang), dan
+                    <strong>Seasonality</strong> (Musiman bulanan seperti tahun ajaran baru sekolah).
+                </p>
+
+                <h4 style="font-size: .83rem; font-weight: 700; color: #1a2b4a; margin-top: 18px; margin-bottom: 6px;">
+                    Parameter Penghalusan (Smoothing Parameters) yang Digunakan:
+                </h4>
+                <div class="parameter-grid">
+                    <div class="param-card">
+                        <div class="param-symbol">&alpha; (Alpha)</div>
+                        <div class="param-value">{{ $parameters['alpha'] }}</div>
+                        <div class="param-desc">Faktor penghalus untuk Level dasar data aktual</div>
+                    </div>
+                    <div class="param-card">
+                        <div class="param-symbol">&beta; (Beta)</div>
+                        <div class="param-value">{{ $parameters['beta'] }}</div>
+                        <div class="param-desc">Faktor penghalus untuk memperbarui Tren pertumbuhan</div>
+                    </div>
+                    <div class="param-card">
+                        <div class="param-symbol">&gamma; (Gamma)</div>
+                        <div class="param-value">{{ $parameters['gamma'] }}</div>
+                        <div class="param-desc">Faktor penghalus indeks Musiman (Seasonal) bulanan</div>
+                    </div>
+                </div>
+
+                <h4 style="font-size: .83rem; font-weight: 700; color: #1a2b4a; margin-top: 20px; margin-bottom: 8px;">
+                    Persamaan Matematika Holt-Winters Multiplikatif:
+                </h4>
+                <div class="formula-box">
+                    1. Persamaan Level (L_t) : L_t = &alpha; * (Y_t / S_{t-p}) + (1 - &alpha;) * (L_{t-1} + T_{t-1})<br>
+                    2. Persamaan Tren (T_t) : T_t = &beta; * (L_t - L_{t-1}) + (1 - &beta;) * T_{t-1}<br>
+                    3. Persamaan Musiman (S_t) : S_t = &gamma; * (Y_t / L_t) + (1 - &gamma;) * S_{t-p}<br>
+                    4. Rumus Prediksi (F_{t+m}) : F_{t+m} = (L_t + m * T_t) * S_{t-p+m}
+                </div>
+
+                <h4 style="font-size: .83rem; font-weight: 700; color: #1a2b4a; margin-top: 18px; margin-bottom: 8px;">
+                    Langkah-Langkah Perhitungan Sistem:
+                </h4>
+                <ul class="step-list">
+                    <li>
+                        <strong>Inisialisasi Data:</strong> Menghitung nilai dasar rata-rata (*Level*) awal, nilai peningkatan
+                        awal (*Trend*), serta menghitung 12 indeks musiman awal (*Seasonal Indices*) berdasarkan data 2 tahun
+                        pertama.
+                    </li>
+                    <li>
+                        <strong>Iterasi Evaluasi:</strong> Melakukan perulangan (*looping*) baris demi baris data dari bulan
+                        pertama hingga bulan terakhir (bulan ke-{{ count($historis) }}) untuk memperbarui nilai parameter $L_t$,
+                        $T_t$, dan $S_t$ agar menyesuaikan fluktuasi riil.
+                    </li>
+                    <li>
+                        <strong>Proyeksi Prediksi:</strong> Menggunakan nilai akhir Level dan Trend terakhir dikalikan dengan
+                        bobot musiman bulan yang bersangkutan untuk meramalkan volume pesanan di 12 bulan ke depan secara
+                        presisi.
+                    </li>
+                </ul>
+            </div>
     @endif
 
 @endsection
 
-@push('scripts')
-    @if($hasData)
-    {{-- Mengimpor Chart.js dari CDN (Jika belum dimuat di layout utama) --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Data Historis dari Controller
-            const dataHistoris = @json($historis);
-            // Data Prediksi dari Controller
-            const dataPrediksi = @json($prediksi);
+    @push('scripts')
+        @if($hasData)
+            {{-- Mengimpor Chart.js dari CDN (Jika belum dimuat di layout utama) --}}
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    // Data Historis dari Controller
+                    const dataHistoris = @json($historis);
+                    // Data Prediksi dari Controller
+                    const dataPrediksi = @json($prediksi);
 
-            // Olah label dan data point untuk Chart
-            const labelsHistoris = dataHistoris.map(item => item.label);
-            const countsHistoris = dataHistoris.map(item => item.count);
+                    // Olah label dan data point untuk Chart
+                    const labelsHistoris = dataHistoris.map(item => item.label);
+                    const countsHistoris = dataHistoris.map(item => item.count);
 
-            const labelsPrediksi = dataPrediksi.map(item => item.label);
-            const countsPrediksi = dataPrediksi.map(item => item.count);
+                    const labelsPrediksi = dataPrediksi.map(item => item.label);
+                    const countsPrediksi = dataPrediksi.map(item => item.count);
 
-            // Gabungkan label (historis + 12 bulan prediksi)
-            const allLabels = [...labelsHistoris, ...labelsPrediksi];
+                    // Gabungkan label (historis + 12 bulan prediksi)
+                    const allLabels = [...labelsHistoris, ...labelsPrediksi];
 
-            // Setup data point historis (data riil, null di akhir agar garis terputus)
-            const datasetHistoris = [...countsHistoris, ...Array(labelsPrediksi.length).fill(null)];
+                    // Setup data point historis (data riil, null di akhir agar garis terputus)
+                    const datasetHistoris = [...countsHistoris, ...Array(labelsPrediksi.length).fill(null)];
 
-            // Setup data point prediksi (null di awal + 1 titik pertemuan di index akhir historis agar garis menyambung + data prediksi)
-            const titikPertemuan = countsHistoris[countsHistoris.length - 1];
-            const datasetPrediksi = [...Array(countsHistoris.length - 1).fill(null), titikPertemuan, ...countsPrediksi];
+                    // Setup data point prediksi (null di awal + 1 titik pertemuan di index akhir historis agar garis menyambung + data prediksi)
+                    const titikPertemuan = countsHistoris[countsHistoris.length - 1];
+                    const datasetPrediksi = [...Array(countsHistoris.length - 1).fill(null), titikPertemuan, ...countsPrediksi];
 
-            const ctx = document.getElementById('chartPrediksiTahunan').getContext('2d');
+                    const ctx = document.getElementById('chartPrediksiTahunan').getContext('2d');
 
-            // Setup gradient warna latar bawah kurva
-            const gradientBlue = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientBlue.addColorStop(0, 'rgba(74, 144, 217, 0.2)');
-            gradientBlue.addColorStop(1, 'rgba(74, 144, 217, 0)');
+                    // Setup gradient warna latar bawah kurva
+                    const gradientBlue = ctx.createLinearGradient(0, 0, 0, 300);
+                    gradientBlue.addColorStop(0, 'rgba(74, 144, 217, 0.2)');
+                    gradientBlue.addColorStop(1, 'rgba(74, 144, 217, 0)');
 
-            const gradientPurple = ctx.createLinearGradient(0, 0, 0, 300);
-            gradientPurple.addColorStop(0, 'rgba(138, 99, 210, 0.2)');
-            gradientPurple.addColorStop(1, 'rgba(138, 99, 210, 0)');
+                    const gradientPurple = ctx.createLinearGradient(0, 0, 0, 300);
+                    gradientPurple.addColorStop(0, 'rgba(138, 99, 210, 0.2)');
+                    gradientPurple.addColorStop(1, 'rgba(138, 99, 210, 0)');
 
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: allLabels,
-                    datasets: [
-                        {
-                            label: 'Jumlah Pesanan Aktual (Historis)',
-                            data: datasetHistoris,
-                            borderColor: '#4A90D9',
-                            backgroundColor: gradientBlue,
-                            borderWidth: 3,
-                            pointBackgroundColor: '#4A90D9',
-                            pointRadius: function(context) {
-                                return context.dataIndex % 3 === 0 ? 3 : 0;
-                            },
-                            fill: true,
-                            tension: 0.3
-                        },
-                        {
-                            label: 'Proyeksi Prediksi (Holt-Winters)',
-                            data: datasetPrediksi,
-                            borderColor: '#8a63d2',
-                            backgroundColor: gradientPurple,
-                            borderWidth: 3,
-                            borderDash: [5, 5], // Membuat garis putus-putus khusus untuk prediksi
-                            pointBackgroundColor: '#8a63d2',
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            fill: true,
-                            tension: 0.3
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: {
-                                font: {
-                                    family: 'Inter',
-                                    size: 11,
-                                    weight: '500'
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: allLabels,
+                            datasets: [
+                                {
+                                    label: 'Jumlah Pesanan Aktual (Historis)',
+                                    data: datasetHistoris,
+                                    borderColor: '#4A90D9',
+                                    backgroundColor: gradientBlue,
+                                    borderWidth: 3,
+                                    pointBackgroundColor: '#4A90D9',
+                                    pointRadius: function (context) {
+                                        return context.dataIndex % 3 === 0 ? 3 : 0;
+                                    },
+                                    fill: true,
+                                    tension: 0.3
                                 },
-                                color: '#1a2b4a'
-                            }
+                                {
+                                    label: 'Proyeksi Prediksi (Holt-Winters)',
+                                    data: datasetPrediksi,
+                                    borderColor: '#8a63d2',
+                                    backgroundColor: gradientPurple,
+                                    borderWidth: 3,
+                                    borderDash: [5, 5], // Membuat garis putus-putus khusus untuk prediksi
+                                    pointBackgroundColor: '#8a63d2',
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6,
+                                    fill: true,
+                                    tension: 0.3
+                                }
+                            ]
                         },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            bodyFont: {
-                                family: 'Inter'
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                    labels: {
+                                        font: {
+                                            family: 'Inter',
+                                            size: 11,
+                                            weight: '500'
+                                        },
+                                        color: '#1a2b4a'
+                                    }
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
+                                    bodyFont: {
+                                        family: 'Inter'
+                                    },
+                                    titleFont: {
+                                        family: 'Inter',
+                                        weight: 'bold'
+                                    }
+                                }
                             },
-                            titleFont: {
-                                family: 'Inter',
-                                weight: 'bold'
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: 'Inter',
+                                            size: 9
+                                        },
+                                        color: '#8ca0bf',
+                                        maxRotation: 45,
+                                        minRotation: 45,
+                                        autoSkip: true,
+                                        maxTicksLimit: 20
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        color: '#f0f4fb'
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: 'Inter',
+                                            size: 10
+                                        },
+                                        color: '#8ca0bf'
+                                    }
+                                }
+                            },
+                            interaction: {
+                                mode: 'index',
+                                intersect: false
                             }
                         }
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                font: {
-                                    family: 'Inter',
-                                    size: 9
-                                },
-                                color: '#8ca0bf',
-                                maxRotation: 45,
-                                minRotation: 45,
-                                autoSkip: true,
-                                maxTicksLimit: 20
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: '#f0f4fb'
-                            },
-                            ticks: {
-                                font: {
-                                    family: 'Inter',
-                                    size: 10
-                                },
-                                color: '#8ca0bf'
-                            }
-                        }
-                    },
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
-                    }
-                }
-            });
-        });
-    </script>
-    @endif
-@endpush
+                    });
+                });
+            </script>
+        @endif
+    @endpush
