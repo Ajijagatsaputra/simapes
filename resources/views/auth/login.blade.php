@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Login SIMAPES - Sistem Informasi Manajemen Pesanan Seragam Sekolah">
     <title>Login — SIMAPES</title>
+    <link rel="icon" type="image/png" href="{{ asset('logoauth/logo2.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -218,6 +219,48 @@
             margin-top: 5px;
         }
 
+        /* ── Eye Toggle & Validation Styles ── */
+        .toggle-password {
+            position: absolute;
+            right: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-sub);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            border-radius: 4px;
+            transition: color var(--ease), background var(--ease);
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
+            background: rgba(26, 79, 171, .05);
+        }
+
+        .field-input.has-error {
+            border-color: #e53935 !important;
+            background: #fff8f8 !important;
+        }
+
+        .field-input.has-error:focus {
+            box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.15) !important;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease;
+        }
+
         /* ── Tombol ── */
         .btn-login {
             width: 100%;
@@ -280,7 +323,7 @@
 
             {{-- Panel Kiri: Branding --}}
             <div class="panel-left">
-                <img src="{{ asset('auth/logo2.png') }}" alt="Logo SIMAPES" class="brand-logo">
+                <img src="{{ asset('logoauth/logo2.png') }}" alt="Logo SIMAPES" class="brand-logo">
                 <h1 class="brand-title">SIMAPES</h1>
                 <p class="brand-subtitle">Sistem Informasi Manajemen<br>Pesanan Seragam Sekolah</p>
                 <p class="brand-desc">Kelola data pelanggan, produk, pesanan,<br>dan prediksi pesanan dengan
@@ -334,7 +377,14 @@
                                     </svg>
                                 </span>
                                 <input id="password" class="field-input" type="password" name="password"
-                                    placeholder="Masukkan password anda" required autocomplete="current-password">
+                                    placeholder="Masukkan password anda" required autocomplete="current-password"
+                                    style="padding-right: 42px;">
+                                <button type="button" id="toggle-password" class="toggle-password" aria-label="Tampilkan password">
+                                    <svg id="eye-icon" class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
+                                </button>
                             </div>
                             @error('password')
                                 <p class="field-error" role="alert">{{ $message }}</p>
@@ -347,6 +397,113 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const togglePasswordBtn = document.getElementById('toggle-password');
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+
+            // Toggle Password Visibility
+            togglePasswordBtn.addEventListener('click', () => {
+                const isPassword = passwordInput.getAttribute('type') === 'password';
+                passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                togglePasswordBtn.setAttribute('aria-label', isPassword ? 'Sembunyikan password' : 'Tampilkan password');
+
+                if (isPassword) {
+                    // Eye off icon
+                    eyeIcon.innerHTML = `
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                        <line x1="1" y1="1" x2="23" y2="23" />
+                    `;
+                } else {
+                    // Eye icon
+                    eyeIcon.innerHTML = `
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    `;
+                }
+            });
+
+            // Validation logic
+            const form = document.querySelector('form');
+            const emailInput = document.getElementById('email');
+
+            form.addEventListener('submit', (e) => {
+                let isValid = true;
+                
+                // Clear previous client-side errors
+                document.querySelectorAll('.client-error').forEach(el => el.remove());
+                emailInput.classList.remove('has-error');
+                passwordInput.classList.remove('has-error');
+
+                // Validate Email
+                if (!emailInput.value.trim()) {
+                    showError(emailInput, 'Username / Email wajib diisi!');
+                    isValid = false;
+                } else if (!validateEmail(emailInput.value.trim())) {
+                    showError(emailInput, 'Format email tidak valid!');
+                    isValid = false;
+                }
+
+                // Validate Password
+                if (!passwordInput.value.trim()) {
+                    showError(passwordInput, 'Password wajib diisi!');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    
+                    // Shake the form box card for nice premium feedback
+                    const card = document.querySelector('.form-box');
+                    card.classList.remove('shake');
+                    // Trigger reflow
+                    void card.offsetWidth;
+                    card.classList.add('shake');
+                }
+            });
+
+            // Real-time input validation cleanup
+            [emailInput, passwordInput].forEach(input => {
+                input.addEventListener('input', () => {
+                    input.classList.remove('has-error');
+                    const errorMsg = input.closest('.field').querySelector('.client-error');
+                    if (errorMsg) errorMsg.remove();
+                });
+            });
+
+            function showError(inputElement, message) {
+                inputElement.classList.add('has-error');
+                const field = inputElement.closest('.field');
+                
+                // Remove server-side validation error if present
+                const serverError = field.querySelector('.field-error');
+                if (serverError) serverError.remove();
+
+                const errorP = document.createElement('p');
+                errorP.className = 'field-error client-error';
+                errorP.setAttribute('role', 'alert');
+                errorP.innerText = message;
+                errorP.style.opacity = '0';
+                errorP.style.transform = 'translateY(-5px)';
+                errorP.style.transition = 'all 0.3s ease';
+                field.appendChild(errorP);
+                
+                // Animate fade-in
+                setTimeout(() => {
+                    errorP.style.opacity = '1';
+                    errorP.style.transform = 'translateY(0)';
+                }, 10);
+            }
+
+            function validateEmail(email) {
+                // simple email regex
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+        });
+    </script>
 </body>
 
 </html>

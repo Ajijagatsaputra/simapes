@@ -13,13 +13,8 @@ class PesananController extends Controller
 {
     public function index(Request $request)
     {
-        // Load pesanan beserta detail item dan relasi produknya
-        $query = Pesanan::with(['user', 'details.produk'])->latest();
-
-        // Filter status
-        if ($request->filled('status') && $request->status !== 'semua') {
-            $query->where('status', $request->status);
-        }
+        // Load pesanan
+        $query = Pesanan::query();
 
         // Filter tanggal
         if ($request->filled('tanggal')) {
@@ -35,12 +30,30 @@ class PesananController extends Controller
             });
         }
 
-        $pesanan = $query->paginate(10)->withQueryString();
-        $totalPesanan = Pesanan::count();
+        // Hitung total status berdasarkan filter pencarian & tanggal (sebelum filter status)
+        $totalPesanan = (clone $query)->count();
+        $totalDiproses = (clone $query)->where('status', 'diproses')->count();
+        $totalDikerjakan = (clone $query)->where('status', 'dikerjakan')->count();
+        $totalSelesai = (clone $query)->where('status', 'selesai')->count();
+
+        // Filter status
+        if ($request->filled('status') && $request->status !== 'semua') {
+            $query->where('status', $request->status);
+        }
+
+        $pesanan = $query->with(['user', 'details.produk'])->latest()->paginate(10)->withQueryString();
         $pelanggan = User::orderBy('name')->get();
         $produks = Produk::orderBy('nama_produk')->get();
 
-        return view('pesanan.index', compact('pesanan', 'totalPesanan', 'pelanggan', 'produks'));
+        return view('pesanan.index', compact(
+            'pesanan',
+            'totalPesanan',
+            'totalDiproses',
+            'totalDikerjakan',
+            'totalSelesai',
+            'pelanggan',
+            'produks'
+        ));
     }
 
     public function store(Request $request)

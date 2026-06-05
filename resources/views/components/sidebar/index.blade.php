@@ -56,7 +56,7 @@
     {{-- ── Logo & Brand ── --}}
     <div class="sidebar-brand">
         <div class="brand-icon-wrap" aria-hidden="true">
-            <img src="{{ asset('auth/logo2.png') }}" alt="Logo SIMAPES" class="brand-icon-img">
+            <img src="{{ asset('logoauth/logo2.png') }}" alt="Logo SIMAPES" class="brand-icon-img">
         </div>
         <span class="brand-name">SIMAPES</span>
     </div>
@@ -217,12 +217,14 @@
     .brand-icon-wrap {
         width: 60px;
         height: 60px;
-        background: rgba(255,255,255,.15);
+        background: #ffffff;
         border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 4px;
     }
 
     .brand-icon-img {
