@@ -111,6 +111,26 @@
     .page-btn.active { background: #4A90D9; color: #fff; border-color: #4A90D9; }
     .page-btn:disabled { opacity: .4; cursor: not-allowed; }
     .page-dots { color: #8ca0bf; font-size: .8rem; font-weight: 600; padding: 0 4px; }
+
+    @media (max-width: 576px) {
+        .item-form-row {
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
+            position: relative;
+            padding-bottom: 16px !important;
+            border-bottom: 1.5px dashed #dde8f8 !important;
+        }
+        .item-form-row:last-child {
+            border-bottom: none !important;
+            padding-bottom: 0 !important;
+        }
+        .btn-remove-item {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 5;
+        }
+    }
 </style>
 @endpush
 

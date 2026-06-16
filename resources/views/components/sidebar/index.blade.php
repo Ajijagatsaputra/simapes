@@ -237,7 +237,14 @@
         z-index: 100;
         font-family: var(--sb-font);
         box-shadow: 4px 0 20px rgba(26,79,171,.15);
-        overflow: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;  /* IE and Edge */
+    }
+
+    .simapes-sidebar::-webkit-scrollbar {
+        display: none; /* Chrome, Safari and Opera */
     }
 
     /* ── Brand / Logo ── */
@@ -249,6 +256,7 @@
         margin-bottom: 32px;
         padding: 0 12px;
         width: 100%;
+        flex-shrink: 0;
     }
 
     .brand-icon-wrap {
@@ -285,6 +293,7 @@
         gap: 4px;
         width: 100%;
         padding: 0 10px;
+        flex-shrink: 0;
     }
 
     /* ── Nav Item (link & button share same class) ── */
@@ -343,6 +352,7 @@
     .sidebar-footer {
         width: 100%;
         padding: 0 10px;
+        flex-shrink: 0;
     }
 
     .nav-item--logout {

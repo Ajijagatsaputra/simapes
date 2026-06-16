@@ -10,10 +10,13 @@
                     <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
             </div>
-            <span class="stat-label">Akurasi Prediksi</span>
+            <span class="stat-label">Akurasi Prediksi (HW)</span>
         </div>
         <div class="stat-value">{{ number_format(100 - $mape, 2) }}%</div>
-        <div class="stat-desc">MAPE Error: {{ number_format($mape, 2) }}%</div>
+        <div class="stat-desc" style="display: flex; flex-direction: column; gap: 2px; line-height: 1.3;">
+            <span>MAPE HW: <strong>{{ number_format($mape, 2) }}%</strong> (Stabil)</span>
+            <span style="color: #f5a54a; font-weight: 500;">MAPE SES: {{ number_format($sesMape, 2) }}% (Datar)</span>
+        </div>
     </div>
 
     {{-- Card 2: Bulan Puncak --}}

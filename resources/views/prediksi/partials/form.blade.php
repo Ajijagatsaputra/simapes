@@ -1,8 +1,19 @@
 {{-- ── Form Parameter Input ── --}}
+@if(request()->query('optimized'))
+    <div
+        style="background: #e8f8ee; border-left: 5px solid #34c472; color: #2e7d32; padding: 14px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span>Parameter Berhasil Dioptimasi Menggunakan <strong>Grid Search</strong>! Ditemukan tingkat kesalahan (MAPE)
+            terendah untuk data transaksi historis Anda.</span>
+    </div>
+@endif
+
 <div class="form-prediksi">
     <form action="{{ route('prediksi.index') }}" method="GET" id="formPrediksi">
         <div style="display: flex; flex-direction: column; gap: 16px;">
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; align-items: flex-end;">
+            <div class="form-preset-grid">
                 <div class="form-group">
                     <label for="preset-select" style="font-weight: 700; color: #1a2b4a;">
                         Mode Sensitivitas Prediksi
@@ -23,6 +34,18 @@
                         </svg>
                         Hitung Prediksi
                     </button>
+                </div>
+                <div>
+                    <a href="{{ route('prediksi.index', ['optimize' => 1]) }}" class="btn-hitung"
+                        style="width: 100%; background: #8a63d2; text-decoration: none; box-sizing: border-box; text-align: center;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                        Optimasi Parameter
+                    </a>
                 </div>
             </div>
 

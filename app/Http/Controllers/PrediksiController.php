@@ -79,9 +79,20 @@ class PrediksiController extends Controller
                 'count' => $count
             ];
         }
+        // ── 2.5. Jika ada request optimasi parameter (Grid Search) ───────
+        if ($request->has('optimize')) {
+            $opt = $this->predictionService->findOptimalParameters($historis);
+            return redirect()->route('prediksi.index', [
+                'alpha' => $opt['alpha'],
+                'beta' => $opt['beta'],
+                'gamma' => $opt['gamma'],
+                'optimized' => 1
+            ]);
+        }
 
-        // ── 3. Jalankan Algoritma Holt-Winters ────────────────────────────
+        // ── 3. Jalankan Algoritma Holt-Winters & SES (Pembanding) ─────────
         $result = $this->predictionService->calculateHoltWinters($historis, $alpha, $beta, $gamma, 12);
+        $sesResult = $this->predictionService->calculateSES($historis, $alpha, 12);
 
         if ($result['success']) {
             \App\Models\ActivityLog::log('Melakukan simulasi prediksi pesanan (Alpha: ' . $alpha . ', Beta: ' . $beta . ', Gamma: ' . $gamma . ')', 'Prediksi');
@@ -102,6 +113,8 @@ class PrediksiController extends Controller
         $prediksi = $result['prediksi'];
         $mape = $result['mape'];
         $mad = $result['mad'];
+        $historis_fitted = $result['historis_fitted'];
+        $sesMape = $sesResult['mape'];
 
         // Cari bulan puncak prediksi
         $puncakPrediksi = null;
@@ -180,8 +193,30 @@ class PrediksiController extends Controller
             }
         }
 
+        // Set lead times, Safety Stock, dan Reorder Point (ROP)
+        $leadTimes = [
+            'kain' => 5,      // 5 Hari
+            'kancing' => 3,   // 3 Hari
+            'benang' => 2,    // 2 Hari
+            'resleting' => 4, // 4 Hari
+        ];
+
         foreach ($mrp as $key => $val) {
             $mrp[$key]['jumlah'] = ceil($val['jumlah']);
+            $lt = $leadTimes[$key] ?? 3;
+            $mrp[$key]['lead_time'] = $lt;
+
+            // Rata-rata kebutuhan harian (Kebutuhan 12 bulan / 360 hari)
+            $avgDaily = ($mrp[$key]['jumlah']) / 360;
+
+            // Safety Stock = 0.5 * Daily Demand * Lead Time (Konstanta Keamanan SCM)
+            $safetyStock = ceil(0.5 * $avgDaily * $lt);
+
+            // Reorder Point (ROP) = (Daily Demand * Lead Time) + Safety Stock
+            $rop = ceil(($avgDaily * $lt) + $safetyStock);
+
+            $mrp[$key]['safety_stock'] = $safetyStock;
+            $mrp[$key]['rop'] = $rop;
         }
 
         // Ambil data supplier untuk dicocokkan dengan kebutuhan MRP
@@ -208,7 +243,28 @@ class PrediksiController extends Controller
             'beta',
             'gamma',
             'mrp',
-            'rekomendasiSupplier'
+            'rekomendasiSupplier',
+            'sesMape',
+            'historis_fitted'
         ))->with('hasData', true);
     }
+
+    /**
+     * Cetak Purchase Order (PO)
+     */
+    public function printPo(Request $request)
+    {
+        $supplierId = $request->query('supplier_id');
+        $supplier = \App\Models\Supplier::findOrFail($supplierId);
+
+        $bahan = $request->query('bahan');
+        $jumlah = $request->query('jumlah');
+        $satuan = $request->query('satuan');
+
+        // Generate PO number PO/YYYYMMDD/[RANDOM]
+        $noPo = 'PO/' . Carbon::now()->format('Ymd') . '/' . strtoupper(bin2hex(random_bytes(2)));
+
+        return view('prediksi.print_po', compact('supplier', 'bahan', 'jumlah', 'satuan', 'noPo'));
+    }
 }
+

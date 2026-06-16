@@ -138,4 +138,96 @@ class PredictionService
             'mad' => $mad
         ];
     }
+
+    /**
+     * Menghitung prediksi menggunakan Single Exponential Smoothing (SES) sebagai pembanding
+     */
+    public function calculateSES(array $historicalData, float $alpha, int $forecastSteps = 12): array
+    {
+        $n = count($historicalData);
+        if ($n < 1) {
+            return ['success' => false, 'message' => 'Data tidak cukup.'];
+        }
+        $y = array_column($historicalData, 'count');
+
+        $f = array_fill(0, $n, null);
+        $f[0] = (float) $y[0]; // Inisialisasi F_1 = Y_1
+
+        for ($i = 1; $i < $n; $i++) {
+            $f[$i] = ($alpha * $y[$i - 1]) + ((1 - $alpha) * $f[$i - 1]);
+        }
+
+        // Ramalan langkah ke depan (SES konstan)
+        $lastForecast = ($alpha * $y[$n - 1]) + ((1 - $alpha) * $f[$n - 1]);
+        $forecastValues = [];
+        for ($m = 1; $m <= $forecastSteps; $m++) {
+            $forecastValues[] = max(0, round($lastForecast));
+        }
+
+        // Hitung MAPE untuk SES (mulai indeks ke-12 agar sebanding dengan Holt-Winters)
+        $absolutePercentageErrors = [];
+        $validErrorCount = 0;
+        $seasonLength = 12;
+
+        for ($i = $seasonLength; $i < $n; $i++) {
+            if ($y[$i] > 0 && !is_null($f[$i])) {
+                $error = abs($y[$i] - $f[$i]);
+                $absolutePercentageErrors[] = ($error / $y[$i]) * 100;
+                $validErrorCount++;
+            }
+        }
+        $mape = $validErrorCount > 0 ? (array_sum($absolutePercentageErrors) / $validErrorCount) : 0.0;
+
+        // Format tanggal
+        $futureForecast = [];
+        $lastDate = \Carbon\Carbon::parse($historicalData[$n - 1]['tanggal'] . '-01');
+        for ($m = 1; $m <= $forecastSteps; $m++) {
+            $nextDate = $lastDate->copy()->addMonths($m);
+            $futureForecast[] = [
+                'tanggal' => $nextDate->format('Y-m'),
+                'label'   => $nextDate->isoFormat('MMM YYYY'),
+                'count'   => $forecastValues[$m - 1]
+            ];
+        }
+
+        return [
+            'success' => true,
+            'prediksi' => $futureForecast,
+            'mape' => $mape
+        ];
+    }
+
+    /**
+     * Mencari parameter smoothing terbaik (alpha, beta, gamma) dengan Grid Search Optimization (MAPE terkecil)
+     */
+    public function findOptimalParameters(array $historicalData): array
+    {
+        $bestAlpha = 0.2;
+        $bestBeta = 0.1;
+        $bestGamma = 0.3;
+        $minMape = 999999.0;
+
+        // Grid search step 0.05
+        for ($alpha = 0.05; $alpha <= 0.95; $alpha += 0.05) {
+            for ($beta = 0.05; $beta <= 0.95; $beta += 0.05) {
+                for ($gamma = 0.05; $gamma <= 0.95; $gamma += 0.05) {
+                    $res = $this->calculateHoltWinters($historicalData, $alpha, $beta, $gamma, 12);
+                    if (isset($res['success']) && $res['success'] && $res['mape'] < $minMape) {
+                         $minMape = $res['mape'];
+                         $bestAlpha = $alpha;
+                         $bestBeta = $beta;
+                         $bestGamma = $gamma;
+                    }
+                }
+            }
+        }
+
+        return [
+            'alpha' => round($bestAlpha, 2),
+            'beta' => round($bestBeta, 2),
+            'gamma' => round($bestGamma, 2),
+            'mape' => $minMape
+        ];
+    }
 }
+

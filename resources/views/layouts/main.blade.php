@@ -405,15 +405,49 @@
             overflow-x: auto;
         }
 
-        @media (max-width: 992px) {
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 1rem;
+        }
+
+        /* ── Tablet / iPad Viewports (<= 1100px) ── */
+        @media (max-width: 1100px) {
+
+            .pelanggan-layout,
+            .produk-layout,
+            .supplier-layout,
+            .pesanan-layout,
+            .prediksi-layout,
+            .laporan-layout {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
 
             .charts-row,
             .bottom-row {
                 grid-template-columns: 1fr !important;
+                gap: 20px !important;
             }
         }
 
+        /* ── Small Tablets / Mobile Viewports (<= 768px) ── */
         @media (max-width: 768px) {
+            body, html {
+                max-width: 100vw;
+                overflow-x: hidden;
+            }
+
+            .app-layout {
+                max-width: 100vw;
+                overflow-x: hidden;
+            }
+
             .mobile-header {
                 display: flex;
             }
@@ -421,11 +455,14 @@
             .app-content {
                 margin-left: 0 !important;
                 padding-top: 60px;
-                /* Offset for mobile header */
+                max-width: 100vw;
+                overflow-x: hidden;
+                min-width: 0;
             }
 
             .app-page {
                 padding: 16px 16px 30px !important;
+                min-width: 0;
             }
 
             /* Modify Sidebar behavior on mobile */
@@ -439,56 +476,78 @@
                 transform: translateX(0);
             }
 
-            /* Responsive stats grids on dashboard */
-            .stats-row {
-                grid-template-columns: repeat(2, 1fr) !important;
+            /* Card padding optimization for mobile screens */
+            .card {
+                padding: 16px 14px !important;
             }
 
-            /* Responsive layout on index pages */
-            .pelanggan-layout,
-            .produk-layout,
-            .pesanan-layout,
-            .prediksi-layout {
-                grid-template-columns: 1fr !important;
-                gap: 16px !important;
+            /* Responsive stats grids on dashboard */
+            .stats-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 12px !important;
+            }
+
+            .stat-card {
+                padding: 14px 12px !important;
             }
 
             /* Stack page-header or dash-header elements */
             .dash-header,
             .page-header {
-                flex-direction: column;
-                gap: 12px;
-                align-items: flex-start;
-            }
-
-            .form-side-panel {
-                width: 100% !important;
-                position: relative !important;
-                top: 0 !important;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-row {
-                grid-template-columns: 1fr !important;
-            }
-
-            .table-toolbar {
-                flex-direction: column;
+                flex-direction: column !important;
+                gap: 12px !important;
                 align-items: stretch !important;
+            }
+
+            .page-date,
+            .dash-date {
+                align-self: flex-start !important;
+            }
+
+            /* Table toolbar stacked nicely */
+            .table-toolbar {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 12px !important;
             }
 
             .toolbar-right {
-                flex-direction: column;
-                align-items: stretch !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                width: 100% !important;
+                gap: 8px !important;
+            }
+
+            .search-wrap {
+                flex: 1 !important;
             }
 
             .search-wrap input {
                 width: 100% !important;
             }
 
+            /* Form panels stacked and clean */
+            .form-panel {
+                width: 100% !important;
+                position: relative !important;
+                top: 0 !important;
+            }
+        }
+
+        /* ── Extra Small Mobile Viewports (<= 480px) ── */
+        @media (max-width: 480px) {
+            .stats-row {
+                grid-template-columns: 1fr !important;
+            }
+
+            .toolbar-right {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 8px !important;
+            }
+
             .btn-tambah {
-                justify-content: center;
+                justify-content: center !important;
             }
         }
     </style>

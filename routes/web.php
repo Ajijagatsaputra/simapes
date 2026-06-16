@@ -60,6 +60,7 @@ Route::middleware('auth')->group(function () {
 
     // Prediksi
     Route::get('/prediksi', [PrediksiController::class, 'index'])->name('prediksi.index');
+    Route::get('/prediksi/print-po', [PrediksiController::class, 'printPo'])->name('prediksi.printPo');
 
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');

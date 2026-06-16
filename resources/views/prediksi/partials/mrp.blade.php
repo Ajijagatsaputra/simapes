@@ -27,6 +27,9 @@
                     <th>Nama Bahan Baku</th>
                     <th style="text-align: right;">Total Kebutuhan</th>
                     <th>Satuan</th>
+                    <th style="text-align: center;">Lead Time (Kirim)</th>
+                    <th style="text-align: right;">Safety Stock</th>
+                    <th style="text-align: right;">Reorder Point (ROP)</th>
                     <th>Keterangan / Alokasi Penggunaan</th>
                 </tr>
             </thead>
@@ -38,10 +41,21 @@
                             {{ number_format($val['jumlah'], 0, ',', '.') }}
                         </td>
                         <td style="font-weight: 600; color: #5a7090;">{{ $val['satuan'] }}</td>
+                        <td style="text-align: center; font-weight: 600; color: #8a63d2;">{{ $val['lead_time'] }} Hari</td>
+                        <td style="text-align: right; font-weight: 700; color: #34c472;">{{ number_format($val['safety_stock'], 0, ',', '.') }}</td>
+                        <td style="text-align: right; font-weight: 700; color: #ef4444;">{{ number_format($val['rop'], 0, ',', '.') }}</td>
                         <td style="color: #8ca0bf; font-size: 0.78rem;">{{ $val['keterangan'] }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+    </div>
+
+    <div style="margin-top: 18px; background: #fafcff; border: 1px dashed #cedbe9; border-radius: 10px; padding: 12px; font-size: 0.75rem; color: #5a7090; line-height: 1.5;">
+        <strong>💡 Catatan Teori & Formula Manajemen Rantai Pasok (SCM):</strong>
+        <ul style="margin: 6px 0 0 16px; padding: 0;">
+            <li><strong>Safety Stock (Stok Pengaman):</strong> Jumlah stok yang disimpan untuk mengantisipasi ketidakpastian permintaan atau keterlambatan pengiriman. Rumus: <code style="font-family: monospace; background: #e8f0fd; padding: 2px 4px; border-radius: 4px;">Safety Stock = 0.5 * (Rata-rata Kebutuhan Harian * Lead Time)</code>.</li>
+            <li><strong>Reorder Point / ROP (Titik Pemesanan Kembali):</strong> Ambang batas stok bahan baku di gudang di mana pemesanan baru harus dilakukan agar bahan baku baru datang sebelum stok aman habis. Rumus: <code style="font-family: monospace; background: #e8f0fd; padding: 2px 4px; border-radius: 4px;">ROP = (Rata-rata Kebutuhan Harian * Lead Time) + Safety Stock</code>.</li>
+        </ul>
     </div>
 </div>

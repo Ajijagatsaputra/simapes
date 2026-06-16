@@ -7,6 +7,8 @@
             const dataHistoris = @json($historis);
             // Data Prediksi dari Controller
             const dataPrediksi = @json($prediksi);
+            // Data Fitted Value Historis (Backtesting)
+            const dataFitted = @json($historis_fitted);
 
             // Olah label dan data point untuk Chart
             const labelsHistoris = dataHistoris.map(item => item.label);
@@ -20,6 +22,9 @@
 
             // Setup data point historis (data riil, null di akhir agar garis terputus)
             const datasetHistoris = [...countsHistoris, ...Array(labelsPrediksi.length).fill(null)];
+
+            // Setup data point fitted (backtesting model, null di akhir)
+            const datasetFitted = [...dataFitted, ...Array(labelsPrediksi.length).fill(null)];
 
             // Setup data point prediksi (null di awal + 1 titik pertemuan di index akhir historis agar garis menyambung + data prediksi)
             const titikPertemuan = countsHistoris[countsHistoris.length - 1];
@@ -55,6 +60,16 @@
                             tension: 0.3
                         },
                         {
+                            label: 'Fitted Value (Model Backtesting)',
+                            data: datasetFitted,
+                            borderColor: '#34c472',
+                            borderWidth: 2,
+                            borderDash: [3, 3],
+                            pointRadius: 0,
+                            fill: false,
+                            tension: 0.3
+                        },
+                        {
                             label: 'Proyeksi Prediksi (Holt-Winters)',
                             data: datasetPrediksi,
                             borderColor: '#8a63d2',
@@ -79,7 +94,7 @@
                             labels: {
                                 font: {
                                     family: 'Inter',
-                                    size: 11,
+                                size: 11,
                                     weight: '500'
                                 },
                                 color: '#1a2b4a'

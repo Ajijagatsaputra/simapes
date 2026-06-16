@@ -65,6 +65,20 @@
         box-shadow: 0 2px 8px rgba(74, 144, 217, .04);
     }
 
+    .form-preset-grid {
+        display: grid;
+        grid-template-columns: 2.2fr 1fr 1fr;
+        gap: 16px;
+        align-items: flex-end;
+    }
+
+    @media (max-width: 992px) {
+        .form-preset-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+    }
+
     .preset-select {
         padding: 10px 14px;
         border: 1px solid #cedbe9;
