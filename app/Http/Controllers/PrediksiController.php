@@ -184,6 +184,15 @@ class PrediksiController extends Controller
             $mrp[$key]['jumlah'] = ceil($val['jumlah']);
         }
 
+        // Ambil data supplier untuk dicocokkan dengan kebutuhan MRP
+        $suppliers = \App\Models\Supplier::all();
+        $rekomendasiSupplier = [];
+        foreach ($mrp as $key => $val) {
+            $rekomendasiSupplier[$key] = $suppliers->filter(function ($s) use ($key) {
+                return is_array($s->kategori_bahan) && in_array($key, $s->kategori_bahan);
+            });
+        }
+
         $parameters = compact('alpha', 'beta', 'gamma');
 
         return view('prediksi.index', compact(
@@ -198,7 +207,8 @@ class PrediksiController extends Controller
             'alpha',
             'beta',
             'gamma',
-            'mrp'
+            'mrp',
+            'rekomendasiSupplier'
         ))->with('hasData', true);
     }
 }

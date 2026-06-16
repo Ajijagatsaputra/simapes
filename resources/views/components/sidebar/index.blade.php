@@ -36,6 +36,12 @@
             'icon'   => 'produk',
         ],
         [
+            'label'  => 'Data Supplier',
+            'route'  => 'supplier.index',
+            'match'  => 'supplier.*',
+            'icon'   => 'supplier',
+        ],
+        [
             'label'  => 'Data Pesanan',
             'route'  => 'pesanan.index',
             'match'  => 'pesanan.*',
@@ -115,6 +121,18 @@
                                  stroke="currentColor" stroke-width="1.8"
                                  stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/>
+                            </svg>
+                        @break
+
+                        {{-- Supplier: paket/pengiriman --}}
+                        @case('supplier')
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/>
+                                <polygon points="12 22.08 12 12 3 6.92 3 17.08 12 22.08"/>
+                                <polygon points="12 22.08 12 12 21 6.92 21 17.08 12 22.08"/>
+                                <polygon points="12 12 3 6.92 12 1.84 21 6.92 12 12"/>
                             </svg>
                         @break
 

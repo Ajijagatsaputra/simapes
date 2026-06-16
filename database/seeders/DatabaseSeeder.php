@@ -57,9 +57,18 @@ class DatabaseSeeder extends Seeder
                     'no_whatsapp' => '08' . $faker->numerify('##########'),
                     'alamat' => $faker->address(),
                     'nama_sekolah' => $faker->randomElement([
-                        'SMAN 1 Bandung', 'SMAN 3 Jakarta', 'SMPN 2 Surabaya', 'SMKN 1 Yogyakarta',
-                        'SMA Labschool', 'SMP Al-Azhar', 'SMAN 8 Jakarta', 'SMAS Kristen Dago',
-                        'SMAN 2 Solo', 'SMPN 5 Semarang', 'SMAN 1 Bogor', 'SMKN 2 Tangerang'
+                        'SMAN 1 Bandung',
+                        'SMAN 3 Jakarta',
+                        'SMPN 2 Surabaya',
+                        'SMKN 1 Yogyakarta',
+                        'SMA Labschool',
+                        'SMP Al-Azhar',
+                        'SMAN 8 Jakarta',
+                        'SMAS Kristen Dago',
+                        'SMAN 2 Solo',
+                        'SMPN 5 Semarang',
+                        'SMAN 1 Bogor',
+                        'SMKN 2 Tangerang'
                     ]),
                 ]
             );
@@ -103,5 +112,8 @@ class DatabaseSeeder extends Seeder
 
         // 4. Jalankan Seeder Pesanan Historis (36 bulan data musiman)
         $this->call(PesananHistorisSeeder::class);
+
+        // 5. Jalankan Seeder Supplier
+        $this->call(SupplierSeeder::class);
     }
 }
