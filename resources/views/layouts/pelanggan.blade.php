@@ -100,6 +100,10 @@
             gap: 12px;
         }
 
+        .user-dropdown {
+            position: relative;
+        }
+
         .user-chip {
             display: flex;
             align-items: center;
@@ -108,6 +112,16 @@
             border-radius: 10px;
             padding: 6px 12px;
             font-size: .82rem;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+            border: 1px solid transparent;
+        }
+
+        .user-chip:hover,
+        .user-chip.active {
+            background: #e2ecfa;
+            border-color: #c5d8f5;
         }
 
         .user-chip-avatar {
@@ -133,22 +147,90 @@
             color: #4A90D9;
         }
 
-        .btn-logout {
-            padding: 7px 14px;
-            background: #fdeaea;
-            color: #e05a5a;
-            border-radius: 10px;
-            font-size: .82rem;
-            font-weight: 600;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
-            transition: background .15s;
+        /* Dropdown Menu */
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: #fff;
+            border: 1px solid #e2e8f4;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(26, 43, 74, .12);
+            width: 200px;
+            display: none;
+            flex-direction: column;
+            padding: 6px;
+            z-index: 100;
+            transform-origin: top right;
+            animation: dropdownFade .18s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .btn-logout:hover {
-            background: #f8d0d0;
+        .dropdown-menu.show {
+            display: flex;
+        }
+
+        @keyframes dropdownFade {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            color: #5a7090;
+            text-decoration: none;
+            font-size: .82rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background .15s, color .15s;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .dropdown-item:hover {
+            background: #f0f4fb;
+            color: #4A90D9;
+        }
+
+        .dropdown-item svg {
+            color: #8ca0bf;
+            transition: color .15s;
+        }
+
+        .dropdown-item:hover svg {
+            color: #4A90D9;
+        }
+
+        .dropdown-divider {
+            border: 0;
+            border-top: 1px solid #e2e8f4;
+            margin: 6px 0;
+        }
+
+        .logout-item {
+            color: #e05a5a;
+        }
+
+        .logout-item:hover {
+            background: #fdeaea;
+            color: #e05a5a;
+        }
+
+        .logout-item:hover svg {
+            color: #e05a5a;
         }
 
         /* ── Content ── */
@@ -224,26 +306,57 @@
                     class="nav-link {{ request()->routeIs('pelanggan.pesanan.create') ? 'active' : '' }}">Buat
                     Pesanan</a></li>
             <li><a href="{{ route('pelanggan.pesanan.index') }}"
-                    class="nav-link {{ request()->routeIs('pelanggan.pesanan.*') ? 'active' : '' }}">Status Pesanan</a>
+                    class="nav-link {{ request()->routeIs('pelanggan.pesanan.index') || request()->routeIs('pelanggan.pesanan.show') ? 'active' : '' }}">Status
+                    Pesanan</a>
             </li>
-            <li><a href="{{ route('pelanggan.riwayat') }}"
-                    class="nav-link {{ request()->routeIs('pelanggan.riwayat') ? 'active' : '' }}">Riwayat</a></li>
-            <li><a href="{{ route('pelanggan.profil.edit') }}"
-                    class="nav-link {{ request()->routeIs('pelanggan.profil.*') ? 'active' : '' }}">Profil</a></li>
         </ul>
 
         <div class="navbar-right">
-            <div class="user-chip">
-                <div class="user-chip-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
-                <div>
-                    <div class="user-chip-name">{{ auth()->user()->name }}</div>
-                    <div class="user-chip-role">{{ auth()->user()->nama_sekolah ?? 'Pelanggan' }}</div>
+            <div class="user-dropdown">
+                <div class="user-chip" id="userDropdownTrigger" onclick="toggleDropdown(event)">
+                    <div class="user-chip-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+                    <div>
+                        <div class="user-chip-name">{{ auth()->user()->name }}</div>
+                        <div class="user-chip-role">{{ auth()->user()->nama_sekolah ?? 'Pelanggan' }}</div>
+                    </div>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        style="margin-left: 4px; transition: transform .2s;" id="dropdownChevron">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+
+                <div class="dropdown-menu" id="userDropdownMenu">
+                    <a href="{{ route('pelanggan.profil.edit') }}" class="dropdown-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Profil Akun
+                    </a>
+                    <a href="{{ route('pelanggan.riwayat') }}" class="dropdown-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 11 12 14 22 4"></polyline>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                        Riwayat Pesanan
+                    </a>
+                    <hr class="dropdown-divider">
+                    <form method="POST" action="{{ route('logout') }}" style="width: 100%;">
+                        @csrf
+                        <button type="submit" class="dropdown-item logout-item">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            Logout
+                        </button>
+                    </form>
                 </div>
             </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="btn-logout">Logout</button>
-            </form>
         </div>
     </nav>
 
@@ -255,6 +368,38 @@
     <!-- Toast -->
     <div class="toast-container" id="toastContainer"></div>
     <script>
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('userDropdownMenu');
+            const trigger = document.getElementById('userDropdownTrigger');
+            const chevron = document.getElementById('dropdownChevron');
+            const show = menu.classList.contains('show');
+
+            if (show) {
+                menu.classList.remove('show');
+                trigger.classList.remove('active');
+                chevron.style.transform = 'rotate(0deg)';
+            } else {
+                menu.classList.add('show');
+                trigger.classList.add('active');
+                chevron.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        document.addEventListener('click', function (event) {
+            const menu = document.getElementById('userDropdownMenu');
+            const trigger = document.getElementById('userDropdownTrigger');
+            const chevron = document.getElementById('dropdownChevron');
+
+            if (menu && menu.classList.contains('show')) {
+                if (!trigger.contains(event.target) && !menu.contains(event.target)) {
+                    menu.classList.remove('show');
+                    trigger.classList.remove('active');
+                    chevron.style.transform = 'rotate(0deg)';
+                }
+            }
+        });
+
         function showToast(msg, type = 'success') {
             const t = document.createElement('div');
             t.className = `toast toast-${type}`;
