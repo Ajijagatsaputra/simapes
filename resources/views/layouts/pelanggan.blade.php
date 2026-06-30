@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'SIMAPES - Portal Pelanggan')</title>
+    <link rel="icon" type="image/png" href="{{ asset('logoauth/logo2.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f4fb;
+            color: #1a2b4a;
+            min-height: 100vh;
+        }
+
+        /* ── Navbar ── */
+        .navbar {
+            background: #fff;
+            border-bottom: 1px solid #e2e8f4;
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 2px 12px rgba(26, 43, 74, .07);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .navbar-brand img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+        }
+
+        .navbar-brand span {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #1a2b4a;
+        }
+
+        .navbar-brand small {
+            font-size: .7rem;
+            color: #4A90D9;
+            font-weight: 600;
+            display: block;
+            line-height: 1;
+        }
+
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            list-style: none;
+        }
+
+        .nav-link {
+            padding: 8px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: .85rem;
+            font-weight: 500;
+            color: #5a7090;
+            transition: background .15s, color .15s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #e8f0fd;
+            color: #4A90D9;
+        }
+
+        .nav-link.active {
+            font-weight: 700;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0f4fb;
+            border-radius: 10px;
+            padding: 6px 12px;
+            font-size: .82rem;
+        }
+
+        .user-chip-avatar {
+            width: 28px;
+            height: 28px;
+            background: #4A90D9;
+            color: #fff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: .75rem;
+        }
+
+        .user-chip-name {
+            font-weight: 600;
+            color: #1a2b4a;
+        }
+
+        .user-chip-role {
+            font-size: .7rem;
+            color: #4A90D9;
+        }
+
+        .btn-logout {
+            padding: 7px 14px;
+            background: #fdeaea;
+            color: #e05a5a;
+            border-radius: 10px;
+            font-size: .82rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background .15s;
+        }
+
+        .btn-logout:hover {
+            background: #f8d0d0;
+        }
+
+        /* ── Content ── */
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px 60px;
+        }
+
+        /* ── Toast ── */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            border-radius: 14px;
+            padding: 14px 18px;
+            min-width: 300px;
+            max-width: 380px;
+            box-shadow: 0 8px 32px rgba(26, 43, 74, .18);
+            transform: translateX(120%);
+            opacity: 0;
+            transition: transform 0.38s cubic-bezier(.34, 1.56, .64, 1), opacity 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast-success {
+            border-left: 4px solid #34c472;
+        }
+
+        .toast-error {
+            border-left: 4px solid #e05a5a;
+        }
+
+        .toast-info {
+            border-left: 4px solid #4A90D9;
+        }
+    </style>
+    @stack('styles')
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{{ route('pelanggan.dashboard') }}" class="navbar-brand">
+            <img src="{{ asset('logoauth/logo2.png') }}" alt="SIMAPES">
+            <div>
+                <span>SIMAPES</span>
+                <small>Portal Pelanggan</small>
+            </div>
+        </a>
+
+        <ul class="navbar-nav">
+            <li><a href="{{ route('pelanggan.dashboard') }}"
+                    class="nav-link {{ request()->routeIs('pelanggan.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+            <li><a href="{{ route('pelanggan.katalog') }}"
+                    class="nav-link {{ request()->routeIs('pelanggan.katalog') ? 'active' : '' }}">Katalog</a></li>
+            <li><a href="{{ route('pelanggan.pesanan.create') }}"
+                    class="nav-link {{ request()->routeIs('pelanggan.pesanan.create') ? 'active' : '' }}">Buat
+                    Pesanan</a></li>
+            <li><a href="{{ route('pelanggan.pesanan.index') }}"
+                    class="nav-link {{ request()->routeIs('pelanggan.pesanan.*') ? 'active' : '' }}">Status Pesanan</a>
+            </li>
+            <li><a href="{{ route('pelanggan.riwayat') }}"
+                    class="nav-link {{ request()->routeIs('pelanggan.riwayat') ? 'active' : '' }}">Riwayat</a></li>
+            <li><a href="{{ route('pelanggan.profil.edit') }}"
+                    class="nav-link {{ request()->routeIs('pelanggan.profil.*') ? 'active' : '' }}">Profil</a></li>
+        </ul>
+
+        <div class="navbar-right">
+            <div class="user-chip">
+                <div class="user-chip-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+                <div>
+                    <div class="user-chip-name">{{ auth()->user()->name }}</div>
+                    <div class="user-chip-role">{{ auth()->user()->nama_sekolah ?? 'Pelanggan' }}</div>
+                </div>
+            </div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="page-wrapper">
+        @yield('content')
+    </main>
+
+    <!-- Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+    <script>
+        function showToast(msg, type = 'success') {
+            const t = document.createElement('div');
+            t.className = `toast toast-${type}`;
+            t.textContent = msg;
+            document.getElementById('toastContainer').appendChild(t);
+            requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+            setTimeout(() => t.remove(), 4000);
+        }
+        @if(session('success')) showToast(@json(session('success')), 'success'); @endif
+        @if(session('error'))   showToast(@json(session('error')), 'error'); @endif
+        @if(session('info'))    showToast(@json(session('info')), 'info'); @endif
+    </script>
+    @stack('scripts')
+</body>
+
+</html>

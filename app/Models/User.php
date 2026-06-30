@@ -17,12 +17,25 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'role',
         'email',
         'password',
         'no_whatsapp',
         'alamat',
         'nama_sekolah',
     ];
+
+    /** Cek apakah user adalah Admin */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /** Cek apakah user adalah Pelanggan */
+    public function isPelanggan(): bool
+    {
+        return $this->role === 'pelanggan';
+    }
 
     /**
      * Kolom yang disembunyikan dari serialisasi.

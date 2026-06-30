@@ -19,44 +19,44 @@
     $navItems = [
         [
             'label'  => 'Dashboard',
-            'route'  => 'dashboard',
-            'match'  => 'dashboard',          // pola untuk routeIs()
+            'route'  => 'admin.dashboard',
+            'match'  => 'admin.dashboard',
             'icon'   => 'dashboard',
         ],
         [
             'label'  => 'Data Pelanggan',
-            'route'  => 'pelanggan.index',
-            'match'  => 'pelanggan.*',
+            'route'  => 'admin.pelanggan.index',
+            'match'  => 'admin.pelanggan.*',
             'icon'   => 'pelanggan',
         ],
         [
             'label'  => 'Data Produk',
-            'route'  => 'produk.index',
-            'match'  => 'produk.*',
+            'route'  => 'admin.produk.index',
+            'match'  => 'admin.produk.*',
             'icon'   => 'produk',
         ],
         [
             'label'  => 'Data Supplier',
-            'route'  => 'supplier.index',
-            'match'  => 'supplier.*',
+            'route'  => 'admin.supplier.index',
+            'match'  => 'admin.supplier.*',
             'icon'   => 'supplier',
         ],
         [
             'label'  => 'Data Pesanan',
-            'route'  => 'pesanan.index',
-            'match'  => 'pesanan.*',
+            'route'  => 'admin.pesanan.index',
+            'match'  => 'admin.pesanan.*',
             'icon'   => 'pesanan',
         ],
         [
             'label'  => 'Prediksi',
-            'route'  => 'prediksi.index',
-            'match'  => 'prediksi.*',
+            'route'  => 'admin.prediksi.index',
+            'match'  => 'admin.prediksi.*',
             'icon'   => 'prediksi',
         ],
         [
             'label'  => 'Laporan',
-            'route'  => 'laporan.index',
-            'match'  => 'laporan.*',
+            'route'  => 'admin.laporan.index',
+            'match'  => 'admin.laporan.*',
             'icon'   => 'laporan',
         ],
     ];

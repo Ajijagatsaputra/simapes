@@ -681,8 +681,9 @@
             document.getElementById('confirmOverlay').classList.add('show');
 
             document.getElementById('confirmOkBtn').onclick = function () {
+                const form = _pendingForm;
                 closeConfirm();
-                if (_pendingForm) _pendingForm.submit();
+                if (form) form.submit();
             };
         }
 

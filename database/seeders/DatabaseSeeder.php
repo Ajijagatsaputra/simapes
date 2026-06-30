@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@gmail.com'],
             [
                 'name' => 'Admin SIMAPES',
+                'role' => 'admin',
                 'password' => Hash::make('12345678'),
                 'no_whatsapp' => '08123456789',
                 'alamat' => 'Kantor SIMAPES Pusat',
@@ -27,6 +28,7 @@ class DatabaseSeeder extends Seeder
         $pelanggan = [
             [
                 'name' => 'Lutfa Nur',
+                'role' => 'pelanggan',
                 'email' => 'lutfa@gmail.com',
                 'password' => Hash::make('12345678'),
                 'no_whatsapp' => '081234567890',
@@ -35,6 +37,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Eca Amelia',
+                'role' => 'pelanggan',
                 'email' => 'eca@gmail.com',
                 'password' => Hash::make('12345678'),
                 'no_whatsapp' => '085423451212',
@@ -53,6 +56,7 @@ class DatabaseSeeder extends Seeder
                 ['email' => "pelanggan{$i}@gmail.com"],
                 [
                     'name' => $faker->name(),
+                    'role' => 'pelanggan',
                     'password' => Hash::make('12345678'),
                     'no_whatsapp' => '08' . $faker->numerify('##########'),
                     'alamat' => $faker->address(),
