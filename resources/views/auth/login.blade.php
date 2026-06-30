@@ -252,9 +252,21 @@
         }
 
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-6px); }
-            40%, 80% { transform: translateX(6px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-6px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(6px);
+            }
         }
 
         .shake {
@@ -379,8 +391,11 @@
                                 <input id="password" class="field-input" type="password" name="password"
                                     placeholder="Masukkan password anda" required autocomplete="current-password"
                                     style="padding-right: 42px;">
-                                <button type="button" id="toggle-password" class="toggle-password" aria-label="Tampilkan password">
-                                    <svg id="eye-icon" class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <button type="button" id="toggle-password" class="toggle-password"
+                                    aria-label="Tampilkan password">
+                                    <svg id="eye-icon" class="eye-icon" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                         <circle cx="12" cy="12" r="3" />
                                     </svg>
@@ -393,6 +408,13 @@
                         {{-- Tombol Login --}}
                         <button id="btn-login" type="submit" class="btn-login">Login</button>
                     </form>
+
+                    {{-- Link Registrasi --}}
+                    <div style="text-align: center; margin-top: 20px; font-size: 0.82rem; color: var(--text-muted);">
+                        Belum punya akun? <a href="{{ route('register') }}"
+                            style="color: var(--primary-btn); text-decoration: none; font-weight: 700; transition: color var(--ease);">Daftar
+                            Pelanggan Baru</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -431,7 +453,7 @@
 
             form.addEventListener('submit', (e) => {
                 let isValid = true;
-                
+
                 // Clear previous client-side errors
                 document.querySelectorAll('.client-error').forEach(el => el.remove());
                 emailInput.classList.remove('has-error');
@@ -454,7 +476,7 @@
 
                 if (!isValid) {
                     e.preventDefault();
-                    
+
                     // Shake the form box card for nice premium feedback
                     const card = document.querySelector('.form-box');
                     card.classList.remove('shake');
@@ -476,7 +498,7 @@
             function showError(inputElement, message) {
                 inputElement.classList.add('has-error');
                 const field = inputElement.closest('.field');
-                
+
                 // Remove server-side validation error if present
                 const serverError = field.querySelector('.field-error');
                 if (serverError) serverError.remove();
@@ -489,7 +511,7 @@
                 errorP.style.transform = 'translateY(-5px)';
                 errorP.style.transition = 'all 0.3s ease';
                 field.appendChild(errorP);
-                
+
                 // Animate fade-in
                 setTimeout(() => {
                     errorP.style.opacity = '1';

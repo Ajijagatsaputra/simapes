@@ -27,8 +27,7 @@ Route::middleware(['auth', 'role:admin'])
 
         // Manajemen Pelanggan
         Route::get('/pelanggan', [Admin\PelangganController::class, 'index'])->name('pelanggan.index');
-        Route::post('/pelanggan', [Admin\PelangganController::class, 'store'])->name('pelanggan.store');
-        Route::put('/pelanggan/{id}', [Admin\PelangganController::class, 'update'])->name('pelanggan.update');
+        Route::delete('/pelanggan/bulk-delete', [Admin\PelangganController::class, 'bulkDestroy'])->name('pelanggan.bulkDestroy');
         Route::delete('/pelanggan/{id}', [Admin\PelangganController::class, 'destroy'])->name('pelanggan.destroy');
 
         // Manajemen Produk

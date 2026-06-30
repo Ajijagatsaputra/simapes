@@ -32,20 +32,27 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'no_whatsapp' => ['nullable', 'string', 'max:20'],
+            'alamat' => ['nullable', 'string'],
+            'nama_sekolah' => ['nullable', 'string', 'max:255'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'pelanggan',
+            'no_whatsapp' => $request->no_whatsapp,
+            'alamat' => $request->alamat,
+            'nama_sekolah' => $request->nama_sekolah,
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('pelanggan.dashboard', absolute: false));
     }
 }
