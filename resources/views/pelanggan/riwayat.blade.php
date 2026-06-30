@@ -172,61 +172,63 @@
                 </div>
             </div>
 
-            <table class="order-table" id="orderTable">
-                <thead>
-                    <tr>
-                        <th style="width: 140px;">No. Pesanan</th>
-                        <th style="width: 140px;">Tanggal</th>
-                        <th>Item Seragam</th>
-                        <th style="width: 160px; text-align: right;">Total Harga</th>
-                        <th style="width: 150px; text-align: center;">Status</th>
-                        <th style="width: 100px; text-align: center;">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="orderBody">
-                    @forelse($riwayat as $p)
-                        <tr data-search="{{ strtolower($p->no_pesanan) }}">
-                            <td style="font-weight: 700; color: #1a2b4a;">{{ $p->no_pesanan }}</td>
-                            <td>{{ \Carbon\Carbon::parse($p->tanggal_pesanan)->isoFormat('DD MMMM YYYY') }}</td>
-                            <td>
-                                <div style="display: flex; flex-direction: column; gap: 2px;">
-                                    @foreach($p->details as $d)
-                                        <span style="font-size: .78rem; color: #5a7090;">
-                                            • {{ $d->produk->nama_produk ?? 'Seragam' }} (Size: {{ $d->ukuran }},
-                                            {{ $d->total_item }} pcs)
-                                        </span>
-                                    @endforeach
-                                </div>
-                            </td>
-                            <td style="text-align: right; font-weight: 700; color: #4A90D9;">
-                                Rp {{ number_format($p->total_harga, 0, ',', '.') }}
-                            </td>
-                            <td style="text-align: center;">
-                                <span class="status-badge">Selesai</span>
-                            </td>
-                            <td style="text-align: center;">
-                                <a href="{{ route('pelanggan.pesanan.show', $p->id) }}" class="btn-detail">
-                                    Lihat Detail
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
+            <div style="overflow-x: auto; width: 100%;">
+                <table class="order-table" id="orderTable">
+                    <thead>
                         <tr>
-                            <td colspan="6">
-                                <div class="empty-state">
-                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="1.8">
-                                        <polyline points="9 11 12 14 22 4"></polyline>
-                                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                                    </svg>
-                                    <h3>Belum Ada Riwayat</h3>
-                                    <p>Anda belum memiliki transaksi pesanan seragam yang selesai dikerjakan.</p>
-                                </div>
-                            </td>
+                            <th style="width: 140px;">No. Pesanan</th>
+                            <th style="width: 140px;">Tanggal</th>
+                            <th>Item Seragam</th>
+                            <th style="width: 160px; text-align: right;">Total Harga</th>
+                            <th style="width: 150px; text-align: center;">Status</th>
+                            <th style="width: 100px; text-align: center;">Aksi</th>
                         </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="orderBody">
+                        @forelse($riwayat as $p)
+                            <tr data-search="{{ strtolower($p->no_pesanan) }}">
+                                <td style="font-weight: 700; color: #1a2b4a;">{{ $p->no_pesanan }}</td>
+                                <td>{{ \Carbon\Carbon::parse($p->tanggal_pesanan)->isoFormat('DD MMMM YYYY') }}</td>
+                                <td>
+                                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                                        @foreach($p->details as $d)
+                                            <span style="font-size: .78rem; color: #5a7090;">
+                                                • {{ $d->produk->nama_produk ?? 'Seragam' }} (Size: {{ $d->ukuran }},
+                                                {{ $d->total_item }} pcs)
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                </td>
+                                <td style="text-align: right; font-weight: 700; color: #4A90D9;">
+                                    Rp {{ number_format($p->total_harga, 0, ',', '.') }}
+                                </td>
+                                <td style="text-align: center;">
+                                    <span class="status-badge">Selesai</span>
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="{{ route('pelanggan.pesanan.show', $p->id) }}" class="btn-detail">
+                                        Lihat Detail
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6">
+                                    <div class="empty-state">
+                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="1.8">
+                                            <polyline points="9 11 12 14 22 4"></polyline>
+                                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2 2V5a2 2 0 0 1 2-2h11"></path>
+                                        </svg>
+                                        <h3>Belum Ada Riwayat</h3>
+                                        <p>Anda belum memiliki transaksi pesanan seragam yang selesai dikerjakan.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
             @if($riwayat->hasPages())
                 <div style="margin-top: 20px; display: flex; justify-content: center;">

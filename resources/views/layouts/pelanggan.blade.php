@@ -282,6 +282,78 @@
         .toast-info {
             border-left: 4px solid #4A90D9;
         }
+
+        /* ── Hamburger Button ── */
+        .hamburger-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #1a2b4a;
+            padding: 8px;
+            z-index: 60;
+            outline: none;
+        }
+
+        .dropdown-user-header {
+            display: none;
+            padding: 10px 14px;
+            border-bottom: 1px solid #f0f4fb;
+            margin-bottom: 6px;
+        }
+
+        /* Responsive Media Queries */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 16px;
+            }
+
+            .hamburger-btn {
+                display: block;
+            }
+
+            .navbar-nav {
+                position: fixed;
+                top: 64px;
+                left: 0;
+                right: 0;
+                background: #fff;
+                flex-direction: column;
+                padding: 16px;
+                gap: 12px;
+                border-bottom: 1px solid #e2e8f4;
+                box-shadow: 0 8px 16px rgba(26, 43, 74, .08);
+                display: none;
+                z-index: 45;
+            }
+
+            .navbar-nav.show {
+                display: flex;
+            }
+
+            .nav-link {
+                width: 100%;
+                text-align: center;
+                padding: 12px;
+            }
+
+            .navbar-right {
+                gap: 8px;
+            }
+
+            .user-chip-name,
+            .user-chip-role {
+                display: none;
+            }
+
+            .user-chip {
+                padding: 8px;
+            }
+
+            .dropdown-user-header {
+                display: block;
+            }
+        }
     </style>
     @stack('styles')
 </head>
@@ -296,6 +368,15 @@
                 <small>Portal Pelanggan</small>
             </div>
         </a>
+
+        <button class="hamburger-btn" onclick="toggleMobileMenu(event)" aria-label="Toggle menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
 
         <ul class="navbar-nav">
             <li><a href="{{ route('pelanggan.dashboard') }}"
@@ -326,6 +407,12 @@
                 </div>
 
                 <div class="dropdown-menu" id="userDropdownMenu">
+                    <div class="dropdown-user-header">
+                        <div style="font-weight: 700; color: #1a2b4a; font-size: .85rem;">{{ auth()->user()->name }}
+                        </div>
+                        <div style="font-size: .72rem; color: #8ca0bf; margin-top: 2px;">
+                            {{ auth()->user()->nama_sekolah ?? 'Pelanggan' }}</div>
+                    </div>
                     <a href="{{ route('pelanggan.profil.edit') }}" class="dropdown-item">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -396,6 +483,23 @@
                     menu.classList.remove('show');
                     trigger.classList.remove('active');
                     chevron.style.transform = 'rotate(0deg)';
+                }
+            }
+        });
+
+        function toggleMobileMenu(event) {
+            event.stopPropagation();
+            const nav = document.querySelector('.navbar-nav');
+            nav.classList.toggle('show');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.querySelector('.navbar-nav');
+            const hamburger = document.querySelector('.hamburger-btn');
+            if (nav && nav.classList.contains('show')) {
+                if (!nav.contains(event.target) && !hamburger.contains(event.target)) {
+                    nav.classList.remove('show');
                 }
             }
         });

@@ -230,20 +230,22 @@
                         Daftar Pesanan Seragam
                     </div>
 
-                    <table class="items-table" id="itemsTable">
-                        <thead>
-                            <tr>
-                                <th>Jenis Seragam</th>
-                                <th style="width: 120px;">Ukuran</th>
-                                <th style="width: 100px;">Jumlah</th>
-                                <th style="width: 130px; text-align: right;">Subtotal</th>
-                                <th style="width: 40px;"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="itemsBody">
-                            <!-- Dynamic rows will be inserted here -->
-                        </tbody>
-                    </table>
+                    <div style="overflow-x: auto; width: 100%;">
+                        <table class="items-table" id="itemsTable">
+                            <thead>
+                                <tr>
+                                    <th>Jenis Seragam</th>
+                                    <th style="width: 120px;">Ukuran</th>
+                                    <th style="width: 100px;">Jumlah</th>
+                                    <th style="width: 130px; text-align: right;">Subtotal</th>
+                                    <th style="width: 40px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsBody">
+                                <!-- Dynamic rows will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
 
                     <button type="button" class="btn-add-row" onclick="addRow()">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -333,35 +335,35 @@
             });
 
             row.innerHTML = `
-                    <td>
-                        <select name="items[${rowCount}][produk_id]" class="form-select" onchange="calculateRowSubtotal(${rowCount})" required>
-                            ${options}
-                        </select>
-                    </td>
-                    <td>
-                        <select name="items[${rowCount}][ukuran]" class="form-select" required>
-                            <option value="S">S</option>
-                            <option value="M" selected>M</option>
-                            <option value="L">L</option>
-                            <option value="XL">XL</option>
-                            <option value="XXL">XXL</option>
-                        </select>
-                    </td>
-                    <td>
-                        <input type="number" name="items[${rowCount}][total_item]" class="form-input" value="1" min="1" oninput="calculateRowSubtotal(${rowCount})" required>
-                    </td>
-                    <td style="text-align: right; font-weight: 700; color: #1a2b4a;" id="subtotal-${rowCount}">
-                        Rp 0
-                    </td>
-                    <td style="text-align: center;">
-                        <button type="button" class="btn-remove-row" onclick="removeRow(${rowCount})" title="Hapus item">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                        </button>
-                    </td>
-                `;
+                        <td>
+                            <select name="items[${rowCount}][produk_id]" class="form-select" onchange="calculateRowSubtotal(${rowCount})" required>
+                                ${options}
+                            </select>
+                        </td>
+                        <td>
+                            <select name="items[${rowCount}][ukuran]" class="form-select" required>
+                                <option value="S">S</option>
+                                <option value="M" selected>M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number" name="items[${rowCount}][total_item]" class="form-input" value="1" min="1" oninput="calculateRowSubtotal(${rowCount})" required>
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: #1a2b4a;" id="subtotal-${rowCount}">
+                            Rp 0
+                        </td>
+                        <td style="text-align: center;">
+                            <button type="button" class="btn-remove-row" onclick="removeRow(${rowCount})" title="Hapus item">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </td>
+                    `;
 
             body.appendChild(row);
             calculateRowSubtotal(rowCount);

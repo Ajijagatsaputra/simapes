@@ -457,54 +457,56 @@
                     <a href="{{ route('pelanggan.pesanan.index') }}" class="card-link">Lihat Semua</a>
                 </div>
 
-                <table class="order-table">
-                    <thead>
-                        <tr>
-                            <th>No. Pesanan</th>
-                            <th>Tanggal</th>
-                            <th style="text-align: right;">Total Bayar</th>
-                            <th style="text-align: center;">Status</th>
-                            <th style="width: 40px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($pesananTerbaru as $p)
+                <div style="overflow-x: auto; width: 100%;">
+                    <table class="order-table">
+                        <thead>
                             <tr>
-                                <td style="font-weight: 700; color: #1a2b4a;">{{ $p->no_pesanan }}</td>
-                                <td>{{ \Carbon\Carbon::parse($p->tanggal_pesanan)->isoFormat('DD MMM YYYY') }}</td>
-                                <td style="text-align: right; font-weight: 700; color: #4A90D9;">
-                                    Rp {{ number_format($p->total_harga, 0, ',', '.') }}
-                                </td>
-                                <td style="text-align: center;">
-                                    @if($p->status === 'diproses')
-                                        <span class="status-badge badge-diproses">Diproses</span>
-                                    @elseif($p->status === 'dikerjakan')
-                                        <span class="status-badge badge-dikerjakan">Dikerjakan</span>
-                                    @elseif($p->status === 'selesai')
-                                        <span class="status-badge badge-selesai">Selesai</span>
-                                    @else
-                                        <span class="status-badge badge-batal">Batal</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <a href="{{ route('pelanggan.pesanan.show', $p->id) }}" class="btn-view"
-                                        title="Detail Pesanan">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="9 18 15 12 9 6"></polyline>
-                                        </svg>
-                                    </a>
-                                </td>
+                                <th>No. Pesanan</th>
+                                <th>Tanggal</th>
+                                <th style="text-align: right;">Total Bayar</th>
+                                <th style="text-align: center;">Status</th>
+                                <th style="width: 40px;"></th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" style="text-align: center; padding: 24px; color: #8ca0bf;">
-                                    Belum ada transaksi pemesanan seragam.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse($pesananTerbaru as $p)
+                                <tr>
+                                    <td style="font-weight: 700; color: #1a2b4a;">{{ $p->no_pesanan }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($p->tanggal_pesanan)->isoFormat('DD MMM YYYY') }}</td>
+                                    <td style="text-align: right; font-weight: 700; color: #4A90D9;">
+                                        Rp {{ number_format($p->total_harga, 0, ',', '.') }}
+                                    </td>
+                                    <td style="text-align: center;">
+                                        @if($p->status === 'diproses')
+                                            <span class="status-badge badge-diproses">Diproses</span>
+                                        @elseif($p->status === 'dikerjakan')
+                                            <span class="status-badge badge-dikerjakan">Dikerjakan</span>
+                                        @elseif($p->status === 'selesai')
+                                            <span class="status-badge badge-selesai">Selesai</span>
+                                        @else
+                                            <span class="status-badge badge-batal">Batal</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('pelanggan.pesanan.show', $p->id) }}" class="btn-view"
+                                            title="Detail Pesanan">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="9 18 15 12 9 6"></polyline>
+                                            </svg>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 24px; color: #8ca0bf;">
+                                        Belum ada transaksi pemesanan seragam.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {{-- Right Side: Quick Actions --}}

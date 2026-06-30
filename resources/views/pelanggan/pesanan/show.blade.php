@@ -221,6 +221,16 @@
             padding-top: 12px;
             margin-top: 12px;
         }
+
+        @media (max-width: 600px) {
+            .total-summary-card {
+                justify-content: center;
+            }
+
+            .total-box {
+                width: 100%;
+            }
+        }
     </style>
 @endpush
 
@@ -296,41 +306,43 @@
             {{-- Items Table --}}
             <div class="info-section">
                 <h3>Daftar Item Seragam</h3>
-                <table class="detail-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 50px;">No.</th>
-                            <th>Nama Seragam</th>
-                            <th style="width: 120px; text-align: center;">Ukuran</th>
-                            <th style="width: 150px; text-align: right;">Harga Satuan</th>
-                            <th style="width: 100px; text-align: center;">Jumlah</th>
-                            <th style="width: 160px; text-align: right;">Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($pesanan->details as $index => $d)
+                <div style="overflow-x: auto; width: 100%;">
+                    <table class="detail-table">
+                        <thead>
                             <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td style="font-weight: 700; color: #1a2b4a;">
-                                    {{ $d->produk->nama_produk ?? 'Seragam' }}
-                                </td>
-                                <td style="text-align: center; font-weight: 600;">
-                                    <span
-                                        style="background: #e8f0fd; color: #4A90D9; padding: 3px 8px; border-radius: 6px;">{{ $d->ukuran }}</span>
-                                </td>
-                                <td style="text-align: right;">
-                                    Rp {{ number_format($d->harga_satuan, 0, ',', '.') }}
-                                </td>
-                                <td style="text-align: center; font-weight: 600;">
-                                    {{ $d->total_item }} Pcs
-                                </td>
-                                <td style="text-align: right; font-weight: 700; color: #2d4060;">
-                                    Rp {{ number_format($d->subtotal, 0, ',', '.') }}
-                                </td>
+                                <th style="width: 50px;">No.</th>
+                                <th>Nama Seragam</th>
+                                <th style="width: 120px; text-align: center;">Ukuran</th>
+                                <th style="width: 150px; text-align: right;">Harga Satuan</th>
+                                <th style="width: 100px; text-align: center;">Jumlah</th>
+                                <th style="width: 160px; text-align: right;">Subtotal</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach($pesanan->details as $index => $d)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td style="font-weight: 700; color: #1a2b4a;">
+                                        {{ $d->produk->nama_produk ?? 'Seragam' }}
+                                    </td>
+                                    <td style="text-align: center; font-weight: 600;">
+                                        <span
+                                            style="background: #e8f0fd; color: #4A90D9; padding: 3px 8px; border-radius: 6px;">{{ $d->ukuran }}</span>
+                                    </td>
+                                    <td style="text-align: right;">
+                                        Rp {{ number_format($d->harga_satuan, 0, ',', '.') }}
+                                    </td>
+                                    <td style="text-align: center; font-weight: 600;">
+                                        {{ $d->total_item }} Pcs
+                                    </td>
+                                    <td style="text-align: right; font-weight: 700; color: #2d4060;">
+                                        Rp {{ number_format($d->subtotal, 0, ',', '.') }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {{-- Summary Total --}}

@@ -211,96 +211,97 @@
                     </svg>
                     <input type="text" id="searchInput" placeholder="Cari nomor pesanan..." oninput="filterOrders()">
                 </div>
-            </div>
-
-            <table class="order-table" id="orderTable">
-                <thead>
-                    <tr>
-                        <th style="width: 140px;">No. Pesanan</th>
-                        <th style="width: 140px;">Tanggal</th>
-                        <th>Item Seragam</th>
-                        <th style="width: 160px; text-align: right;">Total Harga</th>
-                        <th style="width: 150px; text-align: center;">Status</th>
-                        <th style="width: 100px; text-align: center;">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="orderBody">
-                    @forelse($pesanan as $p)
-                        <tr data-search="{{ strtolower($p->no_pesanan) }}">
-                            <td style="font-weight: 700; color: #1a2b4a;">{{ $p->no_pesanan }}</td>
-                            <td>{{ \Carbon\Carbon::parse($p->tanggal_pesanan)->isoFormat('DD MMMM YYYY') }}</td>
-                            <td>
-                                <div style="display: flex; flex-direction: column; gap: 2px;">
-                                    @foreach($p->details as $d)
-                                        <span style="font-size: .78rem; color: #5a7090;">
-                                            • {{ $d->produk->nama_produk ?? 'Seragam' }} (Size: {{ $d->ukuran }},
-                                            {{ $d->total_item }} pcs)
-                                        </span>
-                                    @endforeach
-                                </div>
-                            </td>
-                            <td style="text-align: right; font-weight: 700; color: #4A90D9;">
-                                Rp {{ number_format($p->total_harga, 0, ',', '.') }}
-                            </td>
-                            <td style="text-align: center;">
-                                @if($p->status === 'diproses')
-                                    <span class="status-badge badge-diproses">Diproses</span>
-                                @elseif($p->status === 'dikerjakan')
-                                    <span class="status-badge badge-dikerjakan">Dikerjakan</span>
-                                @elseif($p->status === 'selesai')
-                                    <span class="status-badge badge-selesai">Selesai</span>
-                                @else
-                                    <span class="status-badge badge-batal">Batal</span>
-                                @endif
-                            </td>
-                            <td style="text-align: center;">
-                                <a href="{{ route('pelanggan.pesanan.show', $p->id) }}" class="btn-detail">
-                                    Lihat Detail
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6">
-                                <div class="empty-state">
-                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="1.8">
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                        <polyline points="14 2 14 8 20 8"></polyline>
-                                    </svg>
-                                    <h3>Tidak Ada Pesanan Aktif</h3>
-                                    <p>Anda belum memiliki pesanan seragam yang sedang diproses atau dikerjakan saat ini.</p>
-                                    <a href="{{ route('pelanggan.pesanan.create') }}" class="btn-make-order">
-                                        Buat Pesanan Baru
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-
-            @if($pesanan->hasPages())
-                <div style="margin-top: 20px; display: flex; justify-content: center;">
-                    {{ $pesanan->links() }}
+                <div style="overflow-x: auto; width: 100%;">
+                    <table class="order-table" id="orderTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 140px;">No. Pesanan</th>
+                                <th style="width: 140px;">Tanggal</th>
+                                <th>Item Seragam</th>
+                                <th style="width: 160px; text-align: right;">Total Harga</th>
+                                <th style="width: 150px; text-align: center;">Status</th>
+                                <th style="width: 100px; text-align: center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderBody">
+                            @forelse($pesanan as $p)
+                                <tr data-search="{{ strtolower($p->no_pesanan) }}">
+                                    <td style="font-weight: 700; color: #1a2b4a;">{{ $p->no_pesanan }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($p->tanggal_pesanan)->isoFormat('DD MMMM YYYY') }}</td>
+                                    <td>
+                                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                                            @foreach($p->details as $d)
+                                                <span style="font-size: .78rem; color: #5a7090;">
+                                                    • {{ $d->produk->nama_produk ?? 'Seragam' }} (Size: {{ $d->ukuran }},
+                                                    {{ $d->total_item }} pcs)
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    </td>
+                                    <td style="text-align: right; font-weight: 700; color: #4A90D9;">
+                                        Rp {{ number_format($p->total_harga, 0, ',', '.') }}
+                                    </td>
+                                    <td style="text-align: center;">
+                                        @if($p->status === 'diproses')
+                                            <span class="status-badge badge-diproses">Diproses</span>
+                                        @elseif($p->status === 'dikerjakan')
+                                            <span class="status-badge badge-dikerjakan">Dikerjakan</span>
+                                        @elseif($p->status === 'selesai')
+                                            <span class="status-badge badge-selesai">Selesai</span>
+                                        @else
+                                            <span class="status-badge badge-batal">Batal</span>
+                                        @endif
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <a href="{{ route('pelanggan.pesanan.show', $p->id) }}" class="btn-detail">
+                                            Lihat Detail
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="1.8">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                            </svg>
+                                            <h3>Tidak Ada Pesanan Aktif</h3>
+                                            <p>Anda belum memiliki pesanan seragam yang sedang diproses atau dikerjakan saat
+                                                ini.</p>
+                                            <a href="{{ route('pelanggan.pesanan.create') }}" class="btn-make-order">
+                                                Buat Pesanan Baru
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
-            @endif
+
+                @if($pesanan->hasPages())
+                    <div style="margin-top: 20px; display: flex; justify-content: center;">
+                        {{ $pesanan->links() }}
+                    </div>
+                @endif
+            </div>
         </div>
-    </div>
 
-    <script>
-        function filterOrders() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#orderBody tr:not(:has(.empty-state))');
+        <script>
+            function filterOrders() {
+                const query = document.getElementById('searchInput').value.toLowerCase();
+                const rows = document.querySelectorAll('#orderBody tr:not(:has(.empty-state))');
 
-            rows.forEach(row => {
-                const searchVal = row.getAttribute('data-search');
-                if (searchVal.includes(query)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-    </script>
+                rows.forEach(row => {
+                    const searchVal = row.getAttribute('data-search');
+                    if (searchVal.includes(query)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+        </script>
 @endsection
