@@ -65,7 +65,7 @@ class PesananController extends Controller
             'status' => 'required|in:diproses,dikerjakan,selesai',
             'items' => 'required|array|min:1',
             'items.*.produk_id' => 'required|exists:produks,id',
-            'items.*.ukuran' => 'required|in:S,M,L,XL,XXL',
+            'items.*.ukuran' => 'required|in:S,M,L,XL,XXL,3XL,4XL,5XL',
             'items.*.total_item' => 'required|integer|min:1',
         ]);
 
@@ -119,7 +119,7 @@ class PesananController extends Controller
             'status' => 'required|in:diproses,dikerjakan,selesai',
             'items' => 'required|array|min:1',
             'items.*.produk_id' => 'required|exists:produks,id',
-            'items.*.ukuran' => 'required|in:S,M,L,XL,XXL',
+            'items.*.ukuran' => 'required|in:S,M,L,XL,XXL,3XL,4XL,5XL',
             'items.*.total_item' => 'required|integer|min:1',
         ]);
 

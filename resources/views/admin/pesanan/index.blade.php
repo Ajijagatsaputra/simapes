@@ -70,12 +70,19 @@
 
     /* ── Aksi ── */
     .aksi-wrap { display: flex; gap: 6px; justify-content: center; }
-    .btn-edit, .btn-hapus, .btn-status, .btn-print { width: 30px; height: 30px; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .15s, transform .15s; }
+    .btn-edit, .btn-hapus, .btn-status, .btn-print, .btn-bayar { width: 30px; height: 30px; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .15s, transform .15s; }
     .btn-status { background: #e8f0fd; color: #4A90D9; }
     .btn-edit  { background: #4A90D9; color: #fff; }
     .btn-hapus { background: #e05a5a; color: #fff; }
     .btn-print { background: #8a63d2; color: #fff; text-decoration: none; }
-    .btn-edit:hover, .btn-hapus:hover, .btn-status:hover, .btn-print:hover { opacity: .85; transform: scale(1.08); }
+    .btn-bayar { background: #10b981; color: #fff; text-decoration: none; }
+    .btn-edit:hover, .btn-hapus:hover, .btn-status:hover, .btn-print:hover, .btn-bayar:hover { opacity: .85; transform: scale(1.08); }
+
+    /* Payment Status */
+    .pay-status { display:inline-flex; padding:3px 7px; border-radius:12px; font-size:.65rem; font-weight:700; }
+    .ps-belum_bayar { background:#fef2f2; color:#dc2626; }
+    .ps-dp { background:#fff3e6; color:#d97706; }
+    .ps-lunas { background:#ecfdf5; color:#059669; }
 
     /* ── Form Panel ── */
     .form-panel .panel-title { font-size: .95rem; font-weight: 700; color: #1a2b4a; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid #f0f4fb; }
@@ -271,7 +278,8 @@
                         <th>Daftar Item Produk</th>
                         <th>Total Harga</th>
                         <th style="width:90px" class="center">Status</th>
-                        <th style="width:110px">Aksi</th>
+                        <th style="width:80px" class="center">Bayar</th>
+                        <th style="width:140px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -301,6 +309,11 @@
                         </td>
                         <td class="center">
                             <span class="status-badge status-{{ $p->status }}">{{ $p->status }}</span>
+                        </td>
+                        <td class="center">
+                            <span class="pay-status ps-{{ $p->status_pembayaran ?? 'belum_bayar' }}">
+                                {{ ($p->status_pembayaran ?? 'belum_bayar') === 'belum_bayar' ? 'Belum' : (($p->status_pembayaran ?? '') === 'dp' ? 'DP' : 'Lunas') }}
+                            </span>
                         </td>
                         <td>
                             <div class="aksi-wrap">
@@ -353,12 +366,19 @@
                                     </button>
                                 </form>
 
+                                <a href="{{ route('admin.pesanan.pembayaran', $p->id) }}" class="btn-bayar" title="Kelola Pembayaran">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                        <line x1="1" y1="10" x2="23" y2="10"/>
+                                    </svg>
+                                </a>
+
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8">
+                        <td colspan="9">
                             <div class="empty-state">
                                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>

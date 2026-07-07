@@ -209,8 +209,13 @@
 @section('content')
     <div style="margin-bottom: 24px;">
         <h1 style="font-size: 1.6rem; font-weight: 800; color: #1a2b4a;">Buat Pesanan Baru</h1>
-        <p style="font-size: .85rem; color: #6b7e9f; margin-top: 4px;">Pilih jenis seragam, ukuran, dan jumlah pesanan yang
-            Anda butuhkan</p>
+        <p style="font-size: .85rem; color: #6b7e9f; margin-top: 4px;">Masukkan total akumulasi per ukuran baju dari seluruh
+            kelas (Kelas 1 – Kelas 6). Setiap kombinasi produk dan ukuran dicatat sebagai satu baris pesanan.</p>
+        <p
+            style="font-size: .78rem; color: #8ca0bf; margin-top: 6px; background: #f5f8ff; border: 1px solid #dde8f8; border-radius: 8px; padding: 10px 14px; line-height: 1.6;">
+            <strong style="color: #4A90D9;">💡 Contoh:</strong> Kaos Olahraga Ukuran M (50 pcs), Kaos Olahraga Ukuran XL (50
+            pcs) — masing-masing diinput pada baris terpisah. Tidak ada batasan jumlah pesanan.
+        </p>
     </div>
 
     <form method="POST" action="{{ route('pelanggan.pesanan.store') }}" id="orderForm">
@@ -270,7 +275,7 @@
                             <line x1="16" y1="17" x2="8" y2="17"></line>
                             <polyline points="10 9 9 9 8 9"></polyline>
                         </svg>
-                        Ringkasan Belanja
+                        Ringkasan Pesanan
                     </div>
 
                     <div class="summary-row">
@@ -278,17 +283,21 @@
                         <span id="summaryTotalItems">0 Pcs</span>
                     </div>
                     <div class="summary-row">
-                        <span>Status Pemesanan</span>
-                        <span style="color: #4A90D9; font-weight: 600;">Proses Awal</span>
+                        <span>Status Pengajuan</span>
+                        <span style="color: #d97706; font-weight: 600;">Menunggu Tinjauan Admin</span>
                     </div>
 
                     <div class="summary-total">
-                        <span>Total Pembayaran</span>
+                        <span>Estimasi Total</span>
                         <span id="summaryGrandTotal" style="color: #4A90D9;">Rp 0</span>
                     </div>
 
+                    <p style="font-size: .72rem; color: #8ca0bf; margin-top: 10px; line-height: 1.5; text-align: center;">
+                        Pembayaran dilakukan setelah pesanan ditinjau dan disetujui oleh admin.
+                    </p>
+
                     <button type="submit" class="btn-submit">
-                        Kirim Pesanan Sekarang
+                        Ajukan Pesanan
                     </button>
                 </div>
 
@@ -335,35 +344,40 @@
             });
 
             row.innerHTML = `
-                        <td>
-                            <select name="items[${rowCount}][produk_id]" class="form-select" onchange="calculateRowSubtotal(${rowCount})" required>
-                                ${options}
-                            </select>
-                        </td>
-                        <td>
-                            <select name="items[${rowCount}][ukuran]" class="form-select" required>
-                                <option value="S">S</option>
-                                <option value="M" selected>M</option>
-                                <option value="L">L</option>
-                                <option value="XL">XL</option>
-                                <option value="XXL">XXL</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input type="number" name="items[${rowCount}][total_item]" class="form-input" value="1" min="1" oninput="calculateRowSubtotal(${rowCount})" required>
-                        </td>
-                        <td style="text-align: right; font-weight: 700; color: #1a2b4a;" id="subtotal-${rowCount}">
-                            Rp 0
-                        </td>
-                        <td style="text-align: center;">
-                            <button type="button" class="btn-remove-row" onclick="removeRow(${rowCount})" title="Hapus item">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
-                            </button>
-                        </td>
-                    `;
+                            <td>
+                                <select name="items[${rowCount}][produk_id]" class="form-select" onchange="calculateRowSubtotal(${rowCount})" required>
+                                    ${options}
+                                </select>
+                            </td>
+                            <td>
+                                <select name="items[${rowCount}][ukuran]" class="form-select" required>
+                                    <option value="" disabled>-- Ukuran --</option>
+                                    <option value="S">S</option>
+                                    <option value="M" selected>M</option>
+                                    <option value="L">L</option>
+                                    <option value="XL">XL</option>
+                                    <option value="XXL">XXL</option>
+                                    <option value="3XL">3XL</option>
+                                    <option value="4XL">4XL</option>
+                                    <option value="5XL">5XL</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" name="items[${rowCount}][total_item]" class="form-input" value="1" min="1" oninput="calculateRowSubtotal(${rowCount})" required>
+                                <span style="font-size:.68rem;color:#8ca0bf;margin-top:2px;display:block;">Agregat semua kelas</span>
+                            </td>
+                            <td style="text-align: right; font-weight: 700; color: #1a2b4a;" id="subtotal-${rowCount}">
+                                Rp 0
+                            </td>
+                            <td style="text-align: center;">
+                                <button type="button" class="btn-remove-row" onclick="removeRow(${rowCount})" title="Hapus item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            </td>
+                        `;
 
             body.appendChild(row);
             calculateRowSubtotal(rowCount);

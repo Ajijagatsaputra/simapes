@@ -50,6 +50,11 @@ Route::middleware(['auth', 'role:admin'])
         Route::patch('/pesanan/{id}/status', [Admin\PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
         Route::delete('/pesanan/{id}', [Admin\PesananController::class, 'destroy'])->name('pesanan.destroy');
 
+        // Pembayaran (Termin / DP)
+        Route::get('/pesanan/{id}/pembayaran', [Admin\PembayaranController::class, 'show'])->name('pesanan.pembayaran');
+        Route::post('/pesanan/{id}/pembayaran', [Admin\PembayaranController::class, 'store'])->name('pesanan.pembayaran.store');
+        Route::delete('/pesanan/{id}/pembayaran/{pembayaranId}', [Admin\PembayaranController::class, 'destroy'])->name('pesanan.pembayaran.destroy');
+
         // Prediksi (Holt-Winters)
         Route::get('/prediksi', [Admin\PrediksiController::class, 'index'])->name('prediksi.index');
         Route::get('/prediksi/print-po', [Admin\PrediksiController::class, 'printPo'])->name('prediksi.printPo');

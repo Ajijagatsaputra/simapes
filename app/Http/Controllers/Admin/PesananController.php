@@ -91,7 +91,7 @@ class PesananController extends Controller
                 ]);
             }
 
-            $pesanan->update(['total_harga' => $totalHarga]);
+            $pesanan->update(['total_harga' => $totalHarga, 'sisa_tagihan' => max(0, $totalHarga - $pesanan->total_terbayar)]);
             ActivityLog::log('Membuat pesanan baru: ' . $pesanan->no_pesanan, 'Pesanan', $pesanan->id);
 
             DB::commit();
@@ -141,7 +141,7 @@ class PesananController extends Controller
                 ]);
             }
 
-            $pesanan->update(['total_harga' => $totalHarga]);
+            $pesanan->update(['total_harga' => $totalHarga, 'sisa_tagihan' => max(0, $totalHarga - $pesanan->total_terbayar)]);
             ActivityLog::log('Memperbarui data pesanan: ' . $pesanan->no_pesanan, 'Pesanan', $pesanan->id);
 
             DB::commit();

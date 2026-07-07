@@ -13,12 +13,17 @@ class Pesanan extends Model
         'no_pesanan',
         'user_id',
         'total_harga',
+        'total_terbayar',
+        'sisa_tagihan',
+        'status_pembayaran',
         'tanggal_pesanan',
         'status',
     ];
 
     protected $casts = [
         'total_harga' => 'decimal:2',
+        'total_terbayar' => 'decimal:2',
+        'sisa_tagihan' => 'decimal:2',
         'tanggal_pesanan' => 'date',
     ];
 
@@ -31,6 +36,47 @@ class Pesanan extends Model
     public function details()
     {
         return $this->hasMany(DetailPesanan::class);
+    }
+
+    public function pembayarans()
+    {
+        return $this->hasMany(Pembayaran::class);
+    }
+
+    /* ── Helper: Hitung ulang total pembayaran ── */
+    public function recalculatePembayaran(): void
+    {
+        $totalTerbayar = $this->pembayarans()
+            ->where('status', 'verified')
+            ->sum('jumlah_bayar');
+
+        $sisaTagihan = max(0, $this->total_harga - $totalTerbayar);
+
+        if ($totalTerbayar <= 0) {
+            $statusPembayaran = 'belum_bayar';
+        } elseif ($sisaTagihan <= 0) {
+            $statusPembayaran = 'lunas';
+        } else {
+            $statusPembayaran = 'dp';
+        }
+
+        $this->update([
+            'total_terbayar' => $totalTerbayar,
+            'sisa_tagihan' => $sisaTagihan,
+            'status_pembayaran' => $statusPembayaran,
+        ]);
+    }
+
+    /* ── Helper: Hitung ulang jumlah_terbayar per item ── */
+    public function recalculateItemCoverage(): void
+    {
+        foreach ($this->details as $detail) {
+            $totalCover = PembayaranDetail::whereHas('pembayaran', function ($q) {
+                $q->where('pesanan_id', $this->id)->where('status', 'verified');
+            })->where('detail_pesanan_id', $detail->id)->sum('jumlah_cover');
+
+            $detail->update(['jumlah_terbayar' => min($totalCover, $detail->total_item)]);
+        }
     }
 
     /* ── Generate No Pesanan ── */

@@ -511,6 +511,9 @@
                     <option value="L" ${ukuran === 'L' ? 'selected' : ''}>L</option>
                     <option value="XL" ${ukuran === 'XL' ? 'selected' : ''}>XL</option>
                     <option value="XXL" ${ukuran === 'XXL' ? 'selected' : ''}>XXL</option>
+                    <option value="3XL" ${ukuran === '3XL' ? 'selected' : ''}>3XL</option>
+                    <option value="4XL" ${ukuran === '4XL' ? 'selected' : ''}>4XL</option>
+                    <option value="5XL" ${ukuran === '5XL' ? 'selected' : ''}>5XL</option>
                 </select>
             </div>
             <div>

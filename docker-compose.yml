@@ -17,7 +17,7 @@ services:
     container_name: simapes-web
     restart: unless-stopped
     ports:
-      - "8000:80"
+      - "8091:80"
     volumes:
       - .:/var/www
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf

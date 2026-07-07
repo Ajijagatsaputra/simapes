@@ -38,7 +38,7 @@ class PesananController extends Controller
         $request->validate([
             'items' => 'required|array|min:1',
             'items.*.produk_id' => 'required|exists:produks,id',
-            'items.*.ukuran' => 'required|in:S,M,L,XL,XXL',
+            'items.*.ukuran' => 'required|in:S,M,L,XL,XXL,3XL,4XL,5XL',
             'items.*.total_item' => 'required|integer|min:1',
         ]);
 
@@ -68,11 +68,14 @@ class PesananController extends Controller
                 ]);
             }
 
-            $pesanan->update(['total_harga' => $totalHarga]);
+            $pesanan->update([
+                'total_harga' => $totalHarga,
+                'sisa_tagihan' => $totalHarga,
+            ]);
 
             DB::commit();
             return redirect()->route('pelanggan.pesanan.show', $pesanan->id)
-                ->with('success', 'Pesanan berhasil dibuat! Nomor pesanan: ' . $pesanan->no_pesanan);
+                ->with('success', 'Pesanan berhasil diajukan! Nomor pesanan: ' . $pesanan->no_pesanan . '. Pesanan Anda akan ditinjau oleh admin.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal membuat pesanan: ' . $e->getMessage());
@@ -83,7 +86,11 @@ class PesananController extends Controller
     public function show($id)
     {
         $pesanan = Pesanan::where('user_id', Auth::id())
-            ->with(['details.produk'])
+            ->with([
+                'details.produk',
+                'pembayarans' => fn($q) => $q->where('status', 'verified')->orderBy('termin_ke'),
+                'pembayarans.details.detailPesanan.produk',
+            ])
             ->findOrFail($id);
 
         return view('pelanggan.pesanan.show', compact('pesanan'));
