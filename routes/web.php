@@ -14,6 +14,14 @@ use Illuminate\Support\Facades\Route;
 // ── Landing / Login ──────────────────────────────────────────────────────
 Route::get('/', fn() => view('auth.login'));
 
+Route::get('/dashboard', function () {
+    $role = auth()->user()->role ?? 'pelanggan';
+    if ($role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+    return redirect()->route('pelanggan.dashboard');
+})->middleware(['auth'])->name('dashboard');
+
 // ══════════════════════════════════════════════════════════════════════════
 // ADMIN ROUTES — Prefix: /admin
 // ══════════════════════════════════════════════════════════════════════════

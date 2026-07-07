@@ -337,6 +337,133 @@
             color: #6b7e9f;
             margin-top: 2px;
         }
+
+        /* ── Progress Produksi (Pcs) ── */
+        .progress-section {
+            background: #fff;
+            border: 1px solid #e2e8f4;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(26, 43, 74, .03);
+        }
+
+        .progress-section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #1a2b4a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-pcs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .progress-pcs-card {
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid #f0f4fb;
+        }
+
+        .progress-pcs-card.belum {
+            background: #fdf2f2;
+            border-color: #fde8e8;
+        }
+
+        .progress-pcs-card.proses {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .progress-pcs-card.selesai {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+        }
+
+        .pcs-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .belum .pcs-icon {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .proses .pcs-icon {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+
+        .selesai .pcs-icon {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .pcs-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pcs-value {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #1a2b4a;
+            line-height: 1.2;
+        }
+
+        .pcs-label {
+            font-size: .78rem;
+            color: #4b5563;
+            font-weight: 600;
+        }
+
+        .pcs-desc {
+            font-size: .68rem;
+            color: #6b7e9f;
+            margin-top: 2px;
+        }
+
+        /* ── Badge status pembayaran breakdown ── */
+        .pay-badge-br {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: .7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .pb-belum {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fde8e8;
+        }
+
+        .pb-dp {
+            background: #fff3e6;
+            color: #d97706;
+            border: 1px solid #fed7aa;
+        }
+
+        .pb-lunas {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+        }
     </style>
 @endpush
 
@@ -437,75 +564,194 @@
             </div>
         </div>
 
-        {{-- Main Content Grid --}}
-        <div class="main-grid">
-            {{-- Left Side: Latest Orders --}}
-            <div class="card">
-                <div class="card-header-flex">
-                    <span class="card-title">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="8" y1="6" x2="21" y2="6"></line>
-                            <line x1="8" y1="12" x2="21" y2="12"></line>
-                            <line x1="8" y1="18" x2="21" y2="18"></line>
-                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                        </svg>
-                        Pesanan Terakhir Anda
-                    </span>
-                    <a href="{{ route('pelanggan.pesanan.index') }}" class="card-link">Lihat Semua</a>
+        {{-- Progress Tracking Section --}}
+        <div class="progress-section" style="margin-bottom: 24px;">
+            <span class="progress-section-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                </svg>
+                Transparansi Status Pengerjaan (Pcs)
+            </span>
+            <div class="progress-pcs-grid">
+                {{-- Belum Dikerjakan --}}
+                <div class="progress-pcs-card belum">
+                    <div class="pcs-icon">⏳</div>
+                    <div class="pcs-info">
+                        <span class="pcs-value">{{ $pcsBelumDikerjakan }} Pcs</span>
+                        <span class="pcs-label">Belum Dikerjakan</span>
+                        <span class="pcs-desc">Belum dibayar / belum masuk antrean</span>
+                    </div>
                 </div>
 
-                <div style="overflow-x: auto; width: 100%;">
-                    <table class="order-table">
-                        <thead>
-                            <tr>
-                                <th>No. Pesanan</th>
-                                <th>Tanggal</th>
-                                <th style="text-align: right;">Total Bayar</th>
-                                <th style="text-align: center;">Status</th>
-                                <th style="width: 40px;"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($pesananTerbaru as $p)
+                {{-- Sedang Diproses/Dikerjakan --}}
+                <div class="progress-pcs-card proses">
+                    <div class="pcs-icon">🧵</div>
+                    <div class="pcs-info">
+                        <span class="pcs-value">{{ $pcsSedangDiproses }} Pcs</span>
+                        <span class="pcs-label">Sedang Dikerjakan</span>
+                        <span class="pcs-desc">Sudah divalidasi DP & sedang dijahit</span>
+                    </div>
+                </div>
+
+                {{-- Selesai --}}
+                <div class="progress-pcs-card selesai">
+                    <div class="pcs-icon">✨</div>
+                    <div class="pcs-info">
+                        <span class="pcs-value">{{ $pcsSelesai }} Pcs</span>
+                        <span class="pcs-label">Selesai Produksi</span>
+                        <span class="pcs-desc">Telah selesai & siap dikirim/diambil</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Main Content Grid --}}
+        <div class="main-grid">
+            {{-- Left Side Column Wrapper --}}
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                {{-- Breakdown per Kategori --}}
+                <div class="card">
+                    <div class="card-header-flex">
+                        <span class="card-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 20h9" />
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                            </svg>
+                            Rincian Pesanan Terkini (Breakdown per Kategori)
+                        </span>
+                    </div>
+
+                    <div style="overflow-x: auto; width: 100%;">
+                        <table class="order-table">
+                            <thead>
                                 <tr>
-                                    <td style="font-weight: 700; color: #1a2b4a;">{{ $p->no_pesanan }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($p->tanggal_pesanan)->isoFormat('DD MMM YYYY') }}</td>
-                                    <td style="text-align: right; font-weight: 700; color: #4A90D9;">
-                                        Rp {{ number_format($p->total_harga, 0, ',', '.') }}
-                                    </td>
-                                    <td style="text-align: center;">
-                                        @if($p->status === 'diproses')
-                                            <span class="status-badge badge-diproses">Diproses</span>
-                                        @elseif($p->status === 'dikerjakan')
-                                            <span class="status-badge badge-dikerjakan">Dikerjakan</span>
-                                        @elseif($p->status === 'selesai')
-                                            <span class="status-badge badge-selesai">Selesai</span>
-                                        @else
-                                            <span class="status-badge badge-batal">Batal</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('pelanggan.pesanan.show', $p->id) }}" class="btn-view"
-                                            title="Detail Pesanan">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                <polyline points="9 18 15 12 9 6"></polyline>
-                                            </svg>
-                                        </a>
-                                    </td>
+                                    <th>Jenis Produk</th>
+                                    <th style="text-align: center;">Ukuran</th>
+                                    <th style="text-align: center;">Total Pesanan</th>
+                                    <th style="text-align: center;">Belum Dikerjakan</th>
+                                    <th style="text-align: center;">Sedang Diproses</th>
+                                    <th style="text-align: center;">Selesai</th>
+                                    <th style="text-align: center;">Status Pembayaran</th>
                                 </tr>
-                            @empty
+                            </thead>
+                            <tbody>
+                                @forelse($breakdown as $item)
+                                    <tr>
+                                        <td style="font-weight: 700; color: #1a2b4a;">{{ $item['produk'] }}</td>
+                                        <td style="text-align: center;">
+                                            <span class="status-badge"
+                                                style="background:#e8f0fd; color:#4a90d9; border:none; padding: 2px 6px; font-weight:600;">
+                                                {{ $item['ukuran'] }}
+                                            </span>
+                                        </td>
+                                        <td style="text-align: center; font-weight: 600;">{{ $item['total_pesanan'] }} Pcs</td>
+                                        <td style="text-align: center; color: #ef4444; font-weight: 600;">
+                                            {{ $item['belum_dikerjakan'] }} Pcs
+                                        </td>
+                                        <td style="text-align: center; color: #d97706; font-weight: 600;">
+                                            {{ $item['sedang_diproses'] }} Pcs
+                                        </td>
+                                        <td style="text-align: center; color: #10b981; font-weight: 600;">{{ $item['selesai'] }}
+                                            Pcs</td>
+                                        <td style="text-align: center;">
+                                            @php
+                                                $pbClass = 'pb-belum';
+                                                if (str_contains($item['status_pembayaran'], 'DP')) {
+                                                    $pbClass = 'pb-dp';
+                                                } elseif ($item['status_pembayaran'] === 'Lunas') {
+                                                    $pbClass = 'pb-lunas';
+                                                }
+                                            @endphp
+                                            <span class="pay-badge-br {{ $pbClass }}">{{ $item['status_pembayaran'] }}</span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 24px; color: #8ca0bf;">
+                                            Belum ada detail pengerjaan produksi seragam.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Left Side: Latest Orders --}}
+                <div class="card">
+                    <div class="card-header-flex">
+                        <span class="card-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                            </svg>
+                            Pesanan Terakhir Anda
+                        </span>
+                        <a href="{{ route('pelanggan.pesanan.index') }}" class="card-link">Lihat Semua</a>
+                    </div>
+
+                    <div style="overflow-x: auto; width: 100%;">
+                        <table class="order-table">
+                            <thead>
                                 <tr>
-                                    <td colspan="5" style="text-align: center; padding: 24px; color: #8ca0bf;">
-                                        Belum ada transaksi pemesanan seragam.
-                                    </td>
+                                    <th>No. Pesanan</th>
+                                    <th>Tanggal</th>
+                                    <th style="text-align: right;">Total Bayar</th>
+                                    <th style="text-align: center;">Status</th>
+                                    <th style="width: 40px;"></th>
                                 </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse($pesananTerbaru as $p)
+                                    <tr>
+                                        <td style="font-weight: 700; color: #1a2b4a;">{{ $p->no_pesanan }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($p->tanggal_pesanan)->isoFormat('DD MMM YYYY') }}</td>
+                                        <td style="text-align: right; font-weight: 700; color: #4A90D9;">
+                                            Rp {{ number_format($p->total_harga, 0, ',', '.') }}
+                                        </td>
+                                        <td style="text-align: center;">
+                                            @if($p->status === 'diproses')
+                                                <span class="status-badge badge-diproses">Diproses</span>
+                                            @elseif($p->status === 'dikerjakan')
+                                                <span class="status-badge badge-dikerjakan">Dikerjakan</span>
+                                            @elseif($p->status === 'selesai')
+                                                <span class="status-badge badge-selesai">Selesai</span>
+                                            @else
+                                                <span class="status-badge badge-batal">Batal</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('pelanggan.pesanan.show', $p->id) }}" class="btn-view"
+                                                title="Detail Pesanan">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                                    stroke-linejoin="round">
+                                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                                </svg>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; padding: 24px; color: #8ca0bf;">
+                                            Belum ada transaksi pemesanan seragam.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
