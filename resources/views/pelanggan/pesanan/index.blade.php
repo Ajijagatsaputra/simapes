@@ -102,6 +102,12 @@
             text-transform: uppercase;
         }
 
+        .badge-pending {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+        }
+
         .badge-diproses {
             background: #fffbeb;
             color: #d97706;
@@ -242,7 +248,9 @@
                                         Rp {{ number_format($p->total_harga, 0, ',', '.') }}
                                     </td>
                                     <td style="text-align: center;">
-                                        @if($p->status === 'diproses')
+                                        @if($p->status === 'pending')
+                                            <span class="status-badge badge-pending">Menunggu Persetujuan</span>
+                                        @elseif($p->status === 'diproses')
                                             <span class="status-badge badge-diproses">Diproses</span>
                                         @elseif($p->status === 'dikerjakan')
                                             <span class="status-badge badge-dikerjakan">Dikerjakan</span>

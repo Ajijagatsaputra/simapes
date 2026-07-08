@@ -15,12 +15,13 @@
     .page-date { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: #6b7e9f; background: #fff; border: 1px solid #e2e8f4; border-radius: 10px; padding: 8px 14px; }
 
     /* ── Stat Bar & Grid ── */
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 22px; }
     .stat-bar { background: #fff; border: 1px solid #e8eef8; border-radius: 16px; padding: 18px 22px; display: flex; align-items: center; gap: 16px; margin-bottom: 0; box-shadow: 0 2px 8px rgba(74,144,217,.06); }
     .stat-bar-icon { width: 50px; height: 50px; background: #eaf3fc; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #4A90D9; flex-shrink: 0; }
     .stat-bar-label { font-size: .75rem; color: #8ca0bf; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
     .stat-bar-value { font-size: 1.7rem; font-weight: 800; color: #1a2b4a; line-height: 1.1; }
     .stat-bar-desc  { font-size: .72rem; color: #a0aec0; }
+    @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 992px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 576px) { .stats-grid { grid-template-columns: 1fr; } }
 
@@ -59,6 +60,7 @@
     
     /* ── Status Badges ── */
     .status-badge { display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 20px; font-size: .72rem; font-weight: 700; text-transform: capitalize; }
+    .status-pending { background: #f3f4f6; color: #4b5563; }
     .status-diproses { background: #fff3e6; color: #f5a54a; }
     .status-dikerjakan { background: #e8f0fd; color: #4A90D9; }
     .status-selesai { background: #e8f8ee; color: #34c472; }
@@ -183,7 +185,23 @@
             </div>
         </div>
 
-        {{-- Card 2: Diproses --}}
+        {{-- Card 2: Menunggu Persetujuan --}}
+        <div class="stat-bar">
+            <div class="stat-bar-icon" style="background: #f3f4f6; color: #4b5563;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+            </div>
+            <div>
+                <div class="stat-bar-label">Menunggu Persetujuan</div>
+                <div class="stat-bar-value">{{ $totalPending }}</div>
+                <div class="stat-bar-desc">Perlu verifikasi</div>
+            </div>
+        </div>
+
+        {{-- Card 3: Diproses --}}
         <div class="stat-bar">
             <div class="stat-bar-icon" style="background: #fff3e6; color: #f5a54a;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -198,7 +216,7 @@
             </div>
         </div>
 
-        {{-- Card 3: Dikerjakan --}}
+        {{-- Card 4: Dikerjakan --}}
         <div class="stat-bar">
             <div class="stat-bar-icon" style="background: #eaf3fc; color: #4A90D9;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -212,7 +230,7 @@
             </div>
         </div>
 
-        {{-- Card 4: Selesai --}}
+        {{-- Card 5: Selesai --}}
         <div class="stat-bar">
             <div class="stat-bar-icon" style="background: #e8f8ee; color: #34c472;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -246,6 +264,7 @@
                         
                         <select name="status" class="filter-select" onchange="this.form.submit()">
                             <option value="semua" {{ request('status') == 'semua' ? 'selected' : '' }}>Status Semua</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu Persetujuan</option>
                             <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>Diproses</option>
                             <option value="dikerjakan" {{ request('status') == 'dikerjakan' ? 'selected' : '' }}>Dikerjakan</option>
                             <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
@@ -320,7 +339,7 @@
                                 <form method="POST" action="{{ route('admin.pesanan.updateStatus', $p->id) }}" style="display:inline;" id="status-form-{{ $p->id }}">
                                     @csrf @method('PATCH')
                                     @php
-                                        $nextStatus = $p->status == 'diproses' ? 'dikerjakan' : ($p->status == 'dikerjakan' ? 'selesai' : 'diproses');
+                                        $nextStatus = $p->status == 'pending' ? 'diproses' : ($p->status == 'diproses' ? 'dikerjakan' : ($p->status == 'dikerjakan' ? 'selesai' : 'pending'));
                                     @endphp
                                     <input type="hidden" name="status" value="{{ $nextStatus }}">
                                     <button type="submit" class="btn-status" title="Ubah Status ke {{ ucfirst($nextStatus) }}">
@@ -484,6 +503,7 @@
                     <div class="form-group" style="margin-bottom:0">
                         <label class="form-label" for="status">Status</label>
                         <select class="form-select" id="status" name="status" required>
+                            <option value="pending">Pending (Menunggu Persetujuan)</option>
                             <option value="diproses" selected>Diproses</option>
                             <option value="dikerjakan">Dikerjakan</option>
                             <option value="selesai">Selesai</option>
@@ -534,6 +554,9 @@
                     <option value="L" ${ukuran === 'L' ? 'selected' : ''}>L</option>
                     <option value="XL" ${ukuran === 'XL' ? 'selected' : ''}>XL</option>
                     <option value="XXL" ${ukuran === 'XXL' ? 'selected' : ''}>XXL</option>
+                    <option value="3XL" ${ukuran === '3XL' ? 'selected' : ''}>3XL</option>
+                    <option value="4XL" ${ukuran === '4XL' ? 'selected' : ''}>4XL</option>
+                    <option value="5XL" ${ukuran === '5XL' ? 'selected' : ''}>5XL</option>
                 </select>
             </div>
             <div>

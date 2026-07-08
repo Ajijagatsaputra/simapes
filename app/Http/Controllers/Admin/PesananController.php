@@ -30,6 +30,7 @@ class PesananController extends Controller
         }
 
         $totalPesanan = (clone $query)->count();
+        $totalPending = (clone $query)->where('status', 'pending')->count();
         $totalDiproses = (clone $query)->where('status', 'diproses')->count();
         $totalDikerjakan = (clone $query)->where('status', 'dikerjakan')->count();
         $totalSelesai = (clone $query)->where('status', 'selesai')->count();
@@ -45,6 +46,7 @@ class PesananController extends Controller
         return view('admin.pesanan.index', compact(
             'pesanan',
             'totalPesanan',
+            'totalPending',
             'totalDiproses',
             'totalDikerjakan',
             'totalSelesai',
@@ -58,10 +60,10 @@ class PesananController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'tanggal_pesanan' => 'required|date',
-            'status' => 'required|in:diproses,dikerjakan,selesai',
+            'status' => 'required|in:pending,diproses,dikerjakan,selesai',
             'items' => 'required|array|min:1',
             'items.*.produk_id' => 'required|exists:produks,id',
-            'items.*.ukuran' => 'required|in:S,M,L,XL,XXL',
+            'items.*.ukuran' => 'required|in:S,M,L,XL,XXL,3XL,4XL,5XL',
             'items.*.total_item' => 'required|integer|min:1',
         ]);
 
@@ -107,10 +109,10 @@ class PesananController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'tanggal_pesanan' => 'required|date',
-            'status' => 'required|in:diproses,dikerjakan,selesai',
+            'status' => 'required|in:pending,diproses,dikerjakan,selesai',
             'items' => 'required|array|min:1',
             'items.*.produk_id' => 'required|exists:produks,id',
-            'items.*.ukuran' => 'required|in:S,M,L,XL,XXL',
+            'items.*.ukuran' => 'required|in:S,M,L,XL,XXL,3XL,4XL,5XL',
             'items.*.total_item' => 'required|integer|min:1',
         ]);
 
@@ -154,7 +156,7 @@ class PesananController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $request->validate(['status' => 'required|in:diproses,dikerjakan,selesai']);
+        $request->validate(['status' => 'required|in:pending,diproses,dikerjakan,selesai']);
         $pesanan = Pesanan::findOrFail($id);
         $pesanan->update(['status' => $request->status]);
         ActivityLog::log('Mengubah status pesanan ' . $pesanan->no_pesanan . ' menjadi ' . $request->status, 'Pesanan', $pesanan->id);

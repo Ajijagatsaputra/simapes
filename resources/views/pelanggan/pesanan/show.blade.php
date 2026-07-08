@@ -67,6 +67,12 @@
             text-transform: uppercase;
         }
 
+        .badge-pending {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+        }
+
         .badge-diproses {
             background: #fffbeb;
             color: #d97706;
@@ -415,7 +421,9 @@
                         {{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->isoFormat('DD MMMM YYYY, HH:mm') }} WIB</span>
                 </div>
                 <div>
-                    @if($pesanan->status === 'diproses')
+                    @if($pesanan->status === 'pending')
+                        <span class="status-badge badge-pending">Menunggu Persetujuan</span>
+                    @elseif($pesanan->status === 'diproses')
                         <span class="status-badge badge-diproses">Diproses</span>
                     @elseif($pesanan->status === 'dikerjakan')
                         <span class="status-badge badge-dikerjakan">Dikerjakan</span>

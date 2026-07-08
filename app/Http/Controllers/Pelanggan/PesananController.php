@@ -17,7 +17,7 @@ class PesananController extends Controller
     {
         $user = Auth::user();
         $pesanan = Pesanan::where('user_id', $user->id)
-            ->whereIn('status', ['diproses', 'dikerjakan'])
+            ->whereIn('status', ['pending', 'diproses', 'dikerjakan'])
             ->with('details.produk')
             ->latest()
             ->paginate(10);
@@ -48,7 +48,7 @@ class PesananController extends Controller
                 'no_pesanan' => Pesanan::generateNoPesanan(),
                 'user_id' => Auth::id(),
                 'tanggal_pesanan' => now()->format('Y-m-d'),
-                'status' => 'diproses',
+                'status' => 'pending',
                 'total_harga' => 0,
             ]);
 
@@ -99,7 +99,7 @@ class PesananController extends Controller
     /** Download template Excel */
     public function downloadTemplate()
     {
-        // TODO: Implementasi export Excel (butuh package maatwebsite/excel)
+        //Implementasi export Excel (butuh package maatwebsite/excel)
         return redirect()->back()->with('info', 'Fitur download template Excel segera hadir.');
     }
 
@@ -110,7 +110,7 @@ class PesananController extends Controller
             'file_excel' => 'required|file|mimes:xlsx,xls|max:5120',
         ]);
 
-        // TODO: Implementasi import Excel
+        //Implementasi import Excel
         return redirect()->back()->with('info', 'Fitur upload Excel segera hadir.');
     }
 }
