@@ -292,11 +292,15 @@
                 <div class="product-card" data-name="{{ strtolower($p->nama_produk) }}" data-category="{{ $p->jenis_seragam }}">
                     <div class="product-thumb">
                         <span class="product-badge {{ $badgeClass }}">{{ $p->jenis_seragam }}</span>
-                        <!-- Uniform SVG Icon -->
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-                            <path d="M20.38 3.46L16 6.5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3.5L3.62 3.46a1 1 0 0 0-1.46.9l1.5 14.5a2 2 0 0 0 2 1.8h12.68a2 2 0 0 0 2-1.8l1.5-14.5a1 1 0 0 0-1.46-.9z"/>
-                            <path d="M12 2v7M8 9h8"/>
-                        </svg>
+                        @if($p->gambar)
+                            <img src="{{ asset($p->gambar) }}" alt="{{ $p->nama_produk }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        @else
+                            <!-- Uniform SVG Icon -->
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                                <path d="M20.38 3.46L16 6.5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3.5L3.62 3.46a1 1 0 0 0-1.46.9l1.5 14.5a2 2 0 0 0 2 1.8h12.68a2 2 0 0 0 2-1.8l1.5-14.5a1 1 0 0 0-1.46-.9z"/>
+                                <path d="M12 2v7M8 9h8"/>
+                            </svg>
+                        @endif
                     </div>
                     <div class="product-info">
                         <h3 class="product-name">{{ $p->nama_produk }}</h3>

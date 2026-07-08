@@ -21,11 +21,24 @@ class ProdukController extends Controller
     {
         $validated = $request->validate([
             'nama_produk' => 'required|string|max:255',
-            'jenis_seragam' => 'required|string|max:255',
+            'jenis_seragam' => 'required|in:SD,SMP,SMA/SMK,Umum',
             'harga' => 'required|numeric|min:0',
             'deskripsi' => 'nullable|string',
             'stok' => 'required|integer|min:0',
+            'gambar' => 'nullable|file|mimes:jpeg,png,jpg,webp,svg|max:2048',
         ]);
+
+        if ($request->hasFile('gambar')) {
+            $file = $request->file('gambar');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $destinationPath = public_path('uploads/produk');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+            $file->move($destinationPath, $filename);
+            @chmod($destinationPath . '/' . $filename, 0777);
+            $validated['gambar'] = 'uploads/produk/' . $filename;
+        }
 
         $produk = Produk::create($validated);
         ActivityLog::log('Menambahkan produk baru: ' . $produk->nama_produk, 'Produk', $produk->id);
@@ -38,13 +51,33 @@ class ProdukController extends Controller
     {
         $validated = $request->validate([
             'nama_produk' => 'required|string|max:255',
-            'jenis_seragam' => 'required|string|max:255',
+            'jenis_seragam' => 'required|in:SD,SMP,SMA/SMK,Umum',
             'harga' => 'required|numeric|min:0',
             'deskripsi' => 'nullable|string',
             'stok' => 'required|integer|min:0',
+            'gambar' => 'nullable|file|mimes:jpeg,png,jpg,webp,svg|max:2048',
         ]);
 
         $produk = Produk::findOrFail($id);
+
+        if ($request->hasFile('gambar')) {
+            $file = $request->file('gambar');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $destinationPath = public_path('uploads/produk');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+            $file->move($destinationPath, $filename);
+            @chmod($destinationPath . '/' . $filename, 0777);
+
+            // Hapus gambar lama jika ada
+            if ($produk->gambar && file_exists(public_path($produk->gambar))) {
+                @unlink(public_path($produk->gambar));
+            }
+
+            $validated['gambar'] = 'uploads/produk/' . $filename;
+        }
+
         $produk->update($validated);
         ActivityLog::log('Memperbarui data produk: ' . $produk->nama_produk, 'Produk', $produk->id);
 
@@ -56,6 +89,12 @@ class ProdukController extends Controller
     {
         $produk = Produk::findOrFail($id);
         $name = $produk->nama_produk;
+
+        // Hapus gambar jika ada
+        if ($produk->gambar && file_exists(public_path($produk->gambar))) {
+            @unlink(public_path($produk->gambar));
+        }
+
         $produk->delete();
         ActivityLog::log('Menghapus produk: ' . $name, 'Produk', $id);
 

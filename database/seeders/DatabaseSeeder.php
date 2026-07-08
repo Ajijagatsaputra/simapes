@@ -82,28 +82,28 @@ class DatabaseSeeder extends Seeder
         $produk = [
             [
                 'nama_produk' => 'Baju Seragam OSIS SMA',
-                'jenis_seragam' => 'Atasan',
+                'jenis_seragam' => 'SMA/SMK',
                 'harga' => 85000,
                 'stok' => 120,
                 'deskripsi' => 'Bahan katun premium berlogo OSIS resmi.'
             ],
             [
                 'nama_produk' => 'Celana Seragam Abu-Abu SMA',
-                'jenis_seragam' => 'Bawahan',
+                'jenis_seragam' => 'SMA/SMK',
                 'harga' => 95000,
                 'stok' => 80,
                 'deskripsi' => 'Bahan drill tebal tahan lama.'
             ],
             [
                 'nama_produk' => 'Baju Seragam Pramuka',
-                'jenis_seragam' => 'Atasan',
+                'jenis_seragam' => 'Umum',
                 'harga' => 90000,
                 'stok' => 5, // Status Low Stock
                 'deskripsi' => 'Bahan pramuka standar nasional.'
             ],
             [
                 'nama_produk' => 'Jas Almamater Sekolah',
-                'jenis_seragam' => 'Jas',
+                'jenis_seragam' => 'Umum',
                 'harga' => 150000,
                 'stok' => 0, // Status Empty
                 'deskripsi' => 'Jas almamater puring penuh.'

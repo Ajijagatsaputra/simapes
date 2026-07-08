@@ -342,7 +342,20 @@
                     @forelse($produk as $index => $p)
                     <tr data-search="{{ strtolower($p->nama_produk . ' ' . $p->jenis_seragam) }}">
                         <td class="row-number">{{ $produk->firstItem() + $index }}</td>
-                        <td>{{ $p->nama_produk }}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                @if($p->gambar)
+                                    <img src="{{ asset($p->gambar) }}" alt="{{ $p->nama_produk }}" style="width: 36px; height: 36px; border-radius: 8px; object-fit: cover; border: 1px solid #dde8f8;">
+                                @else
+                                    <div style="width: 36px; height: 36px; border-radius: 8px; background: #f0f4fb; display: flex; align-items: center; justify-content: center; color: #8ca0bf; border: 1px solid #dde8f8;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/>
+                                        </svg>
+                                    </div>
+                                @endif
+                                <span>{{ $p->nama_produk }}</span>
+                            </div>
+                        </td>
                         <td>{{ $p->jenis_seragam }}</td>
                         <td class="harga-cell">Rp {{ number_format($p->harga, 0, ',', '.') }}</td>
                         <td style="max-width:240px;">
@@ -363,9 +376,10 @@
                                         {{ $p->id }},
                                         '{{ addslashes($p->nama_produk) }}',
                                         '{{ addslashes($p->jenis_seragam) }}',
-                                        '{{ $p->harga }}',
+                                        '{{ (int)$p->harga }}',
                                         '{{ addslashes($p->deskripsi ?? '') }}',
-                                        {{ $p->stok }}
+                                        {{ $p->stok }},
+                                        '{{ $p->gambar }}'
                                     )">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                                          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -441,7 +455,7 @@
         <div class="card form-panel" id="formPanel">
             <div class="panel-title" id="formTitle">Tambah Produk</div>
 
-            <form method="POST" id="formProduk" action="{{ route('admin.produk.store') }}">
+            <form method="POST" id="formProduk" action="{{ route('admin.produk.store') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="_method" id="formMethod" value="POST">
 
@@ -453,15 +467,20 @@
 
                 <div class="form-group">
                     <label class="form-label" for="jenisSeragam">Jenis Seragam</label>
-                    <input class="form-input" type="text" id="jenisSeragam" name="jenis_seragam"
-                           placeholder="Cth: Seragam Pramuka" required>
+                    <select class="form-select" id="jenisSeragam" name="jenis_seragam" required>
+                        <option value="" disabled selected>-- Pilih Kategori --</option>
+                        <option value="SD">SD</option>
+                        <option value="SMP">SMP</option>
+                        <option value="SMA/SMK">SMA/SMK</option>
+                        <option value="Umum">Umum</option>
+                    </select>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group" style="margin-bottom:0">
                         <label class="form-label" for="harga">Harga (Rp)</label>
-                        <input class="form-input" type="number" id="harga" name="harga"
-                               placeholder="75000" min="0" required>
+                        <input class="form-input" type="text" id="harga" name="harga"
+                               placeholder="75.000" required>
                     </div>
                     <div class="form-group" style="margin-bottom:0">
                         <label class="form-label" for="stok">Stok</label>
@@ -473,7 +492,17 @@
                 <div class="form-group" style="margin-top:14px">
                     <label class="form-label" for="deskripsi">Deskripsi</label>
                     <textarea class="form-textarea" id="deskripsi" name="deskripsi"
-                              placeholder="Deskripsi produk..."></textarea>
+                               placeholder="Deskripsi produk..."></textarea>
+                </div>
+
+                <div class="form-group" style="margin-top:14px">
+                    <label class="form-label" for="gambarInput">Foto / Gambar Produk</label>
+                    <div id="currentImageContainer" style="display: none; margin-bottom: 8px; align-items: center; gap: 8px;">
+                        <img id="currentImagePreview" src="" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover; border: 1px solid #dde8f8;">
+                        <span style="font-size: 0.72rem; color: #8ca0bf;">Gambar saat ini</span>
+                    </div>
+                    <input class="form-input" type="file" id="gambarInput" name="gambar" accept="image/*">
+                    <small style="color: #8ca0bf; font-size: 0.7rem; display: block; margin-top: 4px;">Format: JPG, PNG, WEBP (Max 2MB)</small>
                 </div>
 
                 <div class="form-actions">
@@ -504,20 +533,40 @@
         document.getElementById('formProduk').action = '{{ route("admin.produk.store") }}';
         document.getElementById('formProduk').reset();
         document.getElementById('btnSimpan').textContent = 'Simpan';
+        document.getElementById('currentImageContainer').style.display = 'none';
+        document.getElementById('currentImagePreview').src = '';
         document.getElementById('namaProduk').focus();
     }
 
     // ── Edit ─────────────────────────────────────────────────────────
-    function editProduk(id, nama, jenis, harga, deskripsi, stok) {
+    function formatRibuan(value) {
+        let numberString = value.toString().replace(/[^0-9]/g, '');
+        if (numberString === '') return '';
+        return parseInt(numberString, 10).toLocaleString('id-ID');
+    }
+
+    // ── Edit ─────────────────────────────────────────────────────────
+    function editProduk(id, nama, jenis, harga, deskripsi, stok, gambarUrl) {
         document.getElementById('formTitle').textContent = 'Edit Produk';
         document.getElementById('formMethod').value = 'PUT';
         document.getElementById('formProduk').action = '/admin/produk/' + id;
         document.getElementById('namaProduk').value   = nama;
         document.getElementById('jenisSeragam').value = jenis;
-        document.getElementById('harga').value        = harga;
+        document.getElementById('harga').value        = formatRibuan(harga);
         document.getElementById('stok').value         = stok;
         document.getElementById('deskripsi').value    = deskripsi;
         document.getElementById('btnSimpan').textContent = 'Update';
+
+        const currentImgContainer = document.getElementById('currentImageContainer');
+        const currentImgPreview = document.getElementById('currentImagePreview');
+        if (gambarUrl && gambarUrl !== '') {
+            currentImgPreview.src = '/' + gambarUrl;
+            currentImgContainer.style.display = 'flex';
+        } else {
+            currentImgPreview.src = '';
+            currentImgContainer.style.display = 'none';
+        }
+
         document.getElementById('formPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
         document.getElementById('namaProduk').focus();
     }
@@ -529,6 +578,38 @@
         document.getElementById('formProduk').reset();
         document.getElementById('formProduk').action = '{{ route("admin.produk.store") }}';
         document.getElementById('btnSimpan').textContent = 'Simpan';
+        document.getElementById('currentImageContainer').style.display = 'none';
+        document.getElementById('currentImagePreview').src = '';
+    }
+
+    // ── Event Listeners formatting ──────────────────────────────────
+    const hargaInput = document.getElementById('harga');
+    if (hargaInput) {
+        hargaInput.addEventListener('input', function(e) {
+            let cursorPosition = this.selectionStart;
+            let originalLength = this.value.length;
+            
+            let formatted = formatRibuan(this.value);
+            this.value = formatted;
+            
+            let newLength = formatted.length;
+            cursorPosition = cursorPosition + (newLength - originalLength);
+            this.setSelectionRange(cursorPosition, cursorPosition);
+        });
+
+        // Format jika ada nilai bawaan
+        if (hargaInput.value) {
+            hargaInput.value = formatRibuan(hargaInput.value);
+        }
+    }
+
+    const formProduk = document.getElementById('formProduk');
+    if (formProduk) {
+        formProduk.addEventListener('submit', function(e) {
+            if (hargaInput) {
+                hargaInput.value = hargaInput.value.replace(/\./g, '');
+            }
+        });
     }
 </script>
 @endpush
