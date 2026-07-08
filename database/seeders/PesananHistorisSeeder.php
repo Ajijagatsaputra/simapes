@@ -25,11 +25,10 @@ class PesananHistorisSeeder extends Seeder
             return;
         }
 
-        // Hapus data pesanan & detail pesanan yang lama agar bersih saat seed ulang
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        Pesanan::truncate();
-        DB::table('detail_pesanans')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        // Jangan timpa atau jalankan seeder jika sudah ada data pesanan real di database
+        if (Pesanan::count() > 0) {
+            return;
+        }
 
         $mulaiBulan = Carbon::now()->subMonths(36);
         $tahunMulai = $mulaiBulan->year;
