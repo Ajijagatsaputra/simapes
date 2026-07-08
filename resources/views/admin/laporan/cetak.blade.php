@@ -143,40 +143,66 @@
         <center>
             <h1 class="title">Laporan Transaksi Pemesanan</h1>
             <div class="period">
-                Periode: {{ \Carbon\Carbon::parse($startDate)->isoFormat('DD MMMM YYYY') }} s/d
-                {{ \Carbon\Carbon::parse($endDate)->isoFormat('DD MMMM YYYY') }}
-                &nbsp;|&nbsp; Status: {{ ucfirst($status) }}
+                Periode: {{ \Carbon\Carbon::parse($startDate)->isoFormat('DD MMMM YYYY') }} s/d {{ \Carbon\Carbon::parse($endDate)->isoFormat('DD MMMM YYYY') }}
+                <br>
+                Sekolah: {{ $sekolahSelected === 'semua' ? 'Semua Sekolah' : $sekolahSelected }} |
+                Progress: {{ $progressSelected === 'semua' ? 'Semua Status' : ucfirst(str_replace('_', ' ', $progressSelected)) }} |
+                Keuangan: {{ $keuanganSelected === 'semua' ? 'Semua Status' : ($keuanganSelected === 'belum_lunas' ? 'Memiliki Sisa Tagihan' : 'Lunas') }}
             </div>
         </center>
 
         <table>
             <thead>
                 <tr>
-                    <th style="width: 5%; text-align: center;">No</th>
+                    <th style="width: 4%; text-align: center;">No</th>
                     <th>No. Pesanan</th>
                     <th>Pelanggan</th>
                     <th>Nama Sekolah / Instansi</th>
-                    <th>Tanggal Pesanan</th>
+                    <th style="text-align: center;">Tanggal</th>
                     <th style="text-align: center;">Status</th>
-                    <th style="text-align: right;">Total Harga</th>
+                    <th style="text-align: right;">Total Tagihan</th>
+                    <th style="text-align: right;">Terbayar</th>
+                    <th style="text-align: right;">Sisa Tagihan</th>
+                    <th style="text-align: center;">Keuangan</th>
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $sumHarga = 0;
+                    $sumTerbayar = 0;
+                    $sumSisa = 0;
+                @endphp
                 @forelse($pesanan as $index => $p)
+                    @php
+                        $sumHarga += $p->total_harga;
+                        $sumTerbayar += $p->total_terbayar ?? 0;
+                        $sumSisa += $p->sisa_tagihan ?? 0;
+                        
+                        $statusKeuangan = 'Belum Bayar';
+                        if (($p->total_terbayar ?? 0) > 0) {
+                            if (($p->sisa_tagihan ?? 0) <= 0) {
+                                $statusKeuangan = 'LUNAS';
+                            } else {
+                                $statusKeuangan = 'DP';
+                            }
+                        }
+                    @endphp
                     <tr>
                         <td style="text-align: center;">{{ $index + 1 }}</td>
                         <td style="font-weight: 700;">{{ $p->no_pesanan }}</td>
                         <td style="font-weight: 600;">{{ $p->user->name }}</td>
                         <td>{{ $p->user->nama_sekolah ?? '-' }}</td>
-                        <td>{{ $p->tanggal_pesanan ? $p->tanggal_pesanan->isoFormat('DD MMMM YYYY') : '-' }}</td>
+                        <td style="text-align: center;">{{ $p->tanggal_pesanan ? $p->tanggal_pesanan->format('d-m-Y') : '-' }}</td>
                         <td style="text-align: center; font-weight: 600;">{{ strtoupper($p->status) }}</td>
-                        <td style="text-align: right; font-weight: 700;">Rp
-                            {{ number_format($p->total_harga, 0, ',', '.') }}</td>
+                        <td style="text-align: right; font-weight: 700;">Rp {{ number_format($p->total_harga, 0, ',', '.') }}</td>
+                        <td style="text-align: right; font-weight: 600; color: #34c472;">Rp {{ number_format($p->total_terbayar ?? 0, 0, ',', '.') }}</td>
+                        <td style="text-align: right; font-weight: 700; color: {{ ($p->sisa_tagihan ?? 0) > 0 ? '#ef4444' : '#34c472' }};">Rp {{ number_format($p->sisa_tagihan ?? 0, 0, ',', '.') }}</td>
+                        <td style="text-align: center; font-weight: 600;">{{ $statusKeuangan }}</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align: center; color: #8ca0bf; padding: 20px;">
-                            Tidak ada transaksi pesanan dalam periode ini.
+                        <td colspan="10" style="text-align: center; color: #8ca0bf; padding: 20px;">
+                            Tidak ada transaksi pesanan yang sesuai dengan kriteria.
                         </td>
                     </tr>
                 @endforelse
@@ -185,8 +211,9 @@
 
         <div class="summary-box">
             <div>Total Transaksi: <span style="color: #4A90D9; font-size: 16px;">{{ $pesanan->count() }}</span></div>
-            <div>Total Pendapatan: <span style="color: #34c472; font-size: 16px;">Rp
-                    {{ number_format($totalPendapatan, 0, ',', '.') }}</span></div>
+            <div>Total Tagihan: <span style="color: #1a2b4a; font-size: 16px;">Rp {{ number_format($sumHarga, 0, ',', '.') }}</span></div>
+            <div>Total Terbayar: <span style="color: #34c472; font-size: 16px;">Rp {{ number_format($sumTerbayar, 0, ',', '.') }}</span></div>
+            <div>Total Sisa Tagihan: <span style="color: #ef4444; font-size: 16px;">Rp {{ number_format($sumSisa, 0, ',', '.') }}</span></div>
         </div>
 
         <div class="footer">

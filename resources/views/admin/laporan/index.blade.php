@@ -203,6 +203,11 @@
             text-transform: uppercase;
         }
 
+        .badge-status.pending {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
         .badge-status.diproses {
             background: #fff3e6;
             color: #f5a54a;
@@ -216,6 +221,11 @@
         .badge-status.selesai {
             background: #e8f8ee;
             color: #34c472;
+        }
+
+        .badge-status.batal {
+            background: #fdf2f2;
+            color: #ef4444;
         }
 
         /* ── Summary Cards ── */
@@ -334,12 +344,31 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="status">Status Pesanan</label>
-                    <select class="form-select" name="status" id="status">
-                        <option value="semua" {{ $status == 'semua' ? 'selected' : '' }}>Semua Status</option>
-                        <option value="diproses" {{ $status == 'diproses' ? 'selected' : '' }}>Diproses</option>
-                        <option value="dikerjakan" {{ $status == 'dikerjakan' ? 'selected' : '' }}>Dikerjakan</option>
-                        <option value="selesai" {{ $status == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                    <label class="form-label" for="sekolah">Per Sekolah / Instansi</label>
+                    <select class="form-select" name="sekolah" id="sekolah">
+                        <option value="semua" {{ $sekolahSelected == 'semua' ? 'selected' : '' }}>Semua Sekolah</option>
+                        @foreach($listSekolah as $sch)
+                            <option value="{{ $sch }}" {{ $sekolahSelected == $sch ? 'selected' : '' }}>{{ $sch }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="progress">Progress Kerja</label>
+                    <select class="form-select" name="progress" id="progress">
+                        <option value="semua" {{ $progressSelected == 'semua' ? 'selected' : '' }}>Semua Progress</option>
+                        <option value="sedang_berjalan" {{ $progressSelected == 'sedang_berjalan' ? 'selected' : '' }}>Sedang Berjalan / Proses</option>
+                        <option value="selesai" {{ $progressSelected == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                        <option value="batal" {{ $progressSelected == 'batal' ? 'selected' : '' }}>Batal</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="keuangan">Status Keuangan</label>
+                    <select class="form-select" name="keuangan" id="keuangan">
+                        <option value="semua" {{ $keuanganSelected == 'semua' ? 'selected' : '' }}>Semua Keuangan</option>
+                        <option value="belum_lunas" {{ $keuanganSelected == 'belum_lunas' ? 'selected' : '' }}>Sisa Tagihan (Belum Lunas)</option>
+                        <option value="lunas" {{ $keuanganSelected == 'lunas' ? 'selected' : '' }}>Lunas</option>
                     </select>
                 </div>
 
@@ -352,8 +381,8 @@
                 </button>
             </form>
 
-            <a href="{{ route('admin.laporan.cetak', ['start_date' => $startDate, 'end_date' => $endDate, 'status' => $status]) }}"
-                target="_blank" class="btn-print-rep">
+            <a href="{{ route('admin.laporan.cetak', ['start_date' => $startDate, 'end_date' => $endDate, 'sekolah' => $sekolahSelected, 'progress' => $progressSelected, 'keuangan' => $keuanganSelected]) }}"
+                target="_blank" class="btn-print-rep" style="margin-bottom: 10px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                     stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 6 2 18 2 18 9" />
@@ -361,6 +390,19 @@
                     <rect x="6" y="14" width="12" height="8" />
                 </svg>
                 Cetak Laporan PDF
+            </a>
+
+            <a href="{{ route('admin.laporan.excel', ['start_date' => $startDate, 'end_date' => $endDate, 'sekolah' => $sekolahSelected, 'progress' => $progressSelected, 'keuangan' => $keuanganSelected]) }}"
+                class="btn-print-rep" style="background: #10b981;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Ekspor Laporan Excel
             </a>
         </div>
 
@@ -387,8 +429,10 @@
                             <th>No. Pesanan</th>
                             <th>Pelanggan</th>
                             <th>Tanggal</th>
-                            <th>Status</th>
-                            <th style="text-align: right;">Total Harga</th>
+                            <th style="text-align: center;">Status</th>
+                            <th style="text-align: right;">Total Tagihan</th>
+                            <th style="text-align: right;">Terbayar</th>
+                            <th style="text-align: right;">Sisa Tagihan</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -400,16 +444,20 @@
                                     <div style="font-size: 0.72rem; color: #8ca0bf;">{{ $p->user->nama_sekolah ?? '-' }}</div>
                                 </td>
                                 <td>{{ $p->tanggal_pesanan ? $p->tanggal_pesanan->isoFormat('DD MMM YYYY') : '-' }}</td>
-                                <td>
+                                <td style="text-align: center;">
                                     <span class="badge-status {{ $p->status }}">{{ $p->status }}</span>
                                 </td>
                                 <td style="text-align: right; font-weight: 700;">Rp
                                     {{ number_format($p->total_harga, 0, ',', '.') }}</td>
+                                <td style="text-align: right; font-weight: 600; color: #10b981;">Rp
+                                    {{ number_format($p->total_terbayar ?? 0, 0, ',', '.') }}</td>
+                                <td style="text-align: right; font-weight: 700; color: {{ ($p->sisa_tagihan ?? 0) > 0 ? '#ef4444' : '#10b981' }};">Rp
+                                    {{ number_format($p->sisa_tagihan ?? 0, 0, ',', '.') }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" style="text-align: center; color: #8ca0bf; padding: 30px;">
-                                    Tidak ada transaksi pesanan dalam periode dan filter status ini.
+                                <td colspan="7" style="text-align: center; color: #8ca0bf; padding: 30px;">
+                                    Tidak ada transaksi pesanan dalam periode dan filter ini.
                                 </td>
                             </tr>
                         @endforelse
