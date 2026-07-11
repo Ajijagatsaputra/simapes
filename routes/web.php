@@ -91,9 +91,10 @@ Route::middleware(['auth', 'role:pelanggan'])
         Route::get('/pesanan', [Pelanggan\PesananController::class, 'index'])->name('pesanan.index');
         Route::get('/pesanan/buat', [Pelanggan\PesananController::class, 'create'])->name('pesanan.create');
         Route::post('/pesanan', [Pelanggan\PesananController::class, 'store'])->name('pesanan.store');
-        Route::get('/pesanan/{id}', [Pelanggan\PesananController::class, 'show'])->name('pesanan.show');
+        // PENTING: route statis harus sebelum wildcard {id}
         Route::get('/pesanan/template-excel', [Pelanggan\PesananController::class, 'downloadTemplate'])->name('pesanan.template');
         Route::post('/pesanan/upload-excel', [Pelanggan\PesananController::class, 'uploadExcel'])->name('pesanan.upload');
+        Route::get('/pesanan/{id}', [Pelanggan\PesananController::class, 'show'])->name('pesanan.show');
 
         // Riwayat Pesanan
         Route::get('/riwayat', [Pelanggan\RiwayatController::class, 'index'])->name('riwayat');

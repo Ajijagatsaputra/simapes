@@ -96,21 +96,193 @@ class PesananController extends Controller
         return view('pelanggan.pesanan.show', compact('pesanan'));
     }
 
-    /** Download template Excel */
+    /** Download template CSV (compatible dengan Excel) */
     public function downloadTemplate()
     {
-        //Implementasi export Excel (butuh package maatwebsite/excel)
-        return redirect()->back()->with('info', 'Fitur download template Excel segera hadir.');
+        // Ambil daftar produk aktif untuk dimasukkan ke kolom info di template
+        $produkList = Produk::orderBy('nama_produk')->get(['id', 'nama_produk', 'harga']);
+
+        // Build CSV content
+        $rows = [];
+
+        // Baris 1: Judul / instruksi
+        $rows[] = ['TEMPLATE PEMESANAN MASSAL SERAGAM - SIMAPES'];
+        $rows[] = ['Petunjuk: Isi kolom Nama_Produk, Ukuran, dan Jumlah. Jangan ubah header baris 5.'];
+        $rows[] = ['Ukuran yang valid: S, M, L, XL, XXL, 3XL, 4XL, 5XL'];
+        $rows[] = ['']; // baris kosong
+
+        // Baris 5: Header data
+        $rows[] = ['No', 'Nama_Produk', 'Ukuran', 'Jumlah'];
+
+        // Contoh data (3 baris)
+        $contoh = [
+            ['S', 30],
+            ['M', 50],
+            ['XL', 20],
+        ];
+        $idx = 1;
+        foreach ($produkList->take(3) as $i => $p) {
+            $rows[] = [$idx++, $p->nama_produk, $contoh[$i][0], $contoh[$i][1]];
+        }
+
+        // Jika produk < 3, isi sisa baris contoh dengan kosong
+        for ($j = $produkList->count(); $j < 3; $j++) {
+            $rows[] = [$idx++, 'Nama Seragam (contoh)', $contoh[$j][0], $contoh[$j][1]];
+        }
+
+        $rows[] = ['']; // baris kosong
+        $rows[] = ['--- Daftar Produk Tersedia ---'];
+        $rows[] = ['ID', 'Nama Produk', 'Harga Satuan (Rp)'];
+        foreach ($produkList as $p) {
+            $rows[] = [$p->id, $p->nama_produk, $p->harga];
+        }
+
+        // Output sebagai file CSV
+        $filename = 'template_pesanan_massal_simapes.csv';
+        $handle = fopen('php://temp', 'r+');
+
+        // BOM untuk Excel agar baca UTF-8 dengan benar
+        fwrite($handle, "\xEF\xBB\xBF");
+
+        foreach ($rows as $row) {
+            fputcsv($handle, $row);
+        }
+
+        rewind($handle);
+        $content = stream_get_contents($handle);
+        fclose($handle);
+
+        return response($content, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+        ]);
     }
 
-    /** Upload file Excel pesanan */
+    /** Upload & parse file CSV/Excel pesanan massal — kembalikan JSON ke frontend */
     public function uploadExcel(Request $request)
     {
         $request->validate([
-            'file_excel' => 'required|file|mimes:xlsx,xls|max:5120',
+            'file_excel' => 'required|file|mimes:csv,txt,xlsx,xls|max:5120',
         ]);
 
-        //Implementasi import Excel
-        return redirect()->back()->with('info', 'Fitur upload Excel segera hadir.');
+        $file = $request->file('file_excel');
+        $produkList = Produk::orderBy('nama_produk')->get(['id', 'nama_produk', 'harga']);
+
+        // Buat map nama produk (lowercase) → id & harga untuk pencocokan
+        $produkMap = [];
+        foreach ($produkList as $p) {
+            $produkMap[mb_strtolower(trim($p->nama_produk))] = [
+                'id' => $p->id,
+                'nama' => $p->nama_produk,
+                'harga' => $p->harga,
+            ];
+        }
+
+        $ukuranValid = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
+
+        $items = [];
+        $errors = [];
+        $rowNum = 0;
+        $dataStarted = false;
+
+        // Buka file sebagai CSV (Excel CSV kompatibel)
+        $handle = fopen($file->getRealPath(), 'r');
+
+        // Hapus BOM jika ada
+        $bom = fread($handle, 3);
+        if ($bom !== "\xEF\xBB\xBF") {
+            rewind($handle);
+        }
+
+        while (($cols = fgetcsv($handle, 1000, ',')) !== false) {
+            $rowNum++;
+
+            // Skip baris kosong
+            if (empty(array_filter($cols, fn($c) => trim($c) !== ''))) {
+                continue;
+            }
+
+            $first = mb_strtolower(trim($cols[0] ?? ''));
+
+            // Deteksi baris header "No, Nama_Produk, Ukuran, Jumlah"
+            if (!$dataStarted && in_array($first, ['no', 'no.'])) {
+                $dataStarted = true;
+                continue;
+            }
+
+            // Skip baris info/instruksi sebelum header ditemukan
+            if (!$dataStarted) {
+                continue;
+            }
+
+            // Skip baris info produk tersedia (setelah data)
+            if (str_starts_with($first, '---') || $first === 'id') {
+                break;
+            }
+
+            // Parse baris data
+            $namaProduk = trim($cols[1] ?? '');
+            $ukuran = strtoupper(trim($cols[2] ?? ''));
+            $jumlah = (int) trim($cols[3] ?? 0);
+
+            if ($namaProduk === '')
+                continue;
+
+            // Cari produk berdasarkan nama (case-insensitive)
+            $key = mb_strtolower($namaProduk);
+            if (!isset($produkMap[$key])) {
+                // Coba partial match
+                $found = null;
+                foreach ($produkMap as $mapKey => $mapVal) {
+                    if (str_contains($mapKey, $key) || str_contains($key, $mapKey)) {
+                        $found = $mapVal;
+                        break;
+                    }
+                }
+                if (!$found) {
+                    $errors[] = "Baris {$rowNum}: Produk \"{$namaProduk}\" tidak ditemukan di sistem.";
+                    continue;
+                }
+                $produkData = $found;
+            } else {
+                $produkData = $produkMap[$key];
+            }
+
+            if (!in_array($ukuran, $ukuranValid)) {
+                $errors[] = "Baris {$rowNum}: Ukuran \"{$ukuran}\" tidak valid (gunakan: S, M, L, XL, XXL, 3XL, 4XL, 5XL).";
+                continue;
+            }
+
+            if ($jumlah < 1) {
+                $errors[] = "Baris {$rowNum}: Jumlah harus minimal 1.";
+                continue;
+            }
+
+            $items[] = [
+                'produk_id' => $produkData['id'],
+                'nama' => $produkData['nama'],
+                'harga' => $produkData['harga'],
+                'ukuran' => $ukuran,
+                'jumlah' => $jumlah,
+                'subtotal' => $produkData['harga'] * $jumlah,
+            ];
+        }
+
+        fclose($handle);
+
+        if (empty($items) && empty($errors)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada data pesanan yang ditemukan dalam file. Pastikan format sesuai template.',
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'items' => $items,
+            'errors' => $errors,
+            'message' => count($items) . ' baris berhasil dibaca' . (count($errors) ? ', ' . count($errors) . ' baris dilewati.' : '.'),
+        ]);
     }
 }

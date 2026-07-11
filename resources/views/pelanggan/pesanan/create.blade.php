@@ -180,7 +180,6 @@
             border-radius: 16px;
             padding: 20px;
             box-shadow: 0 4px 16px rgba(26, 43, 74, .03);
-            text-align: center;
         }
 
         .btn-excel {
@@ -195,13 +194,146 @@
             font-size: .8rem;
             font-weight: 600;
             text-decoration: none;
-            margin-top: 12px;
             transition: all 0.2s;
         }
 
         .btn-excel:hover {
             background: #e8f0fd;
             border-style: solid;
+        }
+
+        /* Upload Drop Zone */
+        .drop-zone {
+            margin-top: 14px;
+            border: 2px dashed #c5d8f5;
+            border-radius: 12px;
+            padding: 18px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f9fbff;
+            position: relative;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #4A90D9;
+            background: #eaf2fd;
+        }
+
+        .drop-zone input[type=file] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .drop-zone-icon {
+            font-size: 1.6rem;
+        }
+
+        .drop-zone p {
+            font-size: .75rem;
+            color: #6b7e9f;
+            margin: 4px 0 0;
+        }
+
+        .drop-zone strong {
+            font-size: .78rem;
+            color: #4A90D9;
+        }
+
+        /* Upload status */
+        .excel-status {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: .78rem;
+            line-height: 1.5;
+        }
+
+        .excel-status.success {
+            background: #ecfdf5;
+            border: 1px solid #6ee7b7;
+            color: #065f46;
+            display: block;
+        }
+
+        .excel-status.error {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+            display: block;
+        }
+
+        .excel-status.warning {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            display: block;
+        }
+
+        .btn-upload-excel {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #217346 0%, #1a9c55 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: .82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+
+        .btn-upload-excel:hover {
+            opacity: .88;
+            transform: translateY(-1px);
+        }
+
+        .btn-upload-excel:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, .4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .excel-preview-list {
+            margin-top: 8px;
+            text-align: left;
+            font-size: .74rem;
+            color: #374151;
+            max-height: 100px;
+            overflow-y: auto;
+            padding: 6px 10px;
+            background: #f0fdf4;
+            border-radius: 8px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .excel-preview-list li {
+            margin-bottom: 2px;
         }
     </style>
 @endpush
@@ -303,18 +435,47 @@
 
                 {{-- Excel Import/Export Card --}}
                 <div class="excel-card">
-                    <h3 style="font-size: .92rem; font-weight: 700; color: #1a2b4a;">Pemesanan Massal via Excel</h3>
-                    <p style="font-size: .75rem; color: #6b7e9f; margin-top: 4px;">Punya pesanan dalam jumlah banyak?
-                        Gunakan template Excel kami</p>
-                    <a href="{{ route('pelanggan.pesanan.template') }}" class="btn-excel">
+                    <h3
+                        style="font-size: .92rem; font-weight: 700; color: #1a2b4a; display:flex; align-items:center; gap:6px;">
+                        <span style="font-size:1.1rem;">📊</span> Pemesanan Massal via Excel
+                    </h3>
+                    <p style="font-size: .75rem; color: #6b7e9f; margin-top: 4px; margin-bottom: 12px;">Upload file
+                        CSV/Excel pesanan sekolah — sistem akan otomatis mengisi daftar pesanan.</p>
+
+                    {{-- Step 1: Download Template --}}
+                    <div
+                        style="margin-bottom:10px; font-size:.72rem; font-weight:700; color:#8ca0bf; text-transform:uppercase; letter-spacing:.5px;">
+                        Step 1 — Unduh Template</div>
+                    <a href="{{ route('pelanggan.pesanan.template') }}" class="btn-excel" id="btnUnduhTemplate">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                             stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
-                        Unduh Template
+                        Unduh Template CSV
                     </a>
+                    <p style="font-size:.7rem; color:#94a3b8; margin-top:5px;">Isi template, lalu upload kembali di bawah.
+                    </p>
+
+                    {{-- Step 2: Upload --}}
+                    <div
+                        style="margin-top:14px; margin-bottom:6px; font-size:.72rem; font-weight:700; color:#8ca0bf; text-transform:uppercase; letter-spacing:.5px;">
+                        Step 2 — Upload File</div>
+
+                    <div class="drop-zone" id="dropZone">
+                        <input type="file" id="excelFileInput" accept=".csv,.xlsx,.xls">
+                        <div class="drop-zone-icon">📁</div>
+                        <strong id="dropZoneLabel">Klik atau seret file ke sini</strong>
+                        <p>.csv, .xlsx, .xls — maks 5 MB</p>
+                    </div>
+
+                    <div class="excel-status" id="excelStatus"></div>
+
+                    <button type="button" class="btn-upload-excel" id="btnUploadExcel" disabled>
+                        <span class="spinner" id="uploadSpinner" style="display:none;"></span>
+                        <span id="btnUploadText">Proses & Masukkan ke Pesanan</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -323,12 +484,143 @@
     <script>
         const produkList = @json($produk);
         const preselectedProdukId = @json(request()->query('produk_id'));
+        const uploadUrl = '{{ route('pelanggan.pesanan.upload') }}';
+        const csrfToken = '{{ csrf_token() }}';
         let rowCount = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Add initial row
             addRow(preselectedProdukId);
+            initExcelUpload();
         });
+
+        /* ═══════════════════════════════════════════════
+           EXCEL UPLOAD LOGIC
+        ═══════════════════════════════════════════════ */
+        function initExcelUpload() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('excelFileInput');
+            const btnUpload = document.getElementById('btnUploadExcel');
+            const statusBox = document.getElementById('excelStatus');
+            const labelEl = document.getElementById('dropZoneLabel');
+            const spinner = document.getElementById('uploadSpinner');
+            const btnText = document.getElementById('btnUploadText');
+
+            let selectedFile = null;
+
+            // Drag & drop visual feedback
+            dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+            dropZone.addEventListener('drop', e => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                const f = e.dataTransfer.files[0];
+                if (f) handleFileSelected(f);
+            });
+
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files[0]) handleFileSelected(fileInput.files[0]);
+            });
+
+            function handleFileSelected(file) {
+                selectedFile = file;
+                labelEl.textContent = '📄 ' + file.name;
+                btnUpload.disabled = false;
+                clearStatus();
+            }
+
+            btnUpload.addEventListener('click', async () => {
+                if (!selectedFile) return;
+
+                // Loading state
+                btnUpload.disabled = true;
+                spinner.style.display = 'inline-block';
+                btnText.textContent = 'Memproses...';
+                clearStatus();
+
+                try {
+                    const formData = new FormData();
+                    formData.append('file_excel', selectedFile);
+                    formData.append('_token', csrfToken);
+
+                    const res = await fetch(uploadUrl, {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+
+                    const json = await res.json();
+
+                    if (!res.ok || !json.success) {
+                        showExcelStatus('error', '❌ ' + (json.message || 'Terjadi kesalahan saat memproses file.'));
+                        return;
+                    }
+
+                    // Inject rows ke tabel
+                    if (json.items && json.items.length > 0) {
+                        // Hapus baris pertama jika kosong (produk belum dipilih)
+                        const firstRow = document.querySelector('#itemsBody tr');
+                        if (firstRow) {
+                            const firstSelect = firstRow.querySelector('select[name*="[produk_id]"]');
+                            if (firstSelect && firstSelect.value === '') {
+                                firstRow.remove();
+                            }
+                        }
+
+                        json.items.forEach(item => {
+                            addRowFromExcel(item.produk_id, item.ukuran, item.jumlah);
+                        });
+
+                        let msg = '✅ ' + json.message;
+                        let cls = 'success';
+
+                        if (json.errors && json.errors.length > 0) {
+                            cls = 'warning';
+                            msg += '<br><strong>Baris yang dilewati:</strong><ul style="margin:4px 0 0 16px;">';
+                            json.errors.forEach(e => { msg += `<li>${e}</li>`; });
+                            msg += '</ul>';
+                        }
+                        showExcelStatus(cls, msg);
+                    } else {
+                        showExcelStatus('error', '❌ Tidak ada baris valid yang berhasil diproses.<br>' +
+                            (json.errors ? json.errors.join('<br>') : ''));
+                    }
+
+                } catch (err) {
+                    showExcelStatus('error', '❌ Gagal menghubungi server: ' + err.message);
+                } finally {
+                    spinner.style.display = 'none';
+                    btnText.textContent = 'Proses & Masukkan ke Pesanan';
+                    btnUpload.disabled = false;
+                }
+            });
+
+            function showExcelStatus(type, html) {
+                statusBox.className = 'excel-status ' + type;
+                statusBox.innerHTML = html;
+            }
+            function clearStatus() {
+                statusBox.className = 'excel-status';
+                statusBox.innerHTML = '';
+            }
+        }
+
+        /** Tambah row ke tabel dari data Excel */
+        function addRowFromExcel(produkId, ukuran, jumlah) {
+            addRow(produkId);
+            const lastRow = document.getElementById(`row-${rowCount}`);
+            if (!lastRow) return;
+
+            // Set ukuran
+            const ukuranSelect = lastRow.querySelector(`select[name="items[${rowCount}][ukuran]"]`);
+            if (ukuranSelect) ukuranSelect.value = ukuran;
+
+            // Set jumlah
+            const jumlahInput = lastRow.querySelector(`input[name="items[${rowCount}][total_item]"]`);
+            if (jumlahInput) {
+                jumlahInput.value = jumlah;
+                calculateRowSubtotal(rowCount);
+            }
+        }
 
         function addRow(selectedId = null) {
             rowCount++;
@@ -344,40 +636,40 @@
             });
 
             row.innerHTML = `
-                                        <td>
-                                            <select name="items[${rowCount}][produk_id]" class="form-select" onchange="calculateRowSubtotal(${rowCount})" required>
-                                                ${options}
-                                            </select>
+                                            <td>
+                                                <select name="items[${rowCount}][produk_id]" class="form-select" onchange="calculateRowSubtotal(${rowCount})" required>
+                                                    ${options}
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select name="items[${rowCount}][ukuran]" class="form-select" style="text-align: center;" required>
+                                                    <option value="" disabled>-- Ukuran --</option>
+                                                    <option value="S">S</option>
+                                                    <option value="M" selected>M</option>
+                                                    <option value="L">L</option>
+                                                    <option value="XL">XL</option>
+                                                    <option value="XXL">XXL</option>
+                                                    <option value="3XL">3XL</option>
+                                                    <option value="4XL">4XL</option>
+                                                    <option value="5XL">5XL</option>
+                                                </select>
+                                            </td>
+                                        <td style="text-align: center; position: relative; padding-bottom: 22px;">
+                                            <input type="number" name="items[${rowCount}][total_item]" class="form-input" value="1" min="1" oninput="calculateRowSubtotal(${rowCount})" required style="text-align: center; max-width: 80px; margin: 0 auto; display: block;">
+                                            <span style="font-size: .65rem; color: #8ca0bf; position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; white-space: nowrap;">Agregat semua kelas</span>
                                         </td>
-                                        <td>
-                                            <select name="items[${rowCount}][ukuran]" class="form-select" style="text-align: center;" required>
-                                                <option value="" disabled>-- Ukuran --</option>
-                                                <option value="S">S</option>
-                                                <option value="M" selected>M</option>
-                                                <option value="L">L</option>
-                                                <option value="XL">XL</option>
-                                                <option value="XXL">XXL</option>
-                                                <option value="3XL">3XL</option>
-                                                <option value="4XL">4XL</option>
-                                                <option value="5XL">5XL</option>
-                                            </select>
-                                        </td>
-                                    <td style="text-align: center; position: relative; padding-bottom: 22px;">
-                                        <input type="number" name="items[${rowCount}][total_item]" class="form-input" value="1" min="1" oninput="calculateRowSubtotal(${rowCount})" required style="text-align: center; max-width: 80px; margin: 0 auto; display: block;">
-                                        <span style="font-size: .65rem; color: #8ca0bf; position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; white-space: nowrap;">Agregat semua kelas</span>
-                                    </td>
-                                        <td style="text-align: right; font-weight: 700; color: #1a2b4a;" id="subtotal-${rowCount}">
-                                            Rp 0
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <button type="button" class="btn-remove-row" onclick="removeRow(${rowCount})" title="Hapus item">
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                                </svg>
-                                            </button>
-                                        </td>
-                                    `;
+                                            <td style="text-align: right; font-weight: 700; color: #1a2b4a;" id="subtotal-${rowCount}">
+                                                Rp 0
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <button type="button" class="btn-remove-row" onclick="removeRow(${rowCount})" title="Hapus item">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                    </svg>
+                                                </button>
+                                            </td>
+                                        `;
 
             body.appendChild(row);
             calculateRowSubtotal(rowCount);

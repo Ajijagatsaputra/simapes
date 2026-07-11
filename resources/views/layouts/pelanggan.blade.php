@@ -240,6 +240,312 @@
             padding: 32px 24px 60px;
         }
 
+        /* ── Footer ── */
+        .site-footer {
+            background: linear-gradient(135deg, #0f1f3d 0%, #1a2b4a 50%, #1e3a5f 100%);
+            color: #c8d9f0;
+            margin-top: auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .site-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4A90D9 0%, #6fb3f5 50%, #4A90D9 100%);
+        }
+
+        .site-footer::after {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(74, 144, 217, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .footer-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 24px 36px;
+            display: grid;
+            grid-template-columns: 1.8fr 1fr 1fr 1.4fr;
+            gap: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Brand Column */
+        .footer-brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            text-decoration: none;
+        }
+
+        .footer-brand-logo img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+            opacity: 0.9;
+        }
+
+        .footer-brand-name {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.3px;
+        }
+
+        .footer-brand-name small {
+            display: block;
+            font-size: .68rem;
+            font-weight: 500;
+            color: #4A90D9;
+            letter-spacing: .5px;
+            line-height: 1;
+        }
+
+        .footer-tagline {
+            font-size: .82rem;
+            line-height: 1.7;
+            color: #8ca0bf;
+            margin-bottom: 20px;
+            max-width: 260px;
+        }
+
+        .footer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(74, 144, 217, 0.15);
+            border: 1px solid rgba(74, 144, 217, 0.3);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: .72rem;
+            font-weight: 600;
+            color: #4A90D9;
+        }
+
+        /* Footer Columns */
+        .footer-col-title {
+            font-size: .78rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-col-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 24px;
+            height: 2px;
+            background: #4A90D9;
+            border-radius: 2px;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .footer-links a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: .82rem;
+            color: #8ca0bf;
+            text-decoration: none;
+            transition: color .2s, gap .2s;
+        }
+
+        .footer-links a::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            background: #4A90D9;
+            border-radius: 50%;
+            flex-shrink: 0;
+            opacity: 0.5;
+            transition: opacity .2s, transform .2s;
+        }
+
+        .footer-links a:hover {
+            color: #6fb3f5;
+            gap: 12px;
+        }
+
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: scale(1.4);
+        }
+
+        /* Contact Items */
+        .footer-contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .footer-contact-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(74, 144, 217, 0.12);
+            border: 1px solid rgba(74, 144, 217, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #4A90D9;
+            transition: background .2s;
+        }
+
+        .footer-contact-item:hover .footer-contact-icon {
+            background: rgba(74, 144, 217, 0.25);
+        }
+
+        .footer-contact-text {
+            font-size: .8rem;
+            color: #8ca0bf;
+            line-height: 1.5;
+        }
+
+        .footer-contact-text strong {
+            display: block;
+            color: #c8d9f0;
+            font-size: .75rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        /* Divider */
+        .footer-divider {
+            border: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* Bottom Bar */
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-copyright {
+            font-size: .75rem;
+            color: #5a7090;
+        }
+
+        .footer-copyright a {
+            color: #4A90D9;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .footer-bottom-link {
+            font-size: .72rem;
+            color: #5a7090;
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            transition: color .15s, background .15s;
+        }
+
+        .footer-bottom-link:hover {
+            color: #4A90D9;
+            background: rgba(74, 144, 217, 0.08);
+        }
+
+        .footer-bottom-sep {
+            color: #2d4060;
+            font-size: .7rem;
+        }
+
+        /* Responsive Footer */
+        @media (max-width: 1024px) {
+            .footer-main {
+                grid-template-columns: 1.5fr 1fr 1fr;
+                gap: 32px;
+            }
+
+            .footer-brand-col {
+                grid-column: 1 / -1;
+                display: flex;
+                flex-direction: row;
+                align-items: flex-start;
+                gap: 24px;
+            }
+
+            .footer-tagline {
+                max-width: none;
+                margin-bottom: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .footer-main {
+                grid-template-columns: 1fr 1fr;
+                gap: 28px;
+                padding: 36px 16px 28px;
+            }
+
+            .footer-brand-col {
+                grid-column: 1 / -1;
+                flex-direction: column;
+            }
+
+            .footer-bottom {
+                padding: 16px;
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .footer-main {
+                grid-template-columns: 1fr;
+                gap: 24px;
+                padding: 28px 16px 24px;
+            }
+
+            .footer-col-title {
+                margin-bottom: 14px;
+            }
+        }
+
         /* ── Toast ── */
         .toast-container {
             position: fixed;
@@ -411,7 +717,8 @@
                         <div style="font-weight: 700; color: #1a2b4a; font-size: .85rem;">{{ auth()->user()->name }}
                         </div>
                         <div style="font-size: .72rem; color: #8ca0bf; margin-top: 2px;">
-                            {{ auth()->user()->nama_sekolah ?? 'Pelanggan' }}</div>
+                            {{ auth()->user()->nama_sekolah ?? 'Pelanggan' }}
+                        </div>
                     </div>
                     <a href="{{ route('pelanggan.profil.edit') }}" class="dropdown-item">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -451,6 +758,124 @@
     <main class="page-wrapper">
         @yield('content')
     </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-main">
+            <!-- Brand Column -->
+            <div class="footer-brand-col">
+                <div>
+                    <a href="{{ route('pelanggan.dashboard') }}" class="footer-brand-logo">
+                        <img src="{{ asset('logoauth/logo2.png') }}" alt="SIMAPES Logo">
+                        <div class="footer-brand-name">
+                            SIMAPES
+                            <small>Portal Pelanggan</small>
+                        </div>
+                    </a>
+                    <p class="footer-tagline">
+                        Sistem Informasi Manajemen Pemesanan Seragam yang memudahkan proses pemesanan, tracking
+                        produksi, hingga pengiriman seragam sekolah Anda.
+                    </p>
+                    <span class="footer-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                        Terpercaya & Terverifikasi
+                    </span>
+                </div>
+            </div>
+
+            <!-- Navigasi Column -->
+            <div>
+                <h3 class="footer-col-title">Navigasi</h3>
+                <ul class="footer-links">
+                    <li><a href="{{ route('pelanggan.dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ route('pelanggan.katalog') }}">Katalog Seragam</a></li>
+                    <li><a href="{{ route('pelanggan.pesanan.create') }}">Buat Pesanan</a></li>
+                    <li><a href="{{ route('pelanggan.pesanan.index') }}">Status Pesanan</a></li>
+                    <li><a href="{{ route('pelanggan.riwayat') }}">Riwayat Pesanan</a></li>
+                </ul>
+            </div>
+
+            <!-- Layanan Column -->
+            <div>
+                <h3 class="footer-col-title">Layanan</h3>
+                <ul class="footer-links">
+                    <li><a href="{{ route('pelanggan.profil.edit') }}">Profil Akun</a></li>
+                    <li><a href="{{ route('pelanggan.pesanan.create') }}">Pemesanan Online</a></li>
+                    <li><a href="{{ route('pelanggan.katalog') }}">Cek Harga Seragam</a></li>
+                    <li><a href="{{ route('pelanggan.pesanan.index') }}">Tracking Produksi</a></li>
+                    <li><a href="{{ route('pelanggan.riwayat') }}">Riwayat Transaksi</a></li>
+                </ul>
+            </div>
+
+            <!-- Kontak Column -->
+            <div>
+                <h3 class="footer-col-title">Hubungi Kami</h3>
+
+                <div class="footer-contact-item">
+                    <div class="footer-contact-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                    </div>
+                    <div class="footer-contact-text">
+                        <strong>Alamat Toko</strong>
+                        Jl. Raya Seragam No. 1,<br>Kota Anda, Jawa Tengah
+                    </div>
+                </div>
+
+                <div class="footer-contact-item">
+                    <div class="footer-contact-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.77a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                    </div>
+                    <div class="footer-contact-text">
+                        <strong>WhatsApp</strong>
+                        +62 812-3456-7890
+                    </div>
+                </div>
+
+                <div class="footer-contact-item">
+                    <div class="footer-contact-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                    </div>
+                    <div class="footer-contact-text">
+                        <strong>Jam Operasional</strong>
+                        Senin – Sabtu: 08.00 – 17.00 WIB
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="footer-divider">
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom">
+            <p class="footer-copyright">
+                &copy; {{ date('Y') }} <a href="{{ route('pelanggan.dashboard') }}">SIMAPES</a>. Semua hak dilindungi
+                undang-undang.
+            </p>
+            <div class="footer-bottom-links">
+                <a href="#" class="footer-bottom-link">Kebijakan Privasi</a>
+                <span class="footer-bottom-sep">&bull;</span>
+                <a href="#" class="footer-bottom-link">Syarat &amp; Ketentuan</a>
+                <span class="footer-bottom-sep">&bull;</span>
+                <a href="#" class="footer-bottom-link">Bantuan</a>
+            </div>
+        </div>
+    </footer>
 
     <!-- Toast -->
     <div class="toast-container" id="toastContainer"></div>
@@ -494,7 +919,7 @@
         }
 
         // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             const nav = document.querySelector('.navbar-nav');
             const hamburger = document.querySelector('.hamburger-btn');
             if (nav && nav.classList.contains('show')) {
