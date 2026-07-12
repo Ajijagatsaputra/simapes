@@ -215,6 +215,12 @@
         const contentArea = document.getElementById('aiContentArea');
         const token = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '';
 
+        // Sembunyikan tombol download PDF terlebih dahulu
+        const btnPdf = document.getElementById('btnDownloadPdf');
+        if (btnPdf) {
+            btnPdf.style.display = 'none';
+        }
+
         // Tampilkan loading screen interaktif
         contentArea.innerHTML = `
             <div class="ai-loading-container">
@@ -272,6 +278,12 @@
                         ${parsedHtml}
                     </div>
                 `;
+                    // Tampilkan dan update url tombol PDF
+                    if (btnPdf) {
+                        const baseUrl = "{{ route('admin.prediksi.exportPdf') }}";
+                        btnPdf.href = `${baseUrl}?alpha=${alpha}&beta=${beta}&gamma=${gamma}`;
+                        btnPdf.style.display = 'inline-flex';
+                    }
                 } else {
                     contentArea.innerHTML = `
                     <div style="color: #e63946; padding: 20px; text-align: center; font-weight: 600;">

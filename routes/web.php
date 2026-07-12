@@ -66,6 +66,7 @@ Route::middleware(['auth', 'role:admin'])
         // Prediksi (Holt-Winters)
         Route::get('/prediksi', [Admin\PrediksiController::class, 'index'])->name('prediksi.index');
         Route::get('/prediksi/print-po', [Admin\PrediksiController::class, 'printPo'])->name('prediksi.printPo');
+        Route::get('/prediksi/export-pdf', [Admin\PrediksiController::class, 'exportPdf'])->name('prediksi.exportPdf');
         Route::post('/prediksi/upload', [Admin\PrediksiController::class, 'uploadExcel'])->name('prediksi.upload');
         Route::post('/prediksi/clear', [Admin\PrediksiController::class, 'clearUpload'])->name('prediksi.clear');
         Route::get('/prediksi/template', [Admin\PrediksiController::class, 'downloadTemplate'])->name('prediksi.template');

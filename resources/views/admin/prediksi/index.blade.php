@@ -126,6 +126,18 @@
                         </svg>
                         Analisis Data
                     </button>
+                    <a id="btnDownloadPdf"
+                        href="{{ route('admin.prediksi.exportPdf', ['alpha' => $alpha ?? 0.2, 'beta' => $beta ?? 0.1, 'gamma' => $gamma ?? 0.3]) }}"
+                        class="btn-ai"
+                        style="background: #e63946; color: white; display: none; text-decoration: none; align-items: center; justify-content: center; gap: 6px; border: none; font-weight: 600;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Ekspor PDF
+                    </a>
                 </div>
             </div>
 

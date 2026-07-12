@@ -508,6 +508,9 @@ class PrediksiController extends Controller
                 $data['mad']
             );
 
+            // Simpan analisis terakhir ke session untuk ekspor PDF
+            session(['last_ai_analysis' => $analysis]);
+
             return response()->json([
                 'success' => true,
                 'analysis' => $analysis
@@ -518,6 +521,32 @@ class PrediksiController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Export Hasil Prediksi & Analisis AI ke PDF
+     */
+    public function exportPdf(Request $request)
+    {
+        $analysis = session('last_ai_analysis');
+        if (!$analysis) {
+            return redirect()->back()->with('error', 'Silakan jalankan analisis AI terlebih dahulu sebelum mengunduh PDF.');
+        }
+
+        $data = $this->getPredictionData($request);
+        if (!$data['hasData']) {
+            return redirect()->back()->with('error', 'Data historis tidak mencukupi.');
+        }
+
+        // Konversi markdown ke HTML menggunakan parser bawaan Laravel
+        $analysisHtml = \Illuminate\Support\Str::markdown($analysis);
+
+        // Render PDF menggunakan Barryvdh DomPDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.prediksi.pdf_report', array_merge($data, [
+            'analysisHtml' => $analysisHtml
+        ]));
+
+        return $pdf->download('laporan_analisis_prediksi_simapes.pdf');
     }
 
     /**
