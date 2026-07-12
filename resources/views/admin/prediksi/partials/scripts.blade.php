@@ -366,4 +366,101 @@
 
         return html;
     }
+
+    // ── INTERACTIVE WHAT-IF SCENARIO SIMULATOR ────────────────────────────
+    function runWhatIfSimulation(val) {
+        const multiplier = parseFloat(val);
+        const formatNum = (num) => new Intl.NumberFormat('id-ID').format(num);
+
+        // 1. Update Tabel MRP
+        const rows = document.querySelectorAll('tr[data-mrp-key]');
+        rows.forEach(row => {
+            const baseJumlah = parseFloat(row.getAttribute('data-base-jumlah'));
+            const leadTime = parseFloat(row.getAttribute('data-lead-time'));
+
+            const newJumlah = Math.ceil(baseJumlah * multiplier);
+            const avgDaily = newJumlah / 360;
+            const newSafetyStock = Math.ceil(0.5 * avgDaily * leadTime);
+            const newRop = Math.ceil((avgDaily * leadTime) + newSafetyStock);
+
+            const cellJumlah = row.querySelector('.mrp-jumlah');
+            const cellSafety = row.querySelector('.mrp-safety-stock');
+            const cellRop = row.querySelector('.mrp-rop');
+
+            if (cellJumlah) {
+                if (multiplier !== 1.0) {
+                    const diffPercent = Math.round((multiplier - 1.0) * 100);
+                    const prefix = diffPercent > 0 ? '+' : '';
+                    cellJumlah.innerHTML = `${formatNum(newJumlah)} <span style="font-size: 0.72rem; font-weight: bold; color: ${diffPercent > 0 ? '#34c472' : '#ef4444'}; display: block;">(${prefix}${diffPercent}%)</span>`;
+                } else {
+                    cellJumlah.textContent = formatNum(newJumlah);
+                }
+            }
+            if (cellSafety) cellSafety.textContent = formatNum(newSafetyStock);
+            if (cellRop) cellRop.textContent = formatNum(newRop);
+        });
+
+        // 2. Update Badge Judul (Kebutuhan Estimasi Pesanan)
+        const baseOrders = {{ $totalPrediksiTahunDepan ?? 0 }};
+        const basePcs = baseOrders * 20;
+        const newOrders = Math.round(baseOrders * multiplier);
+        const newPcs = Math.round(basePcs * multiplier);
+        const titleBadge = document.querySelector('.mrp-title-badge');
+        if (titleBadge) {
+            titleBadge.textContent = `Est. untuk ${formatNum(newOrders)} Pesanan (${formatNum(newPcs)} Pcs)`;
+        }
+
+        // 3. Update Jumlah Kebutuhan di Detail Supplier
+        const reqAmounts = document.querySelectorAll('.mrp-required-amount');
+        reqAmounts.forEach(span => {
+            const baseJumlah = parseFloat(span.getAttribute('data-base-jumlah'));
+            const satuan = span.getAttribute('data-satuan');
+            const newJumlah = Math.ceil(baseJumlah * multiplier);
+
+            if (multiplier !== 1.0) {
+                const diffPercent = Math.round((multiplier - 1.0) * 100);
+                const prefix = diffPercent > 0 ? '+' : '';
+                span.innerHTML = `Dibutuhkan: ${formatNum(newJumlah)} ${satuan} <span style="font-size: 0.72rem; font-weight: bold; color: ${diffPercent > 0 ? '#2e7d32' : '#d32f2f'};">(${prefix}${diffPercent}%)</span>`;
+            } else {
+                span.textContent = `Dibutuhkan: ${formatNum(newJumlah)} ${satuan}`;
+            }
+        });
+
+        // 4. Update Parameter URL Cetak PO & Link WhatsApp
+        const waBtns = document.querySelectorAll('.sup-wa-btn');
+        waBtns.forEach(btn => {
+            const supName = btn.getAttribute('data-sup-name');
+            const phone = btn.getAttribute('data-phone');
+            const bahanName = btn.getAttribute('data-bahan-name');
+            const satuan = btn.getAttribute('data-satuan');
+
+            const parentContainer = btn.closest('[style*="background: #fafcff"]');
+            if (parentContainer) {
+                const reqSpan = parentContainer.querySelector('.mrp-required-amount');
+                if (reqSpan) {
+                    const baseJumlah = parseFloat(reqSpan.getAttribute('data-base-jumlah'));
+                    const newJumlah = Math.ceil(baseJumlah * multiplier);
+
+                    const message = `Halo ${supName}, kami tertarik untuk memesan bahan baku ${bahanName} sebanyak ${newJumlah} ${satuan}.`;
+                    btn.href = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+                }
+            }
+        });
+
+        const poBtns = document.querySelectorAll('.sup-po-btn');
+        poBtns.forEach(btn => {
+            const parentContainer = btn.closest('[style*="background: #fafcff"]');
+            if (parentContainer) {
+                const reqSpan = parentContainer.querySelector('.mrp-required-amount');
+                if (reqSpan) {
+                    const baseJumlah = parseFloat(reqSpan.getAttribute('data-base-jumlah'));
+                    const newJumlah = Math.ceil(baseJumlah * multiplier);
+
+                    const url = new URL(btn.href, window.location.origin);
+                    url.searchParams.set('jumlah', newJumlah);
+                    btn.href = url.pathname + url.search;
+                }
+            }
+        });
+    }
 </script>
