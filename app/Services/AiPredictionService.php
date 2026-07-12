@@ -152,7 +152,8 @@ PROMPT;
                 'model' => $model,
                 'messages' => [
                     ['role' => 'user', 'content' => $prompt]
-                ]
+                ],
+                'max_tokens' => 2048,
             ]);
 
         if ($response->failed()) {
