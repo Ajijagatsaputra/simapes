@@ -37,6 +37,54 @@
         {{-- ── Tampilan Peringatan Jika Data Tidak Cukup ── --}}
         @include('admin.prediksi.partials.warning')
     @else
+        {{-- ── Card Upload Data Alternatif Baru (Hanya tampil jika hasData = true) ── --}}
+        <div class="card" style="margin-bottom: 24px; padding: 16px 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div
+                        style="color: #4A90D9; background: #e8f0fd; padding: 8px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 0.9rem; font-weight: 700; color: #1a2b4a; margin: 0;">Upload Data Historis Baru
+                            (Format CSV)</h3>
+                        <p style="font-size: 0.75rem; color: #6b7e9f; margin: 2px 0 0 0;">Ingin mencoba dataset alternatif?
+                            Unggah file CSV baru untuk langsung menghitung prediksi.</p>
+                    </div>
+                </div>
+                <div>
+                    <form action="{{ route('admin.prediksi.upload') }}" method="POST" enctype="multipart/form-data"
+                        style="display: flex; gap: 12px; align-items: center; margin: 0; flex-wrap: wrap;">
+                        @csrf
+                        <div style="position: relative; overflow: hidden; display: inline-block;">
+                            <input type="file" name="file_excel" id="file_excel_active" required accept=".csv"
+                                style="display: none;"
+                                onchange="document.getElementById('file-name-active').textContent = this.files[0] ? this.files[0].name : ''">
+                            <button type="button" onclick="document.getElementById('file_excel_active').click()"
+                                class="btn-hitung"
+                                style="background: #ffffff; color: #4A90D9; border: 1px solid #4A90D9; height: 36px; padding: 0 16px; font-size: 0.8rem;">
+                                Pilih File CSV
+                            </button>
+                        </div>
+                        <span id="file-name-active"
+                            style="font-size: 0.8rem; color: #4a5a7a; font-weight: 500; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+                        <button type="submit" class="btn-hitung"
+                            style="background: #34c472; height: 36px; padding: 0 16px; font-size: 0.8rem;">
+                            Upload &amp; Hitung
+                        </button>
+                        <a href="{{ route('admin.prediksi.template') }}" class="btn-hitung"
+                            style="background: #8ca0bf; text-decoration: none; height: 36px; padding: 0 16px; font-size: 0.8rem; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;">
+                            Template
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         {{-- ── Stat Cards Grid (Tampil jika ada data) ── --}}
         @include('admin.prediksi.partials.stats')
 

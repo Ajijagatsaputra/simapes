@@ -74,6 +74,67 @@ class AiPredictionTest extends TestCase
     }
 
     /**
+     * Test uploading prediction CSV with semicolon delimiter (Indonesian Excel locale)
+     */
+    public function test_admin_can_upload_valid_semicolon_csv_prediction_data()
+    {
+        // Buat konten CSV mock 24 baris (minimal) dengan separator titik koma (;)
+        $csvContent = "Bulan;Jumlah_Pesanan\n";
+        for ($i = 1; $i <= 24; $i++) {
+            $year = 2024 + intval($i / 12);
+            $month = str_pad(($i % 12) + 1, 2, '0', STR_PAD_LEFT);
+            $csvContent .= "{$year}-{$month};" . rand(10, 50) . "\n";
+        }
+
+        $file = UploadedFile::fake()->createWithContent('test_prediction_semicolon.csv', $csvContent);
+
+        $response = $this->actingAs($this->admin)->post(route('admin.prediksi.upload'), [
+            'file_excel' => $file,
+        ]);
+
+        $response->assertRedirect(route('admin.prediksi.index'));
+        $response->assertSessionHas('uploaded_prediction_data');
+        $response->assertSessionHas('uploaded_prediction_filename', 'test_prediction_semicolon.csv');
+    }
+
+    /**
+     * Test uploading prediction CSV with multi-column year/month split and categories
+     */
+    public function test_admin_can_upload_valid_multicol_csv_prediction_data()
+    {
+        // Buat konten CSV mock 24 baris (minimal) dengan format Tahun, Bulan, dan kategori produk
+        $months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        $csvContent = "Tahun,Bulan,Seragam_TK,Seragam_SD,Seragam_SMP,Seragam_SMA,Atribut\n";
+
+        $rowIdx = 0;
+        for ($year = 2022; $year <= 2024; $year++) {
+            foreach ($months as $month) {
+                $rowIdx++;
+                $csvContent .= "{$year},{$month},10,20,30,40,50\n"; // Total sum = 150 per month
+                if ($rowIdx >= 24)
+                    break;
+            }
+            if ($rowIdx >= 24)
+                break;
+        }
+
+        $file = UploadedFile::fake()->createWithContent('test_prediction_multicol.csv', $csvContent);
+
+        $response = $this->actingAs($this->admin)->post(route('admin.prediksi.upload'), [
+            'file_excel' => $file,
+        ]);
+
+        $response->assertRedirect(route('admin.prediksi.index'));
+        $response->assertSessionHas('uploaded_prediction_data');
+        $response->assertSessionHas('uploaded_prediction_filename', 'test_prediction_multicol.csv');
+
+        $data = session('uploaded_prediction_data');
+        $this->assertCount(24, $data);
+        $this->assertEquals(150, $data[0]['count']); // 10+20+30+40+50
+        $this->assertEquals('2022-01', $data[0]['tanggal']);
+    }
+
+    /**
      * Test upload fails if data has less than 24 months
      */
     public function test_admin_upload_fails_if_less_than_24_months()

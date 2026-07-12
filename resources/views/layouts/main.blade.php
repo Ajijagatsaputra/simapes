@@ -438,7 +438,9 @@
 
         /* ── Small Tablets / Mobile Viewports (<= 768px) ── */
         @media (max-width: 768px) {
-            body, html {
+
+            body,
+            html {
                 max-width: 100vw;
                 overflow-x: hidden;
             }
@@ -714,6 +716,11 @@
         @endif
         @if(session('info'))
             showToast(@json(session('info')), 'info');
+        @endif
+        @if($errors->any())
+            @foreach($errors->all() as $error)
+                showToast(@json($error), 'error');
+            @endforeach
         @endif
 
         // Toggle Mobile Sidebar

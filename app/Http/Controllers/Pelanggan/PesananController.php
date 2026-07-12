@@ -189,13 +189,25 @@ class PesananController extends Controller
         // Buka file sebagai CSV (Excel CSV kompatibel)
         $handle = fopen($file->getRealPath(), 'r');
 
+        // Deteksi delimiter dinamis (koma atau titik koma)
+        $firstLine = fgets($handle);
+        rewind($handle);
+        $delimiter = ',';
+        if ($firstLine !== false) {
+            $commas = substr_count($firstLine, ',');
+            $semicolons = substr_count($firstLine, ';');
+            if ($semicolons > $commas) {
+                $delimiter = ';';
+            }
+        }
+
         // Hapus BOM jika ada
         $bom = fread($handle, 3);
         if ($bom !== "\xEF\xBB\xBF") {
             rewind($handle);
         }
 
-        while (($cols = fgetcsv($handle, 1000, ',')) !== false) {
+        while (($cols = fgetcsv($handle, 1000, $delimiter)) !== false) {
             $rowNum++;
 
             // Skip baris kosong

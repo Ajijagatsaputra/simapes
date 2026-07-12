@@ -256,6 +256,18 @@ class PrediksiController extends Controller
         $file = $request->file('file_excel');
         $handle = fopen($file->getRealPath(), 'r');
 
+        // Deteksi delimiter dinamis (koma atau titik koma)
+        $firstLine = fgets($handle);
+        rewind($handle);
+        $delimiter = ',';
+        if ($firstLine !== false) {
+            $commas = substr_count($firstLine, ',');
+            $semicolons = substr_count($firstLine, ';');
+            if ($semicolons > $commas) {
+                $delimiter = ';';
+            }
+        }
+
         // Hapus BOM jika ada
         $bom = fread($handle, 3);
         if ($bom !== "\xEF\xBB\xBF") {
@@ -264,9 +276,44 @@ class PrediksiController extends Controller
 
         $historis = [];
         $rowNum = 0;
-        $headerSkipped = false;
+        $headerCols = [];
 
-        while (($cols = fgetcsv($handle, 1000, ',')) !== false) {
+        // Map nama bulan Indonesia/Inggris ke nomor
+        $bulanMap = [
+            'januari' => 1,
+            'februari' => 2,
+            'maret' => 3,
+            'april' => 4,
+            'mei' => 5,
+            'juni' => 6,
+            'juli' => 7,
+            'agustus' => 8,
+            'september' => 9,
+            'oktober' => 10,
+            'november' => 11,
+            'desember' => 12,
+            'jan' => 1,
+            'feb' => 2,
+            'mar' => 3,
+            'apr' => 4,
+            'may' => 5,
+            'jun' => 6,
+            'jul' => 7,
+            'aug' => 8,
+            'sep' => 9,
+            'oct' => 10,
+            'nov' => 11,
+            'dec' => 12,
+            'january' => 1,
+            'february' => 2,
+            'march' => 3,
+            'july' => 7,
+            'august' => 8,
+            'october' => 10,
+            'december' => 12
+        ];
+
+        while (($cols = fgetcsv($handle, 1000, $delimiter)) !== false) {
             $rowNum++;
 
             // Skip baris kosong
@@ -274,38 +321,87 @@ class PrediksiController extends Controller
                 continue;
             }
 
-            // Lewati baris header
-            if ($rowNum === 1 && !is_numeric(trim($cols[1] ?? ''))) {
-                $headerSkipped = true;
+            // Simpan header untuk deteksi format
+            if ($rowNum === 1) {
+                $headerCols = array_map(fn($c) => mb_strtolower(trim($c)), $cols);
                 continue;
             }
 
-            if (!$headerSkipped && $rowNum === 1) {
-                continue;
-            }
+            $firstHeader = $headerCols[0] ?? '';
+            $isMultiColumn = ($firstHeader === 'tahun' || $firstHeader === 'year');
 
-            $dateStr = trim($cols[0] ?? '');
-            $countVal = trim($cols[1] ?? '');
+            if ($isMultiColumn) {
+                // Format multi kolom dengan Tahun dan Bulan terpisah
+                $tahun = trim($cols[0] ?? '');
+                $bulanStr = mb_strtolower(trim($cols[1] ?? ''));
 
-            if ($dateStr === '' || $countVal === '') {
-                continue;
+                if ($tahun === '' || $bulanStr === '') {
+                    continue;
+                }
+
+                // Cari nomor bulan
+                $bulan = $bulanMap[$bulanStr] ?? null;
+                if (!$bulan && is_numeric($bulanStr)) {
+                    $bulan = (int) $bulanStr;
+                }
+
+                if (!$bulan || !is_numeric($tahun)) {
+                    fclose($handle);
+                    return redirect()->back()->with('error', "Format bulan atau tahun tidak valid pada baris {$rowNum}: '{$tahun} - {$cols[1]}'");
+                }
+
+                $formattedDate = sprintf("%04d-%02d", $tahun, $bulan);
+
+                // Sum semua kolom kategori angka dari kolom ke-3 (index 2) dst
+                $count = 0;
+                for ($c = 2; $c < count($cols); $c++) {
+                    $val = trim($cols[$c] ?? '0');
+                    if (is_numeric($val)) {
+                        $count += (int) $val;
+                    }
+                }
+            } else {
+                // Format standar (Bulan, Jumlah_Pesanan)
+                $dateStr = trim($cols[0] ?? '');
+                $countVal = trim($cols[1] ?? '');
+
+                if ($dateStr === '' || $countVal === '') {
+                    continue;
+                }
+
+                // Cek apakah tanggal menggunakan bulan bahasa indonesia (misal: "2022 Januari" atau "Januari 2022")
+                $parsedDateStr = $dateStr;
+                foreach ($bulanMap as $indKey => $numVal) {
+                    if (str_contains(mb_strtolower($parsedDateStr), $indKey)) {
+                        $engMonth = date('F', mktime(0, 0, 0, $numVal, 10));
+                        $parsedDateStr = str_ireplace($indKey, $engMonth, $parsedDateStr);
+                        break;
+                    }
+                }
+
+                try {
+                    $carbonDate = Carbon::parse($parsedDateStr);
+                    $formattedDate = $carbonDate->format('Y-m');
+                    $count = (int) $countVal;
+                } catch (\Exception $e) {
+                    fclose($handle);
+                    return redirect()->back()->with('error', "Format tanggal tidak valid pada baris {$rowNum}: '{$dateStr}'");
+                }
             }
 
             try {
-                $carbonDate = Carbon::parse($dateStr);
-                $formattedDate = $carbonDate->format('Y-m');
+                $carbonDate = Carbon::parse($formattedDate . "-01");
                 $label = $carbonDate->isoFormat('MMM YYYY');
-                $count = (int) $countVal;
-
-                $historis[] = [
-                    'tanggal' => $formattedDate,
-                    'label' => $label,
-                    'count' => max(0, $count)
-                ];
             } catch (\Exception $e) {
                 fclose($handle);
-                return redirect()->back()->with('error', "Format tanggal tidak valid pada baris {$rowNum}: '{$dateStr}'");
+                return redirect()->back()->with('error', "Format tanggal tidak valid pada baris {$rowNum}: '{$formattedDate}'");
             }
+
+            $historis[] = [
+                'tanggal' => $formattedDate,
+                'label' => $label,
+                'count' => max(0, $count)
+            ];
         }
 
         fclose($handle);

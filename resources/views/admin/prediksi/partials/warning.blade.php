@@ -15,8 +15,14 @@
             Untuk melakukan simulasi data 3 tahun penuh secara otomatis di database, silakan jalankan command artisan
             seeder di terminal proyek Anda:
         </div>
-        <div class="seeder-hint">
+        <div class="seeder-hint" style="margin-bottom: 8px;">
             php artisan db:seed --class=PesananHistorisSeeder
+        </div>
+        <div class="warning-desc" style="font-size: 0.78rem; opacity: 0.85;">
+            Jika Anda menggunakan <strong>Docker</strong>, jalankan perintah ini:
+        </div>
+        <div class="seeder-hint" style="background: #2b384e; color: #a5d6ff;">
+            docker compose exec app php artisan db:seed --class=PesananHistorisSeeder
         </div>
     </div>
 </div>
@@ -33,10 +39,11 @@
             </svg>
         </div>
         <div>
-            <h3 class="warning-title" style="color: #1a2b4a;">Upload Data Historis Alternatif</h3>
+            <h3 class="warning-title" style="color: #1a2b4a;">Upload Data Historis Alternatif (Format CSV)</h3>
             <p class="warning-desc" style="color: #4a5a7a;">
-                Anda juga dapat mengunggah file data penjualan bulanan (Excel/CSV) untuk langsung menghitung prediksi
-                tanpa harus mengisi database utama konveksi.
+                Anda dapat mengunggah file data penjualan bulanan dalam format <strong>CSV (Comma Separated
+                    Values)</strong>. Jika menggunakan Microsoft Excel, simpan file sebagai <strong>CSV (UTF-8)</strong>
+                atau <strong>CSV (Comma Delimited)</strong> sebelum mengunggah.
             </p>
         </div>
     </div>
