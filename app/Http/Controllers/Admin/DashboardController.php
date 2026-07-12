@@ -8,8 +8,17 @@ use App\Models\User;
 use App\Models\Produk;
 use App\Models\Pesanan;
 
+use App\Services\PredictionService;
+
 class DashboardController extends Controller
 {
+    protected $predictionService;
+
+    public function __construct(PredictionService $predictionService)
+    {
+        $this->predictionService = $predictionService;
+    }
+
     public function index()
     {
         // ── Grafik Jumlah Pesanan (12 bulan terakhir) ──────────────
@@ -25,15 +34,59 @@ class DashboardController extends Controller
             ];
         }
 
-        // ── Grafik Prediksi (6 bulan ke depan) ─────────────────────
+        // ── Ambil Data Historis untuk Prediksi ──────────────────────
+        $historis = [];
+        $hasPrediction = false;
+
+        // 1. Cek data upload di session
+        if (session()->has('uploaded_prediction_data')) {
+            $historis = session('uploaded_prediction_data');
+        } else {
+            // Cek data di database
+            $pesananTerlama = Pesanan::orderBy('tanggal_pesanan', 'asc')->first();
+
+            if ($pesananTerlama) {
+                $tanggalMulai = Carbon::parse($pesananTerlama->tanggal_pesanan)->startOfMonth();
+                $tanggalAkhir = Carbon::now()->startOfMonth();
+                $selisihBulan = $tanggalMulai->diffInMonths($tanggalAkhir);
+
+                if ($selisihBulan >= 23) {
+                    for ($i = 0; $i <= $selisihBulan; $i++) {
+                        $currentMonth = $tanggalMulai->copy()->addMonths($i);
+                        $count = Pesanan::whereYear('tanggal_pesanan', $currentMonth->year)
+                            ->whereMonth('tanggal_pesanan', $currentMonth->month)
+                            ->count();
+                        $historis[] = [
+                            'tanggal' => $currentMonth->format('Y-m'),
+                            'label' => $currentMonth->isoFormat('MMM YYYY'),
+                            'count' => $count
+                        ];
+                    }
+                }
+            }
+        }
+
+        // 2. Jalankan perhitungan Holt-Winters (12 bulan ke depan) jika data cukup
         $chartPrediksi = [];
-        for ($i = 0; $i < 6; $i++) {
-            $bulan = Carbon::now()->addMonths($i + 1);
-            $count = rand(80, 130);
-            $chartPrediksi[] = [
-                'label' => $bulan->isoFormat('MMM YYYY'),
-                'count' => $count,
-            ];
+        if (count($historis) >= 24) {
+            // Gunakan parameter default sistem (Alpha 0.2, Beta 0.1, Gamma 0.3)
+            $result = $this->predictionService->calculateHoltWinters($historis, 0.2, 0.1, 0.3, 12);
+            if ($result['success']) {
+                $chartPrediksi = $result['prediksi'];
+                $hasPrediction = true;
+            }
+        }
+
+        // Fallback jika tidak ada data prediksi
+        if (!$hasPrediction) {
+            $chartPrediksi = [];
+            for ($i = 0; $i < 12; $i++) {
+                $bulan = Carbon::now()->addMonths($i + 1);
+                $chartPrediksi[] = [
+                    'label' => $bulan->isoFormat('MMM YYYY'),
+                    'count' => 0,
+                ];
+            }
         }
 
         // ── Statistik Kartu ─────────────────────────────────────────
@@ -48,6 +101,7 @@ class DashboardController extends Controller
         return view('admin.dashboard', compact(
             'chartPesanan',
             'chartPrediksi',
+            'hasPrediction',
             'totalPelanggan',
             'totalProduk',
             'totalPesanan',

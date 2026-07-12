@@ -11,19 +11,34 @@
     <div>
         <h3 class="warning-title">Data Historis Tidak Mencukupi</h3>
         <p class="warning-desc">{{ $message }}</p>
-        <div class="warning-desc" style="margin-top: 8px;">
-            Untuk melakukan simulasi data 3 tahun penuh secara otomatis di database, silakan jalankan command artisan
-            seeder di terminal proyek Anda:
-        </div>
-        <div class="seeder-hint" style="margin-bottom: 8px;">
-            php artisan db:seed --class=PesananHistorisSeeder
-        </div>
-        <div class="warning-desc" style="font-size: 0.78rem; opacity: 0.85;">
-            Jika Anda menggunakan <strong>Docker</strong>, jalankan perintah ini:
-        </div>
-        <div class="seeder-hint" style="background: #2b384e; color: #a5d6ff;">
-            docker compose exec app php artisan db:seed --class=PesananHistorisSeeder
-        </div>
+        <p class="warning-desc" style="margin-top: 8px;">
+            Silakan unggah file data penjualan bulanan (minimal 24 bulan) melalui panel <strong>Upload Data Historis
+                Alternatif</strong> di bawah ini untuk dapat menghitung peramalan.
+        </p>
+
+        {{-- Petunjuk teknis disembunyikan menggunakan details agar tidak membingungkan pengguna umum --}}
+        <details style="margin-top: 14px; outline: none;">
+            <summary style="font-size: 0.78rem; color: #e05a5a; font-weight: 600; cursor: pointer; user-select: none;">
+                Petunjuk Teknis Pengisian Data (Developer / Administrator)
+            </summary>
+            <div
+                style="margin-top: 8px; padding: 10px; background: rgba(224, 90, 90, 0.04); border-radius: 6px; border: 1px dashed rgba(224, 90, 90, 0.2);">
+                <div class="warning-desc" style="font-size: 0.78rem; color: #c0392b; margin-bottom: 6px;">
+                    Untuk melakukan simulasi data 3 tahun penuh secara otomatis di database, jalankan perintah seeder
+                    berikut di terminal Anda:
+                </div>
+                <div class="seeder-hint" style="margin-bottom: 8px; font-size: 0.8rem; padding: 6px 10px;">
+                    php artisan db:seed --class=PesananHistorisSeeder
+                </div>
+                <div class="warning-desc" style="font-size: 0.75rem; opacity: 0.85; margin-bottom: 4px;">
+                    Jika menggunakan <strong>Docker</strong>:
+                </div>
+                <div class="seeder-hint"
+                    style="background: #2b384e; color: #a5d6ff; font-size: 0.8rem; padding: 6px 10px;">
+                    docker compose exec app php artisan db:seed --class=PesananHistorisSeeder
+                </div>
+            </div>
+        </details>
     </div>
 </div>
 

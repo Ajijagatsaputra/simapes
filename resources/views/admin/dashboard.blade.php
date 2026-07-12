@@ -514,13 +514,30 @@ Page Content
         <div class="card">
             <div class="card-header">
                 <span class="card-title">Prediksi Jumlah Pesanan (Periode Berikutnya)</span>
-                <select class="period-select" id="periodePrediksi" onchange="updateChartPrediksi(this.value)">
-                    <option value="6">6 Bulan Terakhir</option>
-                    <option value="12">12 Bulan Terakhir</option>
-                </select>
+                @if($hasPrediction)
+                    <select class="period-select" id="periodePrediksi" onchange="updateChartPrediksi(this.value)">
+                        <option value="6">6 Bulan Ke Depan</option>
+                        <option value="12">12 Bulan Ke Depan</option>
+                    </select>
+                @endif
             </div>
             <p class="card-subtitle">Jumlah Prediksi Pesanan</p>
-            <canvas id="chartPrediksi" height="160"></canvas>
+            @if($hasPrediction)
+                <canvas id="chartPrediksi" height="160"></canvas>
+            @else
+                <div
+                    style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 160px; text-align: center; color: #8ca0bf; gap: 8px;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span style="font-size: 0.8rem; font-weight: 500; line-height: 1.4;">
+                        Data historis database / upload kurang dari 24 bulan.<br>
+                        Prediksi dinonaktifkan sementara.
+                    </span>
+                </div>
+            @endif
         </div>
 
     </div>
@@ -532,7 +549,7 @@ Page Content
         <div class="card">
             <div class="table-header">
                 <span class="card-title">Pesanan Terbaru</span>
-                @if(Route::has('pesanan.index'))
+                @if(Route::has('admin.pesanan.index'))
                     <a href="{{ route('admin.pesanan.index') }}" class="btn-lihat-semua">Lihat Semua</a>
                 @endif
             </div>
@@ -556,9 +573,9 @@ Page Content
                             <td>
                                 @php $s = strtolower($pesanan->status ?? ''); @endphp
                                 <span class="badge
-                                                @if($s === 'diproses') badge-diproses
-                                                @elseif($s === 'dikerjakan') badge-dikerjakan
-                                                @else badge-selesai @endif">
+                                                                                @if($s === 'diproses') badge-diproses
+                                                                                @elseif($s === 'dikerjakan') badge-dikerjakan
+                                                                                @else badge-selesai @endif">
                                     {{ ucfirst($pesanan->status ?? 'selesai') }}
                                 </span>
                             </td>
@@ -582,32 +599,64 @@ Page Content
                 </div>
 
                 <div class="prediksi-info">
-                    <div class="prediksi-info-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="20" x2="18" y2="10" />
-                            <line x1="12" y1="20" x2="12" y2="4" />
-                            <line x1="6" y1="20" x2="6" y2="14" />
-                            <line x1="2" y1="20" x2="22" y2="20" />
-                        </svg>
+                    <div class="prediksi-info-icon"
+                        style="{{ !$hasPrediction ? 'background: #fdeaea; color: #e05a5a;' : '' }}">
+                        @if($hasPrediction)
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="20" x2="18" y2="10" />
+                                <line x1="12" y1="20" x2="12" y2="4" />
+                                <line x1="6" y1="20" x2="6" y2="14" />
+                                <line x1="2" y1="20" x2="22" y2="20" />
+                            </svg>
+                        @else
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                <line x1="12" y1="9" x2="12" y2="13" />
+                                <line x1="12" y1="17" x2="12.01" y2="17" />
+                            </svg>
+                        @endif
                     </div>
                     <div>
-                        <div class="prediksi-info-title">Prediksi Jumlah Pesanan Periode Berikutnya</div>
+                        <div class="prediksi-info-title">
+                            @if($hasPrediction)
+                                Prediksi Jumlah Pesanan Periode Berikutnya
+                            @else
+                                Data Historis Tidak Mencukupi
+                            @endif
+                        </div>
                         <div class="prediksi-info-period">
-                            {{ \Carbon\Carbon::now()->addMonth()->isoFormat('MMMM') }} –
-                            {{ \Carbon\Carbon::now()->addMonths(6)->isoFormat('MMMM YYYY') }}
+                            @if($hasPrediction)
+                                {{ \Carbon\Carbon::now()->addMonth()->isoFormat('MMMM') }} –
+                                {{ \Carbon\Carbon::now()->addMonths(6)->isoFormat('MMMM YYYY') }}
+                            @else
+                                Perlu Upload Dataset
+                            @endif
                         </div>
                         <div class="prediksi-info-desc">
-                            Prediksi ini dihasilkan berdasarkan historis data pesanan sebelumnya
+                            @if($hasPrediction)
+                                Prediksi ini berhasil dihitung secara akurat menggunakan metode Holt-Winters (Triple Exponential
+                                Smoothing) berdasarkan data historis Anda.
+                            @else
+                                Silakan unggah file CSV data penjualan (minimal 24 bulan) di menu Prediksi untuk dapat
+                                mengaktifkan fitur peramalan ini.
+                            @endif
                         </div>
                     </div>
                 </div>
 
                 <div style="flex:1;"></div>
 
-                @if(Route::has('prediksi.index'))
-                    <a href="{{ route('admin.prediksi.index') }}" class="btn-detail-prediksi">
-                        Lihat Detail Prediksi
+                @if(Route::has('admin.prediksi.index'))
+                    <a href="{{ route('admin.prediksi.index') }}" class="btn-detail-prediksi"
+                        style="{{ !$hasPrediction ? 'background: #e05a5a;' : '' }}">
+                        @if($hasPrediction)
+                            Lihat Detail Prediksi
+                        @else
+                            Buka Menu Prediksi / Upload
+                        @endif
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                             stroke-linecap="round" stroke-linejoin="round">
                             <line x1="5" y1="12" x2="19" y2="12" />
@@ -630,138 +679,142 @@ Page Content
 
     {{-- ── Activity Log (Audit Trail) ── --}}
     <div class="card activity-card">
-                <div class="card-header" style="margin-bottom: 16px;">
-                    <span class="card-title" style="display: flex; align-items: center; gap: 8px;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" style="color: #8a63d2;">
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12 6 12 12 16 14" />
-                        </svg>
-                        Log Aktivitas Sistem Terbaru (Audit Trail)
-                    </span>
-                </div>
-                <ul class="activity-list">
-                    @forelse($activityLogs ?? [] as $log)
-                        <li class="activity-item">
-                            <div style="display: flex; align-items: center; flex: 1;">
-                                <span class="activity-user">{{ $log->user->name ?? 'System' }}</span>
-                                <span class="activity-text">{{ $log->activity }}</span>
-                                @if($log->ip_address)
-                                    <span class="activity-ip">{{ $log->ip_address }}</span>
-                                @endif
-                            </div>
-                            <span class="activity-time">{{ $log->created_at->diffForHumans() }}</span>
-                        </li>
-                    @empty
-                        <li style="text-align: center; color: #8ca0bf; padding: 20px; font-size: 0.8rem;">
-                            Belum ada aktivitas yang dicatat.
-                        </li>
-                    @endforelse
-                </ul>
-            </div>
+        <div class="card-header" style="margin-bottom: 16px;">
+            <span class="card-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="color: #8a63d2;">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg>
+                Log Aktivitas Sistem Terbaru (Audit Trail)
+            </span>
+        </div>
+        <ul class="activity-list">
+            @forelse($activityLogs ?? [] as $log)
+                <li class="activity-item">
+                    <div style="display: flex; align-items: center; flex: 1;">
+                        <span class="activity-user">{{ $log->user->name ?? 'System' }}</span>
+                        <span class="activity-text">{{ $log->activity }}</span>
+                        @if($log->ip_address)
+                            <span class="activity-ip">{{ $log->ip_address }}</span>
+                        @endif
+                    </div>
+                    <span class="activity-time">{{ $log->created_at->diffForHumans() }}</span>
+                </li>
+            @empty
+                <li style="text-align: center; color: #8ca0bf; padding: 20px; font-size: 0.8rem;">
+                    Belum ada aktivitas yang dicatat.
+                </li>
+            @endforelse
+        </ul>
+    </div>
 
 @endsection
 
-        {{-- ══════════════════════════════════════════
-        Scripts — Chart.js
-        ══════════════════════════════════════════ --}}
-        @push('scripts')
-            <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-            <script>
-                // ── Data dari server ─────────────────────────────────────────────────
-                const allDataPesanan = @json($chartPesanan ?? []);
-                const allDataPrediksi = @json($chartPrediksi ?? []);
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script>
+        // ── Data dari server ─────────────────────────────────────────────────
+        const allDataPesanan = @json($chartPesanan ?? []);
+        const allDataPrediksi = @json($chartPrediksi ?? []);
 
-                function sliceLast(arr, n) { return arr.slice(-n); }
+        function sliceLast(arr, n) { return arr.slice(-n); }
 
-                // ── Chart Pesanan ────────────────────────────────────────────────────
-                const ctxP = document.getElementById('chartPesanan').getContext('2d');
-                let chartPesananObj;
+        // ── Chart Pesanan ────────────────────────────────────────────────────
+        const ctxP = document.getElementById('chartPesanan').getContext('2d');
+        let chartPesananObj;
 
-                function buildChartPesanan(n) {
-                    const slice = sliceLast(allDataPesanan, n);
-                    const labels = slice.map(d => d.label);
-                    const data = slice.map(d => d.count);
+        function buildChartPesanan(n) {
+            const slice = sliceLast(allDataPesanan, n);
+            const labels = slice.map(d => d.label);
+            const data = slice.map(d => d.count);
 
-                    const gradient = ctxP.createLinearGradient(0, 0, 0, 200);
-                    gradient.addColorStop(0, 'rgba(74,144,217,.25)');
-                    gradient.addColorStop(1, 'rgba(74,144,217,0)');
+            const gradient = ctxP.createLinearGradient(0, 0, 0, 200);
+            gradient.addColorStop(0, 'rgba(74,144,217,.25)');
+            gradient.addColorStop(1, 'rgba(74,144,217,0)');
 
-                    return new Chart(ctxP, {
-                        type: 'line',
-                        data: {
-                            labels,
-                            datasets: [{
-                                data,
-                                borderColor: '#4A90D9',
-                                backgroundColor: gradient,
-                                borderWidth: 2.5,
-                                pointBackgroundColor: '#4A90D9',
-                                pointRadius: 4,
-                                pointHoverRadius: 6,
-                                tension: 0.35,
-                                fill: true,
-                            }]
+            return new Chart(ctxP, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        data,
+                        borderColor: '#4A90D9',
+                        backgroundColor: gradient,
+                        borderWidth: 2.5,
+                        pointBackgroundColor: '#4A90D9',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        tension: 0.35,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#8ca0bf' } },
+                        y: { grid: { color: '#f0f4fb' }, ticks: { font: { size: 10 }, color: '#8ca0bf' } }
+                    },
+                    interaction: { mode: 'index', intersect: false },
+                }
+            });
+        }
+        chartPesananObj = buildChartPesanan(12);
+        window.updateChartPesanan = function (n) {
+            if (chartPesananObj) {
+                chartPesananObj.destroy();
+            }
+            chartPesananObj = buildChartPesanan(parseInt(n));
+        }
+
+        // ── Chart Prediksi ───────────────────────────────────────────────────
+        const chartPrediksiCanvas = document.getElementById('chartPrediksi');
+        if (chartPrediksiCanvas) {
+            const ctxPr = chartPrediksiCanvas.getContext('2d');
+            let chartPrediksiObj;
+
+            function buildChartPrediksi(n) {
+                const slice = allDataPrediksi.slice(0, n);
+                const labels = slice.map(d => d.label);
+                const data = slice.map(d => d.count);
+
+                const gradient = ctxPr.createLinearGradient(0, 0, 0, 200);
+                gradient.addColorStop(0, 'rgba(138,99,210,.25)');
+                gradient.addColorStop(1, 'rgba(138,99,210,0)');
+
+                return new Chart(ctxPr, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [{
+                            data,
+                            borderColor: '#8a63d2',
+                            backgroundColor: gradient,
+                            borderWidth: 2.5,
+                            pointBackgroundColor: '#8a63d2',
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            tension: 0.35,
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#8ca0bf' } },
+                            y: { grid: { color: '#f0f4fb' }, ticks: { font: { size: 10 }, color: '#8ca0bf' } }
                         },
-                        options: {
-                            plugins: { legend: { display: false } },
-                            scales: {
-                                x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#8ca0bf' } },
-                                y: { grid: { color: '#f0f4fb' }, ticks: { font: { size: 10 }, color: '#8ca0bf' } }
-                            },
-                            interaction: { mode: 'index', intersect: false },
-                        }
-                    });
-                }
-                chartPesananObj = buildChartPesanan(12);
-                function updateChartPesanan(n) {
-                    chartPesananObj.destroy();
-                    chartPesananObj = buildChartPesanan(parseInt(n));
-                }
-
-                // ── Chart Prediksi ───────────────────────────────────────────────────
-                const ctxPr = document.getElementById('chartPrediksi').getContext('2d');
-                let chartPrediksiObj;
-
-                function buildChartPrediksi(n) {
-                    const slice = sliceLast(allDataPrediksi, n);
-                    const labels = slice.map(d => d.label);
-                    const data = slice.map(d => d.count);
-
-                    const gradient = ctxPr.createLinearGradient(0, 0, 0, 200);
-                    gradient.addColorStop(0, 'rgba(138,99,210,.25)');
-                    gradient.addColorStop(1, 'rgba(138,99,210,0)');
-
-                    return new Chart(ctxPr, {
-                        type: 'line',
-                        data: {
-                            labels,
-                            datasets: [{
-                                data,
-                                borderColor: '#8a63d2',
-                                backgroundColor: gradient,
-                                borderWidth: 2.5,
-                                pointBackgroundColor: '#8a63d2',
-                                pointRadius: 4,
-                                pointHoverRadius: 6,
-                                tension: 0.35,
-                                fill: true,
-                            }]
-                        },
-                        options: {
-                            plugins: { legend: { display: false } },
-                            scales: {
-                                x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#8ca0bf' } },
-                                y: { grid: { color: '#f0f4fb' }, ticks: { font: { size: 10 }, color: '#8ca0bf' } }
-                            },
-                            interaction: { mode: 'index', intersect: false },
-                        }
-                    });
-                }
-                chartPrediksiObj = buildChartPrediksi(6);
-                function updateChartPrediksi(n) {
+                        interaction: { mode: 'index', intersect: false },
+                    }
+                });
+            }
+            chartPrediksiObj = buildChartPrediksi(6);
+            window.updateChartPrediksi = function (n) {
+                if (chartPrediksiObj) {
                     chartPrediksiObj.destroy();
-                    chartPrediksiObj = buildChartPrediksi(parseInt(n));
                 }
-            </script>
-        @endpush
+                chartPrediksiObj = buildChartPrediksi(parseInt(n));
+            }
+        }
+    </script>
+@endpush
