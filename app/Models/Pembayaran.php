@@ -16,6 +16,8 @@ class Pembayaran extends Model
         'tanggal_bayar',
         'metode_pembayaran',
         'catatan',
+        'bukti_bayar',
+        'catatan_pelanggan',
         'status',
         'verified_by',
         'verified_at',

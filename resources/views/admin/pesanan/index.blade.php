@@ -58,12 +58,14 @@
     .data-table td.center { text-align: center; }
     .row-number { color: #8ca0bf; font-weight: 600; }
     
-    /* ── Status Badges ── */
-    .status-badge { display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 20px; font-size: .72rem; font-weight: 700; text-transform: capitalize; }
-    .status-pending { background: #f3f4f6; color: #4b5563; }
-    .status-diproses { background: #fff3e6; color: #f5a54a; }
-    .status-dikerjakan { background: #e8f0fd; color: #4A90D9; }
-    .status-selesai { background: #e8f8ee; color: #34c472; }
+    /* ── Status Inline Select ── */
+    .status-select { border-radius: 20px; font-size: .72rem; font-weight: 700; padding: 4px 8px; border: none; outline: none; cursor: pointer; font-family: inherit; appearance: none; -webkit-appearance: none; text-align: center; transition: opacity .15s; }
+    .status-select:hover { opacity: .85; }
+    .status-select.status-pending { background: #f3f4f6; color: #4b5563; }
+    .status-select.status-diproses { background: #fff3e6; color: #f5a54a; }
+    .status-select.status-dikerjakan { background: #e8f0fd; color: #4A90D9; }
+    .status-select.status-selesai { background: #e8f8ee; color: #34c472; }
+    .status-select.loading { opacity: .5; cursor: wait; }
 
     /* ── Product List Item (Table) ── */
     .item-produk-row { font-size: 0.76rem; margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px dashed #e8eef8; }
@@ -296,9 +298,9 @@
                         <th>Pelanggan</th>
                         <th>Daftar Item Produk</th>
                         <th>Total Harga</th>
-                        <th style="width:90px" class="center">Status</th>
+                        <th style="width:120px" class="center">Status</th>
                         <th style="width:80px" class="center">Bayar</th>
-                        <th style="width:140px">Aksi</th>
+                        <th style="width:100px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -327,7 +329,16 @@
                             Rp {{ number_format($p->total_harga, 0, ',', '.') }}
                         </td>
                         <td class="center">
-                            <span class="status-badge status-{{ $p->status }}">{{ $p->status }}</span>
+                            <select
+                                class="status-select status-{{ $p->status }}"
+                                data-id="{{ $p->id }}"
+                                data-url="{{ route('admin.pesanan.updateStatus', $p->id) }}"
+                                onchange="updateStatusAjax(this)">
+                                <option value="pending"   {{ $p->status === 'pending'    ? 'selected' : '' }}>Pending</option>
+                                <option value="diproses"  {{ $p->status === 'diproses'   ? 'selected' : '' }}>Diproses</option>
+                                <option value="dikerjakan" {{ $p->status === 'dikerjakan' ? 'selected' : '' }}>Dikerjakan</option>
+                                <option value="selesai"   {{ $p->status === 'selesai'    ? 'selected' : '' }}>Selesai</option>
+                            </select>
                         </td>
                         <td class="center">
                             <span class="pay-status ps-{{ $p->status_pembayaran ?? 'belum_bayar' }}">
@@ -336,19 +347,6 @@
                         </td>
                         <td>
                             <div class="aksi-wrap">
-                                <form method="POST" action="{{ route('admin.pesanan.updateStatus', $p->id) }}" style="display:inline;" id="status-form-{{ $p->id }}">
-                                    @csrf @method('PATCH')
-                                    @php
-                                        $nextStatus = $p->status == 'pending' ? 'diproses' : ($p->status == 'diproses' ? 'dikerjakan' : ($p->status == 'dikerjakan' ? 'selesai' : 'pending'));
-                                    @endphp
-                                    <input type="hidden" name="status" value="{{ $nextStatus }}">
-                                    <button type="submit" class="btn-status" title="Ubah Status ke {{ ucfirst($nextStatus) }}">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-                                        </svg>
-                                    </button>
-                                </form>
-                                
                                 <a href="{{ route('admin.pesanan.nota', $p->id) }}" target="_blank" class="btn-print" title="Cetak Nota">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                         <polyline points="6 9 6 2 18 2 18 9"/>
@@ -356,20 +354,6 @@
                                         <rect x="6" y="14" width="12" height="8"/>
                                     </svg>
                                 </a>
-
-                                <button class="btn-edit" title="Edit"
-                                    onclick="editPesanan(
-                                        {{ $p->id }},
-                                        {{ $p->user_id }},
-                                        '{{ $p->tanggal_pesanan ? $p->tanggal_pesanan->format('Y-m-d') : '' }}',
-                                        '{{ $p->status }}',
-                                        {{ json_encode($p->details) }}
-                                    )">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                    </svg>
-                                </button>
 
                                 <form method="POST" action="{{ route('admin.pesanan.destroy', $p->id) }}" class="form-hapus" style="display:inline">
                                     @csrf @method('DELETE')
@@ -391,7 +375,6 @@
                                         <line x1="1" y1="10" x2="23" y2="10"/>
                                     </svg>
                                 </a>
-
                             </div>
                         </td>
                     </tr>
@@ -527,14 +510,49 @@
     const produksData = @json($produks);
     let itemIndex = 0;
 
-    // Helper untuk merender 1 baris item produk baru di form
+    // ── Inline Status Dropdown AJAX ──────────────────────────────────
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    function updateStatusAjax(selectEl) {
+        const newStatus = selectEl.value;
+        const url = selectEl.dataset.url;
+
+        // Update visual class immediately
+        selectEl.className = 'status-select loading';
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+                'X-HTTP-Method-Override': 'PATCH',
+            },
+            body: JSON.stringify({ status: newStatus, _method: 'PATCH' }),
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                selectEl.className = 'status-select status-' + newStatus;
+                showToast(data.message, 'success');
+            } else {
+                showToast('Gagal mengubah status.', 'error');
+                selectEl.className = 'status-select status-' + (selectEl.dataset.current || 'pending');
+            }
+        })
+        .catch(() => {
+            showToast('Terjadi kesalahan saat menghubungi server.', 'error');
+            selectEl.className = 'status-select status-' + (selectEl.dataset.current || 'pending');
+        });
+    }
+
+    // ── Helper untuk merender 1 baris item produk ─────────────────────
     function addItemRow(produkId = '', ukuran = 'M', totalItem = 1) {
         const container = document.getElementById('itemsContainer');
         const row = document.createElement('div');
         row.className = 'item-form-row';
         row.id = `item-row-${itemIndex}`;
 
-        // Options list produk
         let options = '<option value="">Pilih Produk</option>';
         produksData.forEach(p => {
             const selected = p.id == produkId ? 'selected' : '';
@@ -578,12 +596,9 @@
 
     function removeItemRow(rowId) {
         const row = document.getElementById(rowId);
-        if (row) {
-            row.remove();
-        }
+        if (row) row.remove();
     }
 
-    // ── Open Form (Tambah Mode) ───────────────────────────────────────
     function openForm() {
         document.getElementById('formTitle').textContent = 'Tambah Pesanan';
         document.getElementById('formMethod').value = 'POST';
@@ -592,46 +607,14 @@
         document.getElementById('tanggalPesanan').value = '{{ date("Y-m-d") }}';
         document.getElementById('status').value = 'diproses';
         document.getElementById('btnSimpan').textContent = 'Simpan';
-        
-        // Bersihkan container item dan sisipkan 1 baris default
         document.getElementById('itemsContainer').innerHTML = '';
         itemIndex = 0;
-        addItemRow(); 
-
+        addItemRow();
         document.getElementById('userId').focus();
     }
 
-    // ── Edit Mode ────────────────────────────────────────────────────
-    function editPesanan(id, userId, tanggal, status, details) {
-        document.getElementById('formTitle').textContent = 'Edit Pesanan';
-        document.getElementById('formMethod').value = 'PUT';
-        document.getElementById('formPesanan').action = '/admin/pesanan/' + id;
-        document.getElementById('userId').value = userId;
-        document.getElementById('tanggalPesanan').value = tanggal;
-        document.getElementById('status').value = status;
-        document.getElementById('btnSimpan').textContent = 'Update';
+    function resetForm() { openForm(); }
 
-        // Bersihkan container item dan render detail pesanan yang ada
-        const container = document.getElementById('itemsContainer');
-        container.innerHTML = '';
-        itemIndex = 0;
-
-        details.forEach(d => {
-            addItemRow(d.produk_id, d.ukuran, d.total_item);
-        });
-
-        document.getElementById('formPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        document.getElementById('userId').focus();
-    }
-
-    // ── Reset Form ───────────────────────────────────────────────────
-    function resetForm() {
-        openForm();
-    }
-
-    // Inisialisasi awal form dengan 1 baris input produk kosong
-    document.addEventListener('DOMContentLoaded', function() {
-        openForm();
-    });
+    document.addEventListener('DOMContentLoaded', function() { openForm(); });
 </script>
 @endpush

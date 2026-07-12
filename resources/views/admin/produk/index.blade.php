@@ -331,7 +331,7 @@
                     <tr>
                         <th style="width:48px">No.</th>
                         <th>Nama Produk</th>
-                        <th>Jenis Seragam</th>
+                        <th>Kategori</th>
                         <th>Harga</th>
                         <th>Deskripsi</th>
                         <th style="width:60px" class="center">Stok</th>
@@ -466,13 +466,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="jenisSeragam">Jenis Seragam</label>
+                    <label class="form-label" for="jenisSeragam">Kategori</label>
                     <select class="form-select" id="jenisSeragam" name="jenis_seragam" required>
                         <option value="" disabled selected>-- Pilih Kategori --</option>
                         <option value="SD">SD</option>
                         <option value="SMP">SMP</option>
                         <option value="SMA/SMK">SMA/SMK</option>
                         <option value="Umum">Umum</option>
+                        <option value="Atribut">Atribut</option>
                     </select>
                 </div>
 

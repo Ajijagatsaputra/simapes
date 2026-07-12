@@ -64,7 +64,6 @@
                             data: datasetFitted,
                             borderColor: '#34c472',
                             borderWidth: 2,
-                            borderDash: [3, 3],
                             pointRadius: 0,
                             fill: false,
                             tension: 0.3
@@ -75,7 +74,7 @@
                             borderColor: '#8a63d2',
                             backgroundColor: gradientPurple,
                             borderWidth: 3,
-                            borderDash: [5, 5], // Membuat garis putus-putus khusus untuk prediksi
+                            borderDash: [5, 5],
                             pointBackgroundColor: '#8a63d2',
                             pointRadius: 4,
                             pointHoverRadius: 6,
@@ -94,7 +93,7 @@
                             labels: {
                                 font: {
                                     family: 'Inter',
-                                size: 11,
+                                    size: 11,
                                     weight: '500'
                                 },
                                 color: '#1a2b4a'
@@ -168,6 +167,7 @@
         };
 
         function updateParams() {
+            if (!presetSelect || !customWrapper) return;
             const val = presetSelect.value;
             if (val === 'kustom') {
                 customWrapper.style.display = 'grid';
@@ -181,24 +181,177 @@
             }
         }
 
-        // Tentukan state awal select berdasarkan input saat ini
-        const currentAlpha = parseFloat(alphaInput.value);
-        const currentBeta = parseFloat(betaInput.value);
-        const currentGamma = parseFloat(gammaInput.value);
+        if (alphaInput && betaInput && gammaInput) {
+            // Tentukan state awal select berdasarkan input saat ini
+            const currentAlpha = parseFloat(alphaInput.value);
+            const currentBeta = parseFloat(betaInput.value);
+            const currentGamma = parseFloat(gammaInput.value);
 
-        let matchedPreset = 'kustom';
-        for (const [key, p] of Object.entries(presets)) {
-            if (Math.abs(p.alpha - currentAlpha) < 0.0001 &&
-                Math.abs(p.beta - currentBeta) < 0.0001 &&
-                Math.abs(p.gamma - currentGamma) < 0.0001) {
-                matchedPreset = key;
-                break;
+            let matchedPreset = 'kustom';
+            for (const [key, p] of Object.entries(presets)) {
+                if (Math.abs(p.alpha - currentAlpha) < 0.0001 &&
+                    Math.abs(p.beta - currentBeta) < 0.0001 &&
+                    Math.abs(p.gamma - currentGamma) < 0.0001) {
+                    matchedPreset = key;
+                    break;
+                }
+            }
+
+            if (presetSelect) {
+                presetSelect.value = matchedPreset;
+                updateParams();
+                presetSelect.addEventListener('change', updateParams);
             }
         }
-
-        presetSelect.value = matchedPreset;
-        updateParams();
-
-        presetSelect.addEventListener('change', updateParams);
     });
+
+    // ── AJAX AI ANALYSIS HANDLER ──────────────────────────────────────────
+    function runAiAnalysis() {
+        const provider = document.getElementById('aiProviderSelect').value;
+        const alpha = document.getElementById('alpha') ? document.getElementById('alpha').value : 0.2;
+        const beta = document.getElementById('beta') ? document.getElementById('beta').value : 0.1;
+        const gamma = document.getElementById('gamma') ? document.getElementById('gamma').value : 0.3;
+
+        const contentArea = document.getElementById('aiContentArea');
+        const token = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '';
+
+        // Tampilkan loading screen interaktif
+        contentArea.innerHTML = `
+            <div class="ai-loading-container">
+                <div class="ai-spinner"></div>
+                <div class="ai-loading-text" id="aiLoadingStatus">Menghubungkan ke layanan AI...</div>
+                <div style="width: 60%; max-width: 300px;">
+                    <div class="shimmer-line"></div>
+                    <div class="shimmer-line" style="width: 85%;"></div>
+                    <div class="shimmer-line" style="width: 90%;"></div>
+                </div>
+            </div>
+        `;
+
+        // Daftar pesan loading bergantian
+        const loadingMessages = [
+            "AI sedang mengumpulkan data historis dan peramalan...",
+            "AI sedang menganalisis pola musiman dan tren penjualan...",
+            "AI sedang menghitung kebutuhan bahan baku (kain, kancing, benang, resleting)...",
+            "AI sedang merumuskan rekomendasi operasional konveksi...",
+            "Menyusun laporan analitik strategis SIMAPES..."
+        ];
+
+        let msgIdx = 0;
+        const msgInterval = setInterval(() => {
+            const statusEl = document.getElementById('aiLoadingStatus');
+            if (statusEl) {
+                statusEl.textContent = loadingMessages[msgIdx % loadingMessages.length];
+                msgIdx++;
+            } else {
+                clearInterval(msgInterval);
+            }
+        }, 3000);
+
+        // Kirim request ke backend
+        fetch("{{ route('admin.prediksi.analisisAi') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": token
+            },
+            body: JSON.stringify({
+                provider: provider,
+                alpha: alpha,
+                beta: beta,
+                gamma: gamma
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                clearInterval(msgInterval);
+                if (data.success) {
+                    const parsedHtml = localMarkdownParser(data.analysis);
+                    contentArea.innerHTML = `
+                    <div class="ai-rendered-markdown">
+                        ${parsedHtml}
+                    </div>
+                `;
+                } else {
+                    contentArea.innerHTML = `
+                    <div style="color: #e63946; padding: 20px; text-align: center; font-weight: 600;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        Gagal memuat analisis: ${data.message}
+                    </div>
+                `;
+                }
+            })
+            .catch(err => {
+                clearInterval(msgInterval);
+                contentArea.innerHTML = `
+                <div style="color: #e63946; padding: 20px; text-align: center; font-weight: 600;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Terjadi kesalahan koneksi ke server. Silakan coba lagi.
+                </div>
+            `;
+            });
+    }
+
+    // ── LOCAL MARKDOWN TO SEMANTIC HTML CONVERTER ──────────────────────────
+    function localMarkdownParser(text) {
+        let html = text;
+
+        // Escape HTML tags to prevent XSS (if text comes from AI)
+        html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        // Headers (e.g. ### Header)
+        html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+        html = html.replace(/^#### (.*$)/gim, '<h4>$1</h4>');
+
+        // Bold (e.g. **bold**)
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        // Blockquotes (e.g. > blockquote)
+        html = html.replace(/^\> (.*$)/gim, '<blockquote><p>$1</p></blockquote>');
+
+        // Bullet points (e.g. - item)
+        let lines = html.split('\n');
+        let inList = false;
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i].trim();
+            if (line.startsWith('- ') || line.startsWith('* ')) {
+                let content = line.substring(2);
+                if (!inList) {
+                    lines[i] = '<ul><li>' + content + '</li>';
+                    inList = true;
+                } else {
+                    lines[i] = '<li>' + content + '</li>';
+                }
+            } else {
+                if (inList) {
+                    lines[i] = '</ul>' + lines[i];
+                    inList = false;
+                }
+            }
+        }
+        if (inList) {
+            lines[lines.length - 1] = lines[lines.length - 1] + '</ul>';
+        }
+        html = lines.join('\n');
+
+        // Paragraphs: wrap non-heading, non-list, non-blockquote lines in p tags if they are not empty
+        html = html.split('\n').map(line => {
+            let trimmed = line.trim();
+            if (trimmed === '') return '';
+            if (trimmed.startsWith('<h') || trimmed.startsWith('<ul') || trimmed.startsWith('<li') || trimmed.startsWith('</ul') || trimmed.startsWith('<blockquote') || trimmed.startsWith('</blockquote')) {
+                return line;
+            }
+            return '<p>' + line + '</p>';
+        }).join('\n');
+
+        return html;
+    }
 </script>

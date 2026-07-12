@@ -483,4 +483,217 @@
     .step-list li {
         margin-bottom: 8px;
     }
+
+    /* ── AI Analysis Card ── */
+    .ai-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #e8eef8;
+        padding: 24px;
+        box-shadow: 0 2px 12px rgba(74, 144, 217, .05);
+        margin-bottom: 24px;
+    }
+
+    .ai-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #f0f4fb;
+        padding-bottom: 16px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .ai-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ai-icon-pulse {
+        color: #8a63d2;
+        background: #f3ebfc;
+        padding: 8px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .ai-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ai-select {
+        padding: 8px 12px;
+        border: 1px solid #cedbe9;
+        border-radius: 8px;
+        font-size: .8rem;
+        color: #1a2b4a;
+        font-family: inherit;
+        outline: none;
+        background: #fafdff;
+        cursor: pointer;
+    }
+
+    .btn-ai {
+        background: #8a63d2;
+        color: #fff;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: .8rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        transition: background .2s, transform .15s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-ai:hover {
+        background: #734bbd;
+        transform: translateY(-1px);
+    }
+
+    .btn-ai:active {
+        transform: translateY(0);
+    }
+
+    .ai-content {
+        font-size: .85rem;
+        color: #2d4060;
+        line-height: 1.65;
+        min-height: 120px;
+    }
+
+    .ai-placeholder-text {
+        color: #8ca0bf;
+        text-align: center;
+        padding: 40px 0;
+        font-style: italic;
+    }
+
+    /* AI Loading State */
+    .ai-loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+        gap: 16px;
+    }
+
+    .ai-spinner {
+        border: 3.5px solid #f3f3f3;
+        border-top: 3.5px solid #8a63d2;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        animation: spin-ai 1s linear infinite;
+    }
+
+    @keyframes spin-ai {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .ai-loading-text {
+        font-size: .82rem;
+        color: #6b7e9f;
+        font-weight: 600;
+        animation: pulse-ai-text 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-ai-text {
+
+        0%,
+        100% {
+            opacity: 0.6;
+        }
+
+        50% {
+            opacity: 1;
+        }
+    }
+
+    /* Markdown styling inside AI content */
+    .ai-rendered-markdown h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1a2b4a;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border-bottom: 1.5px solid #f0f4fb;
+        padding-bottom: 6px;
+    }
+
+    .ai-rendered-markdown h3:first-child {
+        margin-top: 0;
+    }
+
+    .ai-rendered-markdown p {
+        margin-bottom: 12px;
+    }
+
+    .ai-rendered-markdown ul,
+    .ai-rendered-markdown ol {
+        margin-bottom: 14px;
+        padding-left: 20px;
+    }
+
+    .ai-rendered-markdown li {
+        margin-bottom: 6px;
+    }
+
+    .ai-rendered-markdown strong {
+        color: #1a2b4a;
+        font-weight: 700;
+    }
+
+    .ai-rendered-markdown blockquote {
+        background: #f7f6fc;
+        border-left: 4px solid #8a63d2;
+        padding: 10px 16px;
+        margin: 14px 0;
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
+        color: #4a5a7a;
+    }
+
+    .ai-rendered-markdown blockquote p {
+        margin-bottom: 0;
+    }
+
+    /* Shimmer effect for placeholder skeleton */
+    .shimmer-line {
+        height: 12px;
+        margin-bottom: 10px;
+        background: linear-gradient(90deg, #f0f4f8 25%, #e2ebf4 50%, #f0f4f8 75%);
+        background-size: 200% 100%;
+        animation: loading-shimmer 1.5s infinite;
+        border-radius: 4px;
+    }
+
+    @keyframes loading-shimmer {
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
+    }
 </style>

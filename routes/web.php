@@ -54,18 +54,22 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/pesanan', [Admin\PesananController::class, 'index'])->name('pesanan.index');
         Route::post('/pesanan', [Admin\PesananController::class, 'store'])->name('pesanan.store');
         Route::get('/pesanan/{id}/nota', [Admin\PesananController::class, 'nota'])->name('pesanan.nota');
-        Route::put('/pesanan/{id}', [Admin\PesananController::class, 'update'])->name('pesanan.update');
         Route::patch('/pesanan/{id}/status', [Admin\PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
         Route::delete('/pesanan/{id}', [Admin\PesananController::class, 'destroy'])->name('pesanan.destroy');
 
         // Pembayaran (Termin / DP)
         Route::get('/pesanan/{id}/pembayaran', [Admin\PembayaranController::class, 'show'])->name('pesanan.pembayaran');
         Route::post('/pesanan/{id}/pembayaran', [Admin\PembayaranController::class, 'store'])->name('pesanan.pembayaran.store');
+        Route::post('/pesanan/{id}/pembayaran/{pembayaranId}/verifikasi', [Admin\PembayaranController::class, 'verifikasi'])->name('pesanan.pembayaran.verifikasi');
         Route::delete('/pesanan/{id}/pembayaran/{pembayaranId}', [Admin\PembayaranController::class, 'destroy'])->name('pesanan.pembayaran.destroy');
 
         // Prediksi (Holt-Winters)
         Route::get('/prediksi', [Admin\PrediksiController::class, 'index'])->name('prediksi.index');
         Route::get('/prediksi/print-po', [Admin\PrediksiController::class, 'printPo'])->name('prediksi.printPo');
+        Route::post('/prediksi/upload', [Admin\PrediksiController::class, 'uploadExcel'])->name('prediksi.upload');
+        Route::post('/prediksi/clear', [Admin\PrediksiController::class, 'clearUpload'])->name('prediksi.clear');
+        Route::get('/prediksi/template', [Admin\PrediksiController::class, 'downloadTemplate'])->name('prediksi.template');
+        Route::post('/prediksi/analisis-ai', [Admin\PrediksiController::class, 'analisisAi'])->name('prediksi.analisisAi');
 
         // Laporan
         Route::get('/laporan', [Admin\LaporanController::class, 'index'])->name('laporan.index');
@@ -95,6 +99,8 @@ Route::middleware(['auth', 'role:pelanggan'])
         Route::get('/pesanan/template-excel', [Pelanggan\PesananController::class, 'downloadTemplate'])->name('pesanan.template');
         Route::post('/pesanan/upload-excel', [Pelanggan\PesananController::class, 'uploadExcel'])->name('pesanan.upload');
         Route::get('/pesanan/{id}', [Pelanggan\PesananController::class, 'show'])->name('pesanan.show');
+        // Pembayaran termin oleh pelanggan (upload bukti bayar)
+        Route::post('/pesanan/{id}/bayar', [Pelanggan\PembayaranController::class, 'store'])->name('pesanan.bayar');
 
         // Riwayat Pesanan
         Route::get('/riwayat', [Pelanggan\RiwayatController::class, 'index'])->name('riwayat');

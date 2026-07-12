@@ -548,14 +548,22 @@
                                 <div class="tl-dot tl-dot-{{ $p->status }}"></div>
                                 <div class="tl-content">
                                     <div class="tl-header">
-                                        <span class="tl-termin">Termin {{ $p->termin_ke }}</span>
+                                        <span class="tl-termin">
+                                            Termin {{ $p->termin_ke }}
+                                            @if($p->status === 'pending')
+                                                <span style="background:#fff3e6;color:#d97706;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;">⏳ Menunggu Verifikasi</span>
+                                            @else
+                                                <span style="background:#ecfdf5;color:#059669;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;">✓ Terverifikasi</span>
+                                            @endif
+                                        </span>
                                         <span class="tl-amount">Rp {{ number_format($p->jumlah_bayar, 0, ',', '.') }}</span>
                                     </div>
                                     <div class="tl-meta">
                                         {{ $p->tanggal_bayar->isoFormat('DD MMM YYYY') }} · {{ ucfirst($p->metode_pembayaran) }}
-                                        @if($p->catatan) · {{ $p->catatan }} @endif
+                                        @if($p->catatan) · Catatan Admin: {{ $p->catatan }} @endif
+                                        @if($p->catatan_pelanggan) · Catatan Pelanggan: <em style="color:#1a2b4a;">"{{ $p->catatan_pelanggan }}"</em> @endif
                                     </div>
-                                    <div class="tl-items">
+                                    <div class="tl-items" style="margin-bottom:8px;">
                                         @foreach($p->details as $pd)
                                             <strong>{{ $pd->detailPesanan->produk->nama_produk ?? '-' }}
                                                 ({{ $pd->detailPesanan->ukuran }})</strong>: {{ $pd->jumlah_cover }} pcs
@@ -563,7 +571,28 @@
                                                 {{ number_format($pd->nominal_cover, 0, ',', '.') }}</span>@if(!$loop->last), @endif
                                         @endforeach
                                     </div>
-                                    <div style="margin-top:8px; text-align:right;">
+                                    
+                                    @if($p->bukti_bayar)
+                                        <div style="margin-bottom:8px;">
+                                            <a href="{{ asset('storage/' . $p->bukti_bayar) }}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:.72rem;color:#4A90D9;text-decoration:none;font-weight:700;background:#e8f0fd;padding:4px 10px;border-radius:6px;">
+                                                📎 Lihat Bukti Pembayaran
+                                            </a>
+                                        </div>
+                                    @endif
+
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                                        <div>
+                                            @if($p->status === 'pending')
+                                                <form method="POST"
+                                                    action="{{ route('admin.pesanan.pembayaran.verifikasi', [$pesanan->id, $p->id]) }}"
+                                                    style="display:inline;">
+                                                    @csrf
+                                                    <button type="submit" style="background:#10b981;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:.7rem;font-weight:700;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                                                        ✓ Verifikasi Pembayaran
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                         <form method="POST"
                                             action="{{ route('admin.pesanan.pembayaran.destroy', [$pesanan->id, $p->id]) }}"
                                             style="display:inline;"

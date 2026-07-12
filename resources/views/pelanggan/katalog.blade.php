@@ -139,10 +139,30 @@
         }
 
         /* Badge warna berdasarkan jenis seragam */
-        .badge-sd { background: #fee2e2; color: #ef4444; }
-        .badge-smp { background: #dbeafe; color: #2563eb; }
-        .badge-sma { background: #f3f4f6; color: #4b5563; }
-        .badge-umum { background: #fef3c7; color: #d97706; }
+        .badge-sd {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .badge-smp {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .badge-sma {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .badge-umum {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-atribut {
+            background: #f3e8ff;
+            color: #7c3aed;
+        }
 
         .product-info {
             padding: 20px;
@@ -190,8 +210,13 @@
             font-weight: 600;
         }
 
-        .stock-available { color: #10b981; }
-        .stock-empty { color: #ef4444; }
+        .stock-available {
+            color: #10b981;
+        }
+
+        .stock-empty {
+            color: #ef4444;
+        }
 
         .btn-order {
             display: block;
@@ -261,7 +286,8 @@
         {{-- Filter & Search --}}
         <div class="filter-bar">
             <div class="search-box">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8" />
                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
@@ -272,6 +298,7 @@
                 <button class="filter-btn" onclick="filterCategory('SD', this)">SD</button>
                 <button class="filter-btn" onclick="filterCategory('SMP', this)">SMP</button>
                 <button class="filter-btn" onclick="filterCategory('SMA', this)">SMA/SMK</button>
+                <button class="filter-btn" onclick="filterCategory('Atribut', this)">Atribut</button>
             </div>
         </div>
 
@@ -287,25 +314,31 @@
                         $badgeClass = 'badge-smp';
                     } elseif (str_contains($jenisLower, 'sma') || str_contains($jenisLower, 'smk')) {
                         $badgeClass = 'badge-sma';
+                    } elseif ($jenisLower === 'atribut') {
+                        $badgeClass = 'badge-atribut';
                     }
                 @endphp
                 <div class="product-card" data-name="{{ strtolower($p->nama_produk) }}" data-category="{{ $p->jenis_seragam }}">
                     <div class="product-thumb">
                         <span class="product-badge {{ $badgeClass }}">{{ $p->jenis_seragam }}</span>
                         @if($p->gambar)
-                            <img src="{{ asset($p->gambar) }}" alt="{{ $p->nama_produk }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            <img src="{{ asset($p->gambar) }}" alt="{{ $p->nama_produk }}"
+                                style="width: 100%; height: 100%; object-fit: cover;">
                         @else
                             <!-- Uniform SVG Icon -->
                             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-                                <path d="M20.38 3.46L16 6.5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3.5L3.62 3.46a1 1 0 0 0-1.46.9l1.5 14.5a2 2 0 0 0 2 1.8h12.68a2 2 0 0 0 2-1.8l1.5-14.5a1 1 0 0 0-1.46-.9z"/>
-                                <path d="M12 2v7M8 9h8"/>
+                                <path
+                                    d="M20.38 3.46L16 6.5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3.5L3.62 3.46a1 1 0 0 0-1.46.9l1.5 14.5a2 2 0 0 0 2 1.8h12.68a2 2 0 0 0 2-1.8l1.5-14.5a1 1 0 0 0-1.46-.9z" />
+                                <path d="M12 2v7M8 9h8" />
                             </svg>
                         @endif
                     </div>
                     <div class="product-info">
                         <h3 class="product-name">{{ $p->nama_produk }}</h3>
-                        <p class="product-desc">{{ $p->deskripsi ?? 'Bahan berkualitas premium, jahitan rapi, nyaman digunakan sehari-hari.' }}</p>
-                        
+                        <p class="product-desc">
+                            {{ $p->deskripsi ?? 'Bahan berkualitas premium, jahitan rapi, nyaman digunakan sehari-hari.' }}
+                        </p>
+
                         <div class="product-meta">
                             <span class="product-price">Rp {{ number_format($p->harga, 0, ',', '.') }}</span>
                             <span class="product-stock {{ $p->stok > 0 ? 'stock-available' : 'stock-empty' }}">
@@ -338,33 +371,40 @@
     <script>
         let currentCategory = 'all';
 
-        function filterKatalog() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const cards = document.querySelectorAll('.product-card');
-            
-            cards.forEach(card => {
-                const name = card.getAttribute('data-name');
-                const category = card.getAttribute('data-category');
-                
-                const matchesSearch = name.includes(query);
-                const matchesCategory = currentCategory === 'all' || category.includes(currentCategory);
-                
-                if (matchesSearch && matchesCategory) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-
         function filterCategory(category, button) {
             currentCategory = category;
-            
+
             // Toggle active class on buttons
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            
+
             filterKatalog();
+        }
+
+        function filterKatalog() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.product-card');
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                const category = card.getAttribute('data-category');
+
+                let matchesCategory = false;
+                if (currentCategory === 'all') {
+                    matchesCategory = true;
+                } else if (currentCategory === 'SMA') {
+                    // Match SMA atau SMK
+                    matchesCategory = category.toLowerCase().includes('sma') || category.toLowerCase().includes('smk');
+                } else if (currentCategory === 'Atribut') {
+                    matchesCategory = category === 'Atribut';
+                } else {
+                    matchesCategory = category.includes(currentCategory);
+                }
+
+                const matchesSearch = name.includes(query);
+
+                card.style.display = (matchesSearch && matchesCategory) ? 'flex' : 'none';
+            });
         }
     </script>
 @endsection

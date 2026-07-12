@@ -104,55 +104,6 @@ class PesananController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'tanggal_pesanan' => 'required|date',
-            'status' => 'required|in:pending,diproses,dikerjakan,selesai',
-            'items' => 'required|array|min:1',
-            'items.*.produk_id' => 'required|exists:produks,id',
-            'items.*.ukuran' => 'required|in:S,M,L,XL,XXL,3XL,4XL,5XL',
-            'items.*.total_item' => 'required|integer|min:1',
-        ]);
-
-        DB::beginTransaction();
-        try {
-            $pesanan = Pesanan::findOrFail($id);
-            $pesanan->update([
-                'user_id' => $request->user_id,
-                'tanggal_pesanan' => $request->tanggal_pesanan,
-                'status' => $request->status,
-            ]);
-
-            $pesanan->details()->delete();
-            $totalHarga = 0;
-
-            foreach ($request->items as $item) {
-                $produk = Produk::findOrFail($item['produk_id']);
-                $subtotal = $produk->harga * $item['total_item'];
-                $totalHarga += $subtotal;
-
-                DetailPesanan::create([
-                    'pesanan_id' => $pesanan->id,
-                    'produk_id' => $item['produk_id'],
-                    'ukuran' => $item['ukuran'],
-                    'harga_satuan' => $produk->harga,
-                    'total_item' => $item['total_item'],
-                    'subtotal' => $subtotal,
-                ]);
-            }
-
-            $pesanan->update(['total_harga' => $totalHarga, 'sisa_tagihan' => max(0, $totalHarga - $pesanan->total_terbayar)]);
-            ActivityLog::log('Memperbarui data pesanan: ' . $pesanan->no_pesanan, 'Pesanan', $pesanan->id);
-
-            DB::commit();
-            return redirect()->route('admin.pesanan.index')->with('success', 'Pesanan berhasil diperbarui.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal memperbarui pesanan: ' . $e->getMessage());
-        }
-    }
 
     public function updateStatus(Request $request, $id)
     {
@@ -160,6 +111,15 @@ class PesananController extends Controller
         $pesanan = Pesanan::findOrFail($id);
         $pesanan->update(['status' => $request->status]);
         ActivityLog::log('Mengubah status pesanan ' . $pesanan->no_pesanan . ' menjadi ' . $request->status, 'Pesanan', $pesanan->id);
+
+        // Return JSON jika AJAX request
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Status pesanan ' . $pesanan->no_pesanan . ' berhasil diubah ke ' . $request->status . '.',
+                'status' => $request->status,
+            ]);
+        }
 
         return redirect()->route('admin.pesanan.index')->with('success', 'Status pesanan berhasil diperbarui.');
     }

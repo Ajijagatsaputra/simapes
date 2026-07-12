@@ -147,4 +147,41 @@ class PembayaranController extends Controller
             return redirect()->back()->with('error', 'Gagal menghapus pembayaran: ' . $e->getMessage());
         }
     }
+
+    /** Verifikasi pembayaran pending dari pelanggan */
+    public function verifikasi($pesananId, $pembayaranId)
+    {
+        $pesanan = Pesanan::findOrFail($pesananId);
+        $pembayaran = Pembayaran::where('pesanan_id', $pesananId)->findOrFail($pembayaranId);
+
+        if ($pembayaran->status !== 'pending') {
+            return redirect()->back()->with('error', 'Pembayaran ini sudah tidak berstatus pending.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $pembayaran->update([
+                'status' => 'verified',
+                'verified_by' => Auth::id(),
+                'verified_at' => now(),
+            ]);
+
+            // Recalculate pembayaran & item coverage
+            $pesanan->recalculatePembayaran();
+            $pesanan->recalculateItemCoverage();
+
+            ActivityLog::log(
+                'Memverifikasi pembayaran termin ' . $pembayaran->termin_ke . ' sebesar Rp ' . number_format($pembayaran->jumlah_bayar, 0, ',', '.') . ' untuk pesanan ' . $pesanan->no_pesanan,
+                'Pembayaran',
+                $pesanan->id
+            );
+
+            DB::commit();
+            return redirect()->route('admin.pesanan.pembayaran', $pesanan->id)
+                ->with('success', 'Pembayaran termin ' . $pembayaran->termin_ke . ' berhasil diverifikasi.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal memverifikasi pembayaran: ' . $e->getMessage());
+        }
+    }
 }
