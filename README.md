@@ -1,13 +1,13 @@
 # SIMAPES (Sistem Informasi Manajemen Pemesanan Konveksi & Prediksi)
 
-SIMAPES adalah sistem informasi berbasis web yang dirancang khusus untuk mempermudah pemilik/pengelola jasa konveksi (khususnya pembuatan seragam sekolah/organisasi) dalam mengelola seluruh siklus bisnis pemesanan pakaian secara terkomputerisasi. Selain manajemen operasional, sistem ini dilengkapi dengan modul **Sistem Prediksi** untuk meramalkan jumlah pemesanan di masa mendatang guna membantu pengambilan keputusan pengadaan bahan baku dan alokasi tenaga penjahit.
+SIMAPES adalah sistem informasi berbasis web yang dirancang khusus untuk mempermudah pemilik/pengelola jasa konveksi (khususnya pembuatan seragam sekolah/organisasi) dalam mengelola seluruh siklus bisnis pemesanan pakaian secara terkomputerisasi. Selain manajemen operasional, sistem ini dilengkapi dengan modul **Sistem Prediksi** untuk meramalkan jumlah pemesanan di masa mendatang guna membantu pengambilan keputusan pengadaan bahan baku (MRP) dan alokasi kapasitas produksi.
 
 Aplikasi ini dikembangkan menggunakan arsitektur **MVC (Model-View-Controller)** yang bersih, terstruktur, dan terintegrasi penuh dengan database.
 
 ---
 
 ## 👥 Aktor Sistem
-Untuk efisiensi dan fokus kebutuhan Tugas Akhir (TA), sistem ini dirancang dengan **1 Aktor Utama (Admin-Only)** sebagai sistem pengelolaan internal (*Back-Office*). Admin bertanggung jawab menginput data pelanggan, mengelola katalog produk, mencatat pesanan masuk, memperbarui status pengerjaan, dan melakukan simulasi kalkulasi prediksi penjualan.
+Untuk efisiensi dan fokus kebutuhan Tugas Akhir (TA) / Skripsi, sistem ini dirancang dengan **1 Aktor Utama (Admin-Only)** sebagai sistem pengelolaan internal (*Back-Office*). Admin bertanggung jawab menginput data pelanggan, mengelola katalog produk, mencatat pesanan masuk, memperbarui status pengerjaan, melakukan simulasi kalkulasi prediksi penjualan, hingga mengelola rantai pasok bahan baku.
 
 ---
 
@@ -15,8 +15,8 @@ Untuk efisiensi dan fokus kebutuhan Tugas Akhir (TA), sistem ini dirancang denga
 
 1. **Dashboard Interaktif**:
    - Menampilkan card ringkasan statistik real-time (Total Pelanggan, Total Produk, Total Pesanan, Pesanan Sedang Diproses, dan Pesanan Selesai).
-   - Grafik garis visualisasi jumlah pesanan bulanan aktual.
-   - Tabel ringkasan 5 transaksi pesanan terbaru.
+   - **Grafik Peramalan Holt-Winters Terintegrasi**: Menggantikan data dummy dengan hasil kalkulasi peramalan riil yang ditarik dari database atau session data upload.
+   - **UI Fallback Warning**: Deteksi dini jika data transaksi kurang dari 24 bulan, menampilkan peringatan UI non-teknis yang informatif alih-alih merusak grafik chart.
 
 2. **Manajemen Data Pelanggan**:
    - Fitur CRUD lengkap untuk mencatat profil pelanggan (Nama, Email, WhatsApp, Alamat, dan Nama Sekolah/Instansi).
@@ -32,10 +32,26 @@ Untuk efisiensi dan fokus kebutuhan Tugas Akhir (TA), sistem ini dirancang denga
 
 5. **Sistem Prediksi Holt-Winters (Fitur Unggulan TA)**:
    - Menggunakan algoritma **Triple Exponential Smoothing (Holt-Winters Multiplicative)** riil untuk meramal 12 bulan ke depan.
-   - **Form Parameter Dinamis**: Admin dapat memasukkan nilai parameter pemulusan Alpha ($\alpha$), Beta ($\beta$), dan Gamma ($\gamma$) secara interaktif untuk mencari tingkat akurasi tertinggi secara langsung.
+   - **Form Parameter Dinamis**: Admin dapat memasukkan nilai parameter pemulusan Alpha ($\alpha$), Beta ($\beta$), dan Gamma ($\gamma$) secara interaktif.
    - **Evaluasi Error (MAPE & MAD)**: Menampilkan tingkat kesalahan ramalan secara matematis guna menguji keandalan hasil prediksi.
    - **Visualisasi Chart.js**: Grafik kesinambungan kontinu antara data aktual (3 tahun lalu) dan data proyeksi (1 tahun mendatang).
-   - **Detail Rumus Akademik**: Bagian penjelasan rumus matematika pemulusan level, tren, dan musiman untuk mempermudah sidang pertanggungjawaban di depan dosen penguji.
+   - **Dual-Mode Data Ingestion**: Sistem mampu menghitung prediksi secara otomatis dari database sistem atau via unggah (upload) file CSV/Excel data historis secara fleksibel.
+
+6. **Analisis Cerdas & Rekomendasi AI**:
+   - Terintegrasi dengan **Gemini API (Direct)** dan **OpenRouter (Gemini 2.5 Flash)**.
+   - AI membaca hasil peramalan Holt-Winters dan kalkulasi MRP untuk memberikan analisis tren taktis, rekomendasi pengadaan, dan strategi operasional konveksi secara instan.
+   - Dilengkapi *circuit breaker* parameter `max_tokens` (2048) untuk menjamin pemakaian yang hemat kuota pada limitasi gratis API.
+
+7. **Perencanaan Kebutuhan Bahan Baku (MRP & SCM)**:
+   - Menghitung kebutuhan bahan mentah (Kain, Kancing, Benang, Resleting) untuk menyelesaikan pesanan ramalan 12 bulan ke depan.
+   - **Safety Stock (Stok Pengaman)** & **Reorder Point (ROP)** dihitung secara dinamis berbasis data lead-time pengiriman supplier.
+
+8. **Simulator Skenario "What-If" Interaktif (Baru)**:
+   - Slider simulasi di browser untuk memodelkan skenario pasar (-30% Krisis s.d +50% Lonjakan Puncak).
+   - Tabel MRP, Safety Stock, ROP, isi draf chat WhatsApp Supplier, dan link Cetak PO berubah otomatis secara dinamis (*real-time*) mengikuti opsi skenario yang dipilih.
+
+9. **Ekspor Laporan PDF Komprehensif (Baru)**:
+   - Menghasilkan berkas cetak PDF resmi menggunakan `dompdf` berisi data evaluasi model peramalan (MAPE/MAD), tabel proyeksi 12 bulan, tabel perhitungan MRP/ROP, dan hasil analisis narasi AI.
 
 ---
 
@@ -44,59 +60,19 @@ Untuk efisiensi dan fokus kebutuhan Tugas Akhir (TA), sistem ini dirancang denga
 ### Mengapa Holt-Winters Multiplikatif?
 Data pesanan jasa konveksi seragam memiliki karakteristik **Tren** jangka panjang sekaligus **Musiman** tahunan yang sangat kuat (misalnya: pesanan selalu melonjak tajam menjelang Tahun Ajaran Baru sekolah di bulan Juni - Agustus, dan sepi di bulan Desember). Metode Holt-Winters Multiplikatif sangat cocok karena mampu memperhitungkan komponen musiman yang bersifat proporsional terhadap rata-rata level data.
 
-### Cara Kerja Perhitungan di Sistem
-Prediksi dihitung secara langsung di backend server (**`App\Services\PredictionService`**) secara *on-the-fly* (langsung dihitung saat halaman dimuat) dari database riil tabel `pesanans`. **Tidak ada penyimpanan file model Machine Learning terpisah**.
-
-1. **Inisialisasi**: Sistem menghitung nilai Level awal ($L_0$), Tren awal ($T_0$), dan 12 Indeks Musiman ($S_1 \dots S_{12}$) berdasarkan data 24 bulan pertama (2 tahun awal).
-2. **Iterasi Pemulusan (Smoothing)**: Sistem menyusuri data dari bulan ke-13 hingga bulan ke-36 untuk memperbarui parameter level, tren, dan musiman dengan persamaan:
-   - **Level ($L_t$)**: $L_t = \alpha \frac{Y_t}{S_{t-12}} + (1 - \alpha) (L_{t-1} + T_{t-1})$
-   - **Trend ($T_t$)**: $T_t = \beta (L_t - L_{t-1}) + (1 - \beta) T_{t-1}$
-   - **Seasonal ($S_t$)**: $S_t = \gamma \frac{Y_t}{L_t} + (1 - \gamma) S_{t-12}$
-3. **Proyeksi**: Hasil peramalan untuk $m$ bulan ke depan dihitung dengan rumus: $F_{t+m} = (L_t + m \cdot T_t) \cdot S_{t-12+m}$
+### Persamaan Matematis yang Digunakan:
+1. **Level ($L_t$)**: $L_t = \alpha \frac{Y_t}{S_{t-12}} + (1 - \alpha) (L_{t-1} + T_{t-1})$
+2. **Trend ($T_t$)**: $T_t = \beta (L_t - L_{t-1}) + (1 - \beta) T_{t-1}$
+3. **Seasonal ($S_t$)**: $S_t = \gamma \frac{Y_t}{L_t} + (1 - \gamma) S_{t-12}$
+4. **Proyeksi**: $F_{t+m} = (L_t + m \cdot T_t) \cdot S_{t-12+m}$
 
 ---
 
 ## 🛠️ Langkah Instalasi & Penggunaan
 
-Pilih salah satu metode instalasi di bawah ini:
+### Metode A: Menggunakan Docker (Direkomendasikan)
 
-### Metode A: Instalasi Lokal (Tanpa Docker)
-
-1. **Clone & Masuk ke Proyek**:
-   ```bash
-   cd simapes
-   ```
-
-2. **Install Dependencies**:
-   ```bash
-   composer install
-   npm install
-   ```
-
-3. **Konfigurasi Environment**:
-   - Salin file `.env.example` menjadi `.env`
-   - Sesuaikan nama database di bagian `DB_DATABASE=simapes` dan pastikan `DB_HOST=127.0.0.1`
-
-4. **Jalankan Migrasi & Suntik Data Historis 3 Tahun**:
-   ```bash
-   php artisan migrate:fresh --seed
-   ```
-
-5. **Jalankan Server Lokal**:
-   ```bash
-   php artisan serve
-   ```
-
-6. **Akun Akses Default**:
-   Buka `http://127.0.0.1:8000/` di browser dan masuk menggunakan akun admin berikut:
-   - **Email**: `admin@gmail.com`
-   - **Password**: `12345678`
-
----
-
-### Metode B: Menggunakan Docker (Rekomendasi)
-
-Jika Anda ingin menjalankan aplikasi di dalam kontainer Docker tanpa perlu menginstal PHP, Composer, Node.js, atau MySQL secara lokal:
+Aplikasi telah dilengkapi konfigurasi Docker Compose ter-orkestrasi:
 
 1. **Clone & Masuk ke Proyek**:
    ```bash
@@ -104,8 +80,8 @@ Jika Anda ingin menjalankan aplikasi di dalam kontainer Docker tanpa perlu mengi
    ```
 
 2. **Konfigurasi Environment**:
-   - Salin file `.env.example` menjadi `.env` (jika belum ada).
-   - Sesuaikan konfigurasi database agar terhubung ke kontainer MySQL di dalam Docker:
+   - Salin `.env.example` menjadi `.env`
+   - Pastikan konfigurasi database mengarah ke service kontainer MySQL (`db`):
      ```env
      DB_HOST=db
      DB_PORT=3306
@@ -115,65 +91,74 @@ Jika Anda ingin menjalankan aplikasi di dalam kontainer Docker tanpa perlu mengi
      ```
 
 3. **Jalankan Docker Compose**:
-   Bangun dan jalankan kontainer di background:
    ```bash
    docker compose up -d --build
    ```
 
-4. **Install Dependencies di Dalam Kontainer**:
+4. **Instal Dependencies**:
    ```bash
    docker compose exec app composer install
    docker compose exec app npm install
    ```
 
-5. **Atur Izin Folder (Permissions)**:
-   Berikan akses tulis untuk folder storage dan cache di dalam kontainer:
+5. **Generate Application Key & Izin Folder**:
    ```bash
+   docker compose exec app php artisan key:generate
    docker compose exec app chmod -R 777 storage bootstrap/cache
    ```
 
-6. **Generate Application Key**:
-   ```bash
-   docker compose exec app php artisan key:generate
-   ```
-
-7. **Jalankan Migrasi & Suntik Data Historis**:
+6. **Jalankan Migrasi & Suntik Data Historis 3 Tahun**:
    ```bash
    docker compose exec app php artisan migrate:fresh --seed
    ```
 
-8. **Compile Aset Frontend (Vite)**:
-   - Untuk mode pengembangan (Hot Reloading / Dev):
-     ```bash
-     docker compose exec app npm run dev
-     ```
-   - Untuk membuild aset produksi:
-     ```bash
-     docker compose exec app npm run build
-     ```
+7. **Jalankan Vite Dev Server**:
+   ```bash
+   docker compose exec app npm run dev
+   ```
 
-9. **Akun Akses Default**:
-   Buka `http://localhost:8000/` di browser dan masuk menggunakan akun admin berikut:
+8. **Akses Aplikasi**:
+   Buka **[http://localhost:8091](http://localhost:8091)** di browser Anda.
    - **Email**: `admin@gmail.com`
    - **Password**: `12345678`
 
-10. **Menghentikan Kontainer**:
-    ```bash
-    docker compose down
-    ```
+---
+
+### Metode B: Instalasi Lokal (Tanpa Docker)
+
+1. **Install Dependencies**:
+   ```bash
+   composer install
+   npm install
+   ```
+
+2. **Konfigurasi Database**:
+   Sesuaikan file `.env` ke database lokal MySQL Anda (`DB_HOST=127.0.0.1`).
+
+3. **Jalankan Migrasi & Seeder**:
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
+
+4. **Jalankan Server & Aset Compile**:
+   ```bash
+   php artisan serve
+   npm run dev
+   ```
+   Buka `http://127.0.0.1:8000` di browser.
 
 ---
 
-## 📁 Struktur Folder Utama Proyek (MVC)
+## 📁 Struktur Folder Utama Proyek (MVC & Services)
 *   **`app/Http/Controllers/`**
-    *   `DashboardController.php` - Mengelola data statistik & ringkasan di beranda utama.
-    *   `PrediksiController.php` - Menerima parameter input $\alpha, \beta, \gamma$, memanggil layanan prediksi, dan mengirim data ke frontend.
+    *   `DashboardController.php` - Mengelola data statistik dashboard & memicu Holt-Winters ke beranda utama.
+    *   `PrediksiController.php` - Menerima input $\alpha, \beta, \gamma$, memicu prediksi/MRP, menyimpan riwayat analisis AI di session, dan mencetak laporan PO/PDF.
 *   **`app/Services/`**
-    *   `PredictionService.php` - Berisi implementasi rumus matematika Holt-Winters, perhitungan MAPE, MAD, dan inisialisasi musiman.
-*   **`database/seeders/`**
-    *   `DatabaseSeeder.php` - Seeder master data admin, pelanggan, dan produk.
-    *   `PesananHistorisSeeder.php` - Menghasilkan data transaksi penjualan musiman 3 tahun (36 data point bulanan) secara dinamis.
-*   **`resources/views/`**
-    *   `layouts/main.blade.php` - Layout master admin (Sidebar, Notifikasi Toast, & Modal Konfirmasi).
-    *   `dashboard.blade.php` - Tampilan beranda utama admin.
-    *   `prediksi/index.blade.php` - Halaman form interaktif parameter, grafik Chart.js, tabel ramalan, dan rincian rumus.
+    *   `PredictionService.php` - Logika Holt-Winters, perhitungan MAPE/MAD, optimasi parameter otomatis, dan kalkulasi Safety Stock/ROP.
+    *   `AiPredictionService.php` - Gateway komunikasi API AI ke Gemini dan OpenRouter dengan penanganan token dinamis.
+*   **`resources/views/admin/prediksi/`**
+    *   `index.blade.php` - Interface peramalan utama.
+    *   `pdf_report.blade.php` - Template cetak PDF laporan formal.
+    *   `partials/mrp.blade.php` - Tabel perencanaan bahan & panel simulator "What-if".
+    *   `partials/supplier.blade.php` - Daftar rekomendasi supplier terintegrasi PO & WA.
+    *   `partials/scripts.blade.php` - Client-side simulator engine & local markdown parser.
