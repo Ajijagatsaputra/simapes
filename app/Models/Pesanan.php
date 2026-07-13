@@ -83,7 +83,21 @@ class Pesanan extends Model
     public static function generateNoPesanan(): string
     {
         $tahun = now()->year;
-        $lastNo = static::whereYear('created_at', $tahun)->count() + 1;
-        return 'PSN-' . $tahun . '-' . str_pad($lastNo, 3, '0', STR_PAD_LEFT);
+
+        // Cari pesanan terakhir di tahun ini yang memiliki format 'PSN-YYYY-XXX'
+        $lastOrder = static::whereYear('created_at', $tahun)
+            ->where('no_pesanan', 'LIKE', "PSN-{$tahun}-%")
+            ->orderBy('no_pesanan', 'desc')
+            ->first();
+
+        $lastNo = 0;
+        if ($lastOrder) {
+            // Ambil bagian nomor urut di paling akhir (misal dari 'PSN-2026-122' diambil 122)
+            $parts = explode('-', $lastOrder->no_pesanan);
+            $lastNo = (int) end($parts);
+        }
+
+        $nextNo = $lastNo + 1;
+        return 'PSN-' . $tahun . '-' . str_pad($nextNo, 3, '0', STR_PAD_LEFT);
     }
 }
