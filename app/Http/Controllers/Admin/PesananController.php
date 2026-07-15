@@ -39,7 +39,7 @@ class PesananController extends Controller
             $query->where('status', $request->status);
         }
 
-        $pesanan = $query->with(['user', 'details.produk'])->latest()->paginate(10)->withQueryString();
+        $pesanan = $query->with(['user', 'details.produk'])->orderBy('id', 'desc')->paginate(10)->withQueryString();
         $pelanggan = User::where('role', 'pelanggan')->orderBy('name')->get();
         $produks = Produk::orderBy('nama_produk')->get();
 

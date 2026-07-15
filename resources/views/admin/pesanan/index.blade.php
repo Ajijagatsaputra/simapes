@@ -21,6 +21,9 @@
     .stat-bar-label { font-size: .75rem; color: #8ca0bf; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
     .stat-bar-value { font-size: 1.7rem; font-weight: 800; color: #1a2b4a; line-height: 1.1; }
     .stat-bar-desc  { font-size: .72rem; color: #a0aec0; }
+    .stat-bar-link { text-decoration: none; display: block; transition: transform 0.2s, box-shadow 0.2s; }
+    .stat-bar-link:hover { transform: translateY(-3px); }
+    .stat-bar-link:hover .stat-bar { box-shadow: 0 6px 16px rgba(74, 144, 217, 0.12); border-color: #bcd4f5; }
     @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 992px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 576px) { .stats-grid { grid-template-columns: 1fr; } }
@@ -173,80 +176,90 @@
     {{-- ── Stats Grid ── --}}
     <div class="stats-grid">
         {{-- Card 1: Total Transaksi --}}
-        <div class="stat-bar">
-            <div class="stat-bar-icon" style="background: #e8f0fd; color: #4A90D9;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <line x1="16" y1="13" x2="8" y2="13"/>
-                    <line x1="16" y1="17" x2="8" y2="17"/>
-                </svg>
+        <a href="{{ route('admin.pesanan.index', ['status' => 'semua']) }}" class="stat-bar-link">
+            <div class="stat-bar">
+                <div class="stat-bar-icon" style="background: #e8f0fd; color: #4A90D9;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-bar-label">Total Pesanan</div>
+                    <div class="stat-bar-value">{{ $totalPesanan }}</div>
+                    <div class="stat-bar-desc">Semua status pesanan</div>
+                </div>
             </div>
-            <div>
-                <div class="stat-bar-label">Total Pesanan</div>
-                <div class="stat-bar-value">{{ $totalPesanan }}</div>
-                <div class="stat-bar-desc">Semua status pesanan</div>
-            </div>
-        </div>
+        </a>
 
         {{-- Card 2: Menunggu Persetujuan --}}
-        <div class="stat-bar">
-            <div class="stat-bar-icon" style="background: #f3f4f6; color: #4b5563;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
+        <a href="{{ route('admin.pesanan.index', ['status' => 'pending']) }}" class="stat-bar-link">
+            <div class="stat-bar">
+                <div class="stat-bar-icon" style="background: #f3f4f6; color: #4b5563;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-bar-label">Menunggu Persetujuan</div>
+                    <div class="stat-bar-value">{{ $totalPending }}</div>
+                    <div class="stat-bar-desc">Perlu verifikasi</div>
+                </div>
             </div>
-            <div>
-                <div class="stat-bar-label">Menunggu Persetujuan</div>
-                <div class="stat-bar-value">{{ $totalPending }}</div>
-                <div class="stat-bar-desc">Perlu verifikasi</div>
-            </div>
-        </div>
+        </a>
 
         {{-- Card 3: Diproses --}}
-        <div class="stat-bar">
-            <div class="stat-bar-icon" style="background: #fff3e6; color: #f5a54a;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                </svg>
+        <a href="{{ route('admin.pesanan.index', ['status' => 'diproses']) }}" class="stat-bar-link">
+            <div class="stat-bar">
+                <div class="stat-bar-icon" style="background: #fff3e6; color: #f5a54a;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-bar-label">Diproses</div>
+                    <div class="stat-bar-value">{{ $totalDiproses }}</div>
+                    <div class="stat-bar-desc">Pesanan baru masuk</div>
+                </div>
             </div>
-            <div>
-                <div class="stat-bar-label">Diproses</div>
-                <div class="stat-bar-value">{{ $totalDiproses }}</div>
-                <div class="stat-bar-desc">Pesanan baru masuk</div>
-            </div>
-        </div>
+        </a>
 
         {{-- Card 4: Dikerjakan --}}
-        <div class="stat-bar">
-            <div class="stat-bar-icon" style="background: #eaf3fc; color: #4A90D9;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/>
-                </svg>
+        <a href="{{ route('admin.pesanan.index', ['status' => 'dikerjakan']) }}" class="stat-bar-link">
+            <div class="stat-bar">
+                <div class="stat-bar-icon" style="background: #eaf3fc; color: #4A90D9;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-bar-label">Dikerjakan</div>
+                    <div class="stat-bar-value">{{ $totalDikerjakan }}</div>
+                    <div class="stat-bar-desc">Sedang diproduksi</div>
+                </div>
             </div>
-            <div>
-                <div class="stat-bar-label">Dikerjakan</div>
-                <div class="stat-bar-value">{{ $totalDikerjakan }}</div>
-                <div class="stat-bar-desc">Sedang diproduksi</div>
-            </div>
-        </div>
+        </a>
 
         {{-- Card 5: Selesai --}}
-        <div class="stat-bar">
-            <div class="stat-bar-icon" style="background: #e8f8ee; color: #34c472;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                </svg>
+        <a href="{{ route('admin.pesanan.index', ['status' => 'selesai']) }}" class="stat-bar-link">
+            <div class="stat-bar">
+                <div class="stat-bar-icon" style="background: #e8f8ee; color: #34c472;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-bar-label">Selesai</div>
+                    <div class="stat-bar-value">{{ $totalSelesai }}</div>
+                    <div class="stat-bar-desc">Rampung & diambil</div>
+                </div>
             </div>
-            <div>
-                <div class="stat-bar-label">Selesai</div>
-                <div class="stat-bar-value">{{ $totalSelesai }}</div>
-                <div class="stat-bar-desc">Rampung & diambil</div>
-            </div>
-        </div>
+        </a>
     </div>
 
     {{-- ── Main Layout ── --}}
