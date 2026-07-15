@@ -573,9 +573,9 @@ Page Content
                             <td>
                                 @php $s = strtolower($pesanan->status ?? ''); @endphp
                                 <span class="badge
-                                                                                @if($s === 'diproses') badge-diproses
-                                                                                @elseif($s === 'dikerjakan') badge-dikerjakan
-                                                                                @else badge-selesai @endif">
+                                                                                        @if($s === 'diproses') badge-diproses
+                                                                                        @elseif($s === 'dikerjakan') badge-dikerjakan
+                                                                                        @else badge-selesai @endif">
                                     {{ ucfirst($pesanan->status ?? 'selesai') }}
                                 </span>
                             </td>
@@ -675,6 +675,91 @@ Page Content
                 @endif
             </div>
         </div>
+    </div>
+
+    {{-- ── Progres Produksi Seragam (Berjalan) ── --}}
+    <div class="card" style="margin-top: 24px;">
+        <div class="card-header" style="margin-bottom: 16px;">
+            <span class="card-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="color: #eab308;">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z">
+                    </path>
+                </svg>
+                Progres Produksi Seragam (Berjalan)
+            </span>
+            @if(Route::has('admin.pesanan.index'))
+                <a href="{{ route('admin.pesanan.index') }}" class="btn-lihat-semua">Kelola Semua Pesanan</a>
+            @endif
+        </div>
+
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>No. Pesanan</th>
+                    <th>Pelanggan</th>
+                    <th>Detail Tahapan Progres</th>
+                    <th style="text-align: center;">Dokumentasi</th>
+                    <th style="text-align: center;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($pesananDikerjakan ?? [] as $pesanan)
+                    <tr>
+                        <td style="font-weight: 700;">
+                            {{ $pesanan->no_pesanan ?? 'PSN-' . str_pad($pesanan->id, 3, '0', STR_PAD_LEFT) }}</td>
+                        <td>
+                            <div style="font-weight: 600;">{{ $pesanan->user->name ?? '-' }}</div>
+                            <div style="font-size: 0.7rem; color: #8ca0bf;">{{ $pesanan->user->nama_sekolah ?? '-' }}</div>
+                        </td>
+                        <td>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                @foreach($pesanan->progresProduksis as $prog)
+                                    <div
+                                        style="display: flex; justify-content: space-between; font-size: 0.75rem; background: #f8fafc; padding: 4px 8px; border-radius: 6px; border: 1px solid #f0f2f5;">
+                                        <span><strong>{{ $prog->tahapan }}</strong></span>
+                                        <span style="color: #4A90D9; font-weight: 700;">{{ $prog->jumlah_pcs }} Pcs</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </td>
+                        <td style="text-align: center;">
+                            <div style="display: flex; justify-content: center; gap: 4px;">
+                                @php $hasDoc = false; @endphp
+                                @foreach($pesanan->progresProduksis as $prog)
+                                    @if($prog->dokumentasi)
+                                        @php $hasDoc = true; @endphp
+                                        <a href="{{ asset('storage/' . $prog->dokumentasi) }}" target="_blank"
+                                            title="Lihat Dokumentasi: {{ $prog->tahapan }}">
+                                            <img src="{{ asset('storage/' . $prog->dokumentasi) }}"
+                                                style="width: 32px; height: 32px; border-radius: 6px; object-fit: cover; border: 1px solid #dde8f8;"
+                                                alt="Doc">
+                                        </a>
+                                    @endif
+                                @endforeach
+                                @if(!$hasDoc)
+                                    <span style="font-size: 0.72rem; color: #a0aec0; font-style: italic;">Tidak ada foto</span>
+                                @endif
+                            </div>
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="{{ route('admin.pesanan.progres', $pesanan->id) }}" class="btn-lihat-semua"
+                                style="background: #e8f0fd; color: #4A90D9; border: 1px solid #d0e3fa; font-weight: 700; text-decoration: none;">
+                                Kelola Progres
+                            </a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" style="text-align:center;color:#a0aec0;padding:24px 0;">
+                            Tidak ada pesanan yang sedang dalam proses produksi.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 
     {{-- ── Activity Log (Audit Trail) ── --}}

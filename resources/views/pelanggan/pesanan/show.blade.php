@@ -398,45 +398,300 @@
         }
 
         /* ── Modal Pembayaran ── */
-        .modal-overlay { position:fixed; inset:0; background:rgba(10,20,50,.55); z-index:1000; display:flex; align-items:center; justify-content:center; padding:16px; opacity:0; visibility:hidden; transition:opacity .25s, visibility .25s; }
-        .modal-overlay.open { opacity:1; visibility:visible; }
-        .modal-box { background:#fff; border-radius:20px; width:100%; max-width:500px; box-shadow:0 24px 64px rgba(26,43,74,.18); transform:translateY(24px); transition:transform .25s; overflow:hidden; }
-        .modal-overlay.open .modal-box { transform:translateY(0); }
-        .modal-header { background:linear-gradient(135deg,#1e3c72,#2a5298); padding:20px 24px; display:flex; justify-content:space-between; align-items:center; }
-        .modal-header h3 { color:#fff; font-size:1rem; font-weight:800; margin:0; }
-        .modal-header span { color:#93c5fd; font-size:.78rem; margin-top:3px; display:block; }
-        .modal-close { background:rgba(255,255,255,.15); border:none; color:#fff; width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; transition:background .15s; }
-        .modal-close:hover { background:rgba(255,255,255,.3); }
-        .modal-body { padding:20px 24px; }
-        .modal-footer { padding:0 24px 20px; display:flex; gap:10px; }
-        .pay-method-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
-        .pay-method-btn { border:2px solid #e2e8f4; border-radius:12px; padding:14px 12px; cursor:pointer; text-align:center; transition:border-color .15s, background .15s; background:#fff; }
-        .pay-method-btn:hover { border-color:#4A90D9; background:#f5f8ff; }
-        .pay-method-btn.selected { border-color:#4A90D9; background:#eaf3fc; }
-        .pay-method-btn .icon { font-size:1.4rem; margin-bottom:4px; }
-        .pay-method-btn .label { font-size:.8rem; font-weight:700; color:#1a2b4a; }
-        .pay-method-btn .sub { font-size:.68rem; color:#8ca0bf; margin-top:2px; }
-        .form-lbl { display:block; font-size:.75rem; font-weight:600; color:#5a7090; margin-bottom:5px; }
-        .form-ctrl { width:100%; border:1.5px solid #dde8f8; border-radius:9px; padding:9px 12px; font-size:.83rem; font-family:inherit; color:#1a2b4a; background:#fafdff; outline:none; transition:border-color .15s, box-shadow .15s; box-sizing:border-box; }
-        .form-ctrl:focus { border-color:#4A90D9; box-shadow:0 0 0 3px rgba(74,144,217,.12); background:#fff; }
-        .upload-zone { border:2px dashed #c5d8f5; border-radius:12px; padding:20px; text-align:center; cursor:pointer; transition:border-color .15s, background .15s; margin-bottom:16px; }
-        .upload-zone:hover { border-color:#4A90D9; background:#f5f8ff; }
-        .upload-zone.has-file { border-color:#10b981; background:#ecfdf5; }
-        .upload-zone .uz-icon { font-size:1.6rem; margin-bottom:6px; }
-        .upload-zone .uz-text { font-size:.78rem; color:#6b7e9f; }
-        .upload-zone .uz-file { font-size:.78rem; font-weight:700; color:#059669; margin-top:4px; }
-        .btn-submit-bayar { flex:1; background:#4A90D9; color:#fff; border:none; border-radius:10px; padding:11px; font-size:.85rem; font-weight:700; cursor:pointer; font-family:inherit; transition:background .2s; }
-        .btn-submit-bayar:hover { background:#3a7bc8; }
-        .btn-cancel-modal { background:#f0f4fb; color:#5a7090; border:1px solid #dde8f8; border-radius:10px; padding:11px 18px; font-size:.85rem; font-weight:600; cursor:pointer; font-family:inherit; transition:background .15s; }
-        .btn-cancel-modal:hover { background:#e2e8f4; }
-        .nominal-highlight { background:#fff3e6; border:1px solid #fde68a; border-radius:10px; padding:12px 16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; }
-        .nominal-highlight .nh-label { font-size:.78rem; color:#d97706; font-weight:600; }
-        .nominal-highlight .nh-value { font-size:1.1rem; font-weight:800; color:#b45309; }
-        .btn-bayar-termin { display:inline-flex; align-items:center; gap:7px; background:linear-gradient(135deg,#1e3c72,#3a7bc8); color:#fff; border:none; border-radius:10px; padding:10px 18px; font-size:.82rem; font-weight:700; cursor:pointer; font-family:inherit; transition:opacity .15s, transform .15s; text-decoration:none; }
-        .btn-bayar-termin:hover { opacity:.9; transform:translateY(-1px); }
-        .btn-bayar-termin:disabled { background:#cbd5e1; color:#94a3b8; cursor:not-allowed; transform:none; }
-        .btn-bayar-lunas { background:linear-gradient(135deg,#059669,#10b981); }
-        .badge-pending-pay { background:#fff3e6; color:#d97706; font-size:.65rem; font-weight:700; padding:3px 8px; border-radius:10px; margin-left:8px; }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 20, 50, .55);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .25s, visibility .25s;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 24px 64px rgba(26, 43, 74, .18);
+            transform: translateY(24px);
+            transition: transform .25s;
+            overflow: hidden;
+        }
+
+        .modal-overlay.open .modal-box {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .modal-header span {
+            color: #93c5fd;
+            font-size: .78rem;
+            margin-top: 3px;
+            display: block;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, .15);
+            border: none;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .15s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, .3);
+        }
+
+        .modal-body {
+            padding: 20px 24px;
+        }
+
+        .modal-footer {
+            padding: 0 24px 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .pay-method-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .pay-method-btn {
+            border: 2px solid #e2e8f4;
+            border-radius: 12px;
+            padding: 14px 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: border-color .15s, background .15s;
+            background: #fff;
+        }
+
+        .pay-method-btn:hover {
+            border-color: #4A90D9;
+            background: #f5f8ff;
+        }
+
+        .pay-method-btn.selected {
+            border-color: #4A90D9;
+            background: #eaf3fc;
+        }
+
+        .pay-method-btn .icon {
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+        }
+
+        .pay-method-btn .label {
+            font-size: .8rem;
+            font-weight: 700;
+            color: #1a2b4a;
+        }
+
+        .pay-method-btn .sub {
+            font-size: .68rem;
+            color: #8ca0bf;
+            margin-top: 2px;
+        }
+
+        .form-lbl {
+            display: block;
+            font-size: .75rem;
+            font-weight: 600;
+            color: #5a7090;
+            margin-bottom: 5px;
+        }
+
+        .form-ctrl {
+            width: 100%;
+            border: 1.5px solid #dde8f8;
+            border-radius: 9px;
+            padding: 9px 12px;
+            font-size: .83rem;
+            font-family: inherit;
+            color: #1a2b4a;
+            background: #fafdff;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+            box-sizing: border-box;
+        }
+
+        .form-ctrl:focus {
+            border-color: #4A90D9;
+            box-shadow: 0 0 0 3px rgba(74, 144, 217, .12);
+            background: #fff;
+        }
+
+        .upload-zone {
+            border: 2px dashed #c5d8f5;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .15s, background .15s;
+            margin-bottom: 16px;
+        }
+
+        .upload-zone:hover {
+            border-color: #4A90D9;
+            background: #f5f8ff;
+        }
+
+        .upload-zone.has-file {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .upload-zone .uz-icon {
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+        }
+
+        .upload-zone .uz-text {
+            font-size: .78rem;
+            color: #6b7e9f;
+        }
+
+        .upload-zone .uz-file {
+            font-size: .78rem;
+            font-weight: 700;
+            color: #059669;
+            margin-top: 4px;
+        }
+
+        .btn-submit-bayar {
+            flex: 1;
+            background: #4A90D9;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 11px;
+            font-size: .85rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background .2s;
+        }
+
+        .btn-submit-bayar:hover {
+            background: #3a7bc8;
+        }
+
+        .btn-cancel-modal {
+            background: #f0f4fb;
+            color: #5a7090;
+            border: 1px solid #dde8f8;
+            border-radius: 10px;
+            padding: 11px 18px;
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background .15s;
+        }
+
+        .btn-cancel-modal:hover {
+            background: #e2e8f4;
+        }
+
+        .nominal-highlight {
+            background: #fff3e6;
+            border: 1px solid #fde68a;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nominal-highlight .nh-label {
+            font-size: .78rem;
+            color: #d97706;
+            font-weight: 600;
+        }
+
+        .nominal-highlight .nh-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #b45309;
+        }
+
+        .btn-bayar-termin {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: linear-gradient(135deg, #1e3c72, #3a7bc8);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 18px;
+            font-size: .82rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity .15s, transform .15s;
+            text-decoration: none;
+        }
+
+        .btn-bayar-termin:hover {
+            opacity: .9;
+            transform: translateY(-1px);
+        }
+
+        .btn-bayar-termin:disabled {
+            background: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-bayar-lunas {
+            background: linear-gradient(135deg, #059669, #10b981);
+        }
+
+        .badge-pending-pay {
+            background: #fff3e6;
+            color: #d97706;
+            font-size: .65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
     </style>
 @endpush
 
@@ -498,6 +753,69 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Progres Produksi Timeline --}}
+            @if(in_array($pesanan->status, ['dikerjakan', 'selesai']))
+                <div class="info-section" style="margin-bottom: 28px;">
+                    <h3>Progres Produksi Seragam</h3>
+
+                    @if($pesanan->progresProduksis->isEmpty())
+                        <div
+                            style="background: #fafbfc; border: 1px dashed #dde8f8; border-radius: 12px; padding: 24px; text-align: center; color: #8ca0bf; font-size: 0.82rem;">
+                            ⏳ Menunggu tim produksi memulai proses pengerjaan.
+                        </div>
+                    @else
+                        <div style="position: relative; padding-left: 28px; margin-top: 14px;">
+                            <div style="position: absolute; left: 9px; top: 4px; bottom: 4px; width: 2px; background: #e8eef8;">
+                            </div>
+
+                            @foreach($pesanan->progresProduksis as $prog)
+                                <div style="position: relative; margin-bottom: 24px;">
+                                    <div
+                                        style="position: absolute; left: -24px; top: 4px; width: 12px; height: 12px; border-radius: 50%; border: 2.5px solid #fff; background: {{ $prog->tahapan === 'Selesai Produksi' ? '#10b981' : '#4A90D9' }}; box-shadow: 0 0 0 3px {{ $prog->tahapan === 'Selesai Produksi' ? 'rgba(16,185,129,0.15)' : 'rgba(74,144,217,0.15)' }};">
+                                    </div>
+
+                                    <div
+                                        style="background: #fdfeff; border: 1px solid #dde8f8; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(74, 144, 217, 0.02);">
+                                        <div
+                                            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+                                            <span
+                                                style="font-weight: 700; color: #1a2b4a; font-size: 0.88rem;">{{ $prog->tahapan }}</span>
+                                            <span
+                                                style="background: #e8f0fd; color: #4A90D9; font-weight: 800; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px;">{{ $prog->jumlah_pcs }}
+                                                Pcs</span>
+                                        </div>
+
+                                        @if($prog->catatan)
+                                            <div style="font-size: 0.78rem; color: #5a7090; margin-bottom: 10px; font-style: italic;">
+                                                "{{ $prog->catatan }}"
+                                            </div>
+                                        @endif
+
+                                        @if($prog->dokumentasi)
+                                            <div style="margin-top: 10px; margin-bottom: 6px;">
+                                                <a href="{{ asset('storage/' . $prog->dokumentasi) }}" target="_blank"
+                                                    style="display: inline-block;">
+                                                    <img src="{{ asset('storage/' . $prog->dokumentasi) }}"
+                                                        style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid #e2e8f4; object-fit: contain;"
+                                                        alt="Dokumentasi">
+                                                </a>
+                                                <div style="font-size: 0.65rem; color: #8ca0bf; margin-top: 4px;">🔍 Klik gambar untuk
+                                                    memperbesar</div>
+                                            </div>
+                                        @endif
+
+                                        <div style="font-size: 0.68rem; color: #8ca0bf; text-align: right; margin-top: 6px;">
+                                            Terakhir diupdate: {{ $prog->updated_at->isoFormat('DD MMMM YYYY, HH:mm') }} WIB
+                                            ({{ $prog->updated_at->diffForHumans() }})
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            @endif
 
             {{-- Items Table with Coverage --}}
             <div class="info-section">
@@ -570,108 +888,138 @@
 
             {{-- Invoice Section — Interaktif dengan Tombol Bayar --}}
             @php
-                $dp50        = $pesanan->total_harga / 2;
-                $lunas50     = $pesanan->total_harga / 2;
-                $sp          = $pesanan->status_pembayaran ?? 'belum_bayar';
-                $termin1     = $pesanan->pembayarans->where('termin_ke', 1)->first();
-                $termin2     = $pesanan->pembayarans->where('termin_ke', 2)->first();
-                $t1Verified  = $termin1 && $termin1->status === 'verified';
-                $t1Pending   = $termin1 && $termin1->status === 'pending';
-                $t2Verified  = $termin2 && $termin2->status === 'verified';
-                $t2Pending   = $termin2 && $termin2->status === 'pending';
+                $dp50 = $pesanan->total_harga / 2;
+                $lunas50 = $pesanan->total_harga / 2;
+                $sp = $pesanan->status_pembayaran ?? 'belum_bayar';
+                $termin1 = $pesanan->pembayarans->where('termin_ke', 1)->first();
+                $termin2 = $pesanan->pembayarans->where('termin_ke', 2)->first();
+                $t1Verified = $termin1 && $termin1->status === 'verified';
+                $t1Pending = $termin1 && $termin1->status === 'pending';
+                $t2Verified = $termin2 && $termin2->status === 'verified';
+                $t2Pending = $termin2 && $termin2->status === 'pending';
                 $bisaBayarT1 = !$termin1;
                 $bisaBayarT2 = $t1Verified && !$termin2;
             @endphp
             <div class="info-section" style="margin-bottom:24px;">
                 <h3>Invoice &amp; Pembayaran Termin</h3>
                 @if(session('success'))
-                    <div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#065f46;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+                    <div
+                        style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#065f46;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
                         <span>✓</span> {{ session('success') }}
                     </div>
                 @endif
                 @if(session('error'))
-                    <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#991b1b;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+                    <div
+                        style="background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#991b1b;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
                         <span>✗</span> {{ session('error') }}
                     </div>
                 @endif
 
                 <div style="background:#f5f8ff;border:1px solid #dde8f8;border-radius:14px;overflow:hidden;">
                     {{-- Header --}}
-                    <div style="background:linear-gradient(135deg,#1e3c72,#2a5298);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                    <div
+                        style="background:linear-gradient(135deg,#1e3c72,#2a5298);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
                         <div>
-                            <div style="color:#fff;font-weight:800;font-size:.95rem;">Invoice #{{ $pesanan->no_pesanan }}</div>
-                            <div style="color:#93c5fd;font-size:.75rem;margin-top:2px;">{{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->isoFormat('DD MMMM YYYY') }}</div>
+                            <div style="color:#fff;font-weight:800;font-size:.95rem;">Invoice #{{ $pesanan->no_pesanan }}
+                            </div>
+                            <div style="color:#93c5fd;font-size:.75rem;margin-top:2px;">
+                                {{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->isoFormat('DD MMMM YYYY') }}
+                            </div>
                         </div>
                         <span class="pay-badge-sm pb-{{ $sp }}" style="font-size:.78rem;padding:5px 14px;">
-                            @if($sp==='belum_bayar') Belum Bayar
-                            @elseif($sp==='dp') DP Dibayar
+                            @if($sp === 'belum_bayar') Belum Bayar
+                            @elseif($sp === 'dp') DP Dibayar
                             @else Lunas @endif
                         </span>
                     </div>
 
                     <div style="padding:0 20px;">
                         {{-- Total --}}
-                        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #e2e8f4;">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #e2e8f4;">
                             <div>
                                 <div style="font-weight:700;color:#1a2b4a;font-size:.85rem;">Total Tagihan</div>
-                                <div style="font-size:.72rem;color:#8ca0bf;">{{ $pesanan->details->sum('total_item') }} Pcs · Alokasi otomatis per item</div>
+                                <div style="font-size:.72rem;color:#8ca0bf;">{{ $pesanan->details->sum('total_item') }} Pcs
+                                    · Alokasi otomatis per item</div>
                             </div>
-                            <div style="font-weight:800;font-size:1.05rem;color:#1a2b4a;">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</div>
+                            <div style="font-weight:800;font-size:1.05rem;color:#1a2b4a;">Rp
+                                {{ number_format($pesanan->total_harga, 0, ',', '.') }}
+                            </div>
                         </div>
 
                         {{-- Termin 1 --}}
-                        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #e2e8f4;gap:12px;flex-wrap:wrap;">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #e2e8f4;gap:12px;flex-wrap:wrap;">
                             <div style="flex:1;min-width:180px;">
                                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                                     <span style="font-weight:700;color:#1a2b4a;font-size:.85rem;">Termin 1 — DP (50%)</span>
                                     @if($t1Verified)
-                                        <span style="background:#ecfdf5;color:#059669;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">✓ Terverifikasi</span>
+                                        <span
+                                            style="background:#ecfdf5;color:#059669;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">✓
+                                            Terverifikasi</span>
                                     @elseif($t1Pending)
                                         <span class="badge-pending-pay">⏳ Menunggu Verifikasi</span>
                                     @else
-                                        <span style="background:#fef2f2;color:#dc2626;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">Belum Bayar</span>
+                                        <span
+                                            style="background:#fef2f2;color:#dc2626;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">Belum
+                                            Bayar</span>
                                     @endif
                                 </div>
                                 <div style="font-size:.72rem;color:#8ca0bf;margin-top:3px;">
-                                    @if($t1Verified) Dibayar {{ $termin1->tanggal_bayar->isoFormat('DD MMM YYYY') }} · {{ ucfirst($termin1->metode_pembayaran) }}
+                                    @if($t1Verified) Dibayar {{ $termin1->tanggal_bayar->isoFormat('DD MMM YYYY') }} ·
+                                        {{ ucfirst($termin1->metode_pembayaran) }}
                                     @elseif($t1Pending) Menunggu konfirmasi admin
                                     @else Bayar untuk memulai produksi @endif
                                 </div>
                             </div>
                             <div style="display:flex;align-items:center;gap:12px;">
-                                <div style="font-weight:800;font-size:.95rem;color:#d97706;">Rp {{ number_format($dp50, 0, ',', '.') }}</div>
+                                <div style="font-weight:800;font-size:.95rem;color:#d97706;">Rp
+                                    {{ number_format($dp50, 0, ',', '.') }}
+                                </div>
                                 @if($bisaBayarT1)
-                                    <button onclick="openModalBayar(1, {{ $dp50 }})" class="btn-bayar-termin">💳 Bayar DP</button>
+                                    <button onclick="openModalBayar(1, {{ $dp50 }})" class="btn-bayar-termin">💳 Bayar
+                                        DP</button>
                                 @endif
                             </div>
                         </div>
 
                         {{-- Termin 2 --}}
-                        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #e2e8f4;gap:12px;flex-wrap:wrap;">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #e2e8f4;gap:12px;flex-wrap:wrap;">
                             <div style="flex:1;min-width:180px;">
                                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                                    <span style="font-weight:700;color:#1a2b4a;font-size:.85rem;">Termin 2 — Pelunasan (50%)</span>
+                                    <span style="font-weight:700;color:#1a2b4a;font-size:.85rem;">Termin 2 — Pelunasan
+                                        (50%)</span>
                                     @if($t2Verified)
-                                        <span style="background:#ecfdf5;color:#059669;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">✓ Terverifikasi</span>
+                                        <span
+                                            style="background:#ecfdf5;color:#059669;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">✓
+                                            Terverifikasi</span>
                                     @elseif($t2Pending)
                                         <span class="badge-pending-pay">⏳ Menunggu Verifikasi</span>
                                     @elseif($t1Verified)
-                                        <span style="background:#fff3e6;color:#d97706;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">Siap Dibayar</span>
+                                        <span
+                                            style="background:#fff3e6;color:#d97706;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">Siap
+                                            Dibayar</span>
                                     @else
-                                        <span style="background:#f3f4f6;color:#6b7280;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">Terkunci</span>
+                                        <span
+                                            style="background:#f3f4f6;color:#6b7280;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">Terkunci</span>
                                     @endif
                                 </div>
                                 <div style="font-size:.72rem;color:#8ca0bf;margin-top:3px;">
-                                    @if($t2Verified) Dibayar {{ $termin2->tanggal_bayar->isoFormat('DD MMM YYYY') }} · {{ ucfirst($termin2->metode_pembayaran) }}
+                                    @if($t2Verified) Dibayar {{ $termin2->tanggal_bayar->isoFormat('DD MMM YYYY') }} ·
+                                        {{ ucfirst($termin2->metode_pembayaran) }}
                                     @elseif($t2Pending) Menunggu konfirmasi admin
                                     @elseif($t1Verified) Termin 1 sudah lunas — silakan lanjut pelunasan
                                     @else Selesaikan Termin 1 terlebih dahulu @endif
                                 </div>
                             </div>
                             <div style="display:flex;align-items:center;gap:12px;">
-                                <div style="font-weight:800;font-size:.95rem;color:{{ $t2Verified ? '#059669' : '#94a3b8' }};">Rp {{ number_format($lunas50, 0, ',', '.') }}</div>
+                                <div
+                                    style="font-weight:800;font-size:.95rem;color:{{ $t2Verified ? '#059669' : '#94a3b8' }};">
+                                    Rp {{ number_format($lunas50, 0, ',', '.') }}</div>
                                 @if($bisaBayarT2)
-                                    <button onclick="openModalBayar(2, {{ $lunas50 }})" class="btn-bayar-termin btn-bayar-lunas">💳 Bayar Lunas</button>
+                                    <button onclick="openModalBayar(2, {{ $lunas50 }})"
+                                        class="btn-bayar-termin btn-bayar-lunas">💳 Bayar Lunas</button>
                                 @endif
                             </div>
                         </div>
@@ -679,26 +1027,33 @@
                         {{-- Sisa --}}
                         <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;">
                             <div style="font-weight:700;color:#dc2626;font-size:.85rem;">Sisa Tagihan</div>
-                            <div style="font-weight:800;font-size:1.05rem;color:#dc2626;">Rp {{ number_format($pesanan->sisa_tagihan, 0, ',', '.') }}</div>
+                            <div style="font-weight:800;font-size:1.05rem;color:#dc2626;">Rp
+                                {{ number_format($pesanan->sisa_tagihan, 0, ',', '.') }}
+                            </div>
                         </div>
                     </div>
 
                     {{-- Simulasi Alokasi Proporsional --}}
                     <div style="background:#fff;border-top:1px solid #e2e8f4;padding:14px 20px;">
-                        <div style="font-size:.72rem;font-weight:700;color:#8ca0bf;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Simulasi Alokasi DP per Item</div>
+                        <div
+                            style="font-size:.72rem;font-weight:700;color:#8ca0bf;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">
+                            Simulasi Alokasi DP per Item</div>
                         <div style="display:flex;flex-direction:column;gap:6px;">
                             @foreach($pesanan->details as $d)
                                 @php
                                     $proporsi = $pesanan->total_harga > 0 ? $d->subtotal / $pesanan->total_harga : 0;
-                                    $dpItem   = $d->harga_satuan > 0 ? (int) floor($dp50 * $proporsi / $d->harga_satuan) : 0;
+                                    $dpItem = $d->harga_satuan > 0 ? (int) floor($dp50 * $proporsi / $d->harga_satuan) : 0;
                                 @endphp
                                 <div style="display:flex;justify-content:space-between;align-items:center;font-size:.75rem;">
-                                    <span style="color:#1a2b4a;font-weight:600;">{{ $d->produk->nama_produk ?? '-' }} <span style="background:#e8f0fd;color:#4A90D9;padding:1px 5px;border-radius:4px;font-size:.65rem;font-weight:700;">{{ $d->ukuran }}</span></span>
-                                    <span style="color:#6b7e9f;">DP → <strong style="color:#d97706;">{{ $dpItem }} pcs</strong> / {{ $d->total_item }} pcs terjamin produksi</span>
+                                    <span style="color:#1a2b4a;font-weight:600;">{{ $d->produk->nama_produk ?? '-' }} <span
+                                            style="background:#e8f0fd;color:#4A90D9;padding:1px 5px;border-radius:4px;font-size:.65rem;font-weight:700;">{{ $d->ukuran }}</span></span>
+                                    <span style="color:#6b7e9f;">DP → <strong style="color:#d97706;">{{ $dpItem }} pcs</strong>
+                                        / {{ $d->total_item }} pcs terjamin produksi</span>
                                 </div>
                             @endforeach
                         </div>
-                        <div style="margin-top:10px;font-size:.72rem;color:#8ca0bf;border-top:1px dashed #e2e8f4;padding-top:10px;">
+                        <div
+                            style="margin-top:10px;font-size:.72rem;color:#8ca0bf;border-top:1px dashed #e2e8f4;padding-top:10px;">
                             💬 Setelah pembayaran dikonfirmasi admin, alokasi pcs di atas otomatis diperbarui.
                         </div>
                     </div>
@@ -715,7 +1070,8 @@
                         </div>
                         <button type="button" class="modal-close" onclick="closeModal()">✕</button>
                     </div>
-                    <form method="POST" action="{{ route('pelanggan.pesanan.bayar', $pesanan->id) }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('pelanggan.pesanan.bayar', $pesanan->id) }}"
+                        enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="termin_ke" id="inputTerminKe" value="1">
                         <div class="modal-body">
@@ -726,36 +1082,46 @@
                             <label class="form-lbl" style="margin-bottom:8px;">Pilih Metode Pembayaran</label>
                             <div class="pay-method-grid">
                                 <label class="pay-method-btn" id="btnQris">
-                                    <input type="radio" name="metode_pembayaran" value="qris" style="display:none;" onchange="selectMethod('qris')" required>
+                                    <input type="radio" name="metode_pembayaran" value="qris" style="display:none;"
+                                        onchange="selectMethod('qris')" required>
                                     <div class="icon">📱</div>
                                     <div class="label">QRIS</div>
                                     <div class="sub">Scan kode QR</div>
                                 </label>
                                 <label class="pay-method-btn" id="btnTransfer">
-                                    <input type="radio" name="metode_pembayaran" value="transfer" style="display:none;" onchange="selectMethod('transfer')">
+                                    <input type="radio" name="metode_pembayaran" value="transfer" style="display:none;"
+                                        onchange="selectMethod('transfer')">
                                     <div class="icon">🏦</div>
                                     <div class="label">Transfer Bank</div>
                                     <div class="sub">ATM / Mobile Banking</div>
                                 </label>
                             </div>
-                            <div id="infoQris" style="display:none;background:#f0f4fb;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.78rem;color:#1a2b4a;">
-                                📱 <strong>Scan QRIS</strong> di aplikasi dompet digital Anda (GoPay, OVO, Dana, ShopeePay, dll.)<br>
-                                <span style="color:#8ca0bf;margin-top:4px;display:block;">Nama Toko: <strong>TB. SIMAPES</strong></span>
+                            <div id="infoQris"
+                                style="display:none;background:#f0f4fb;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.78rem;color:#1a2b4a;">
+                                📱 <strong>Scan QRIS</strong> di aplikasi dompet digital Anda (GoPay, OVO, Dana, ShopeePay,
+                                dll.)<br>
+                                <span style="color:#8ca0bf;margin-top:4px;display:block;">Nama Toko: <strong>TB.
+                                        SIMAPES</strong></span>
                             </div>
-                            <div id="infoTransfer" style="display:none;background:#f0f4fb;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.78rem;color:#1a2b4a;">
+                            <div id="infoTransfer"
+                                style="display:none;background:#f0f4fb;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.78rem;color:#1a2b4a;">
                                 🏦 <strong>Transfer ke:</strong><br>
-                                <span style="color:#8ca0bf;">Bank BCA · No. Rek: <strong style="color:#1a2b4a;">1234-5678-90</strong> a/n TB. SIMAPES</span>
+                                <span style="color:#8ca0bf;">Bank BCA · No. Rek: <strong
+                                        style="color:#1a2b4a;">1234-5678-90</strong> a/n TB. SIMAPES</span>
                             </div>
                             <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileBukti').click()">
                                 <div class="uz-icon">📎</div>
                                 <div class="uz-text">Klik untuk upload bukti pembayaran</div>
-                                <div class="uz-text" style="font-size:.65rem;margin-top:2px;">JPG, PNG, PDF — Maks 3 MB</div>
+                                <div class="uz-text" style="font-size:.65rem;margin-top:2px;">JPG, PNG, PDF — Maks 3 MB
+                                </div>
                                 <div class="uz-file" id="fileNameDisplay" style="display:none;"></div>
                             </div>
-                            <input type="file" id="fileBukti" name="bukti_bayar" accept=".jpg,.jpeg,.png,.pdf" style="display:none;" onchange="handleFileSelect(this)" required>
+                            <input type="file" id="fileBukti" name="bukti_bayar" accept=".jpg,.jpeg,.png,.pdf"
+                                style="display:none;" onchange="handleFileSelect(this)" required>
                             <div>
                                 <label class="form-lbl" for="catatanPelanggan">Catatan (opsional)</label>
-                                <textarea class="form-ctrl" id="catatanPelanggan" name="catatan_pelanggan" rows="2" placeholder="Contoh: Transfer dari BCA atas nama Budi..."></textarea>
+                                <textarea class="form-ctrl" id="catatanPelanggan" name="catatan_pelanggan" rows="2"
+                                    placeholder="Contoh: Transfer dari BCA atas nama Budi..."></textarea>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -849,17 +1215,17 @@
             const modal = document.getElementById('modalBayar');
             modal.classList.remove('open');
             document.body.style.overflow = '';
-            
+
             // Reset Form
             document.getElementById('fileBukti').value = '';
             document.getElementById('fileNameDisplay').style.display = 'none';
             document.getElementById('catatanPelanggan').value = '';
-            
+
             const qris = document.getElementById('btnQris');
             const transfer = document.getElementById('btnTransfer');
             qris.classList.remove('selected');
             transfer.classList.remove('selected');
-            
+
             document.getElementById('infoQris').style.display = 'none';
             document.getElementById('infoTransfer').style.display = 'none';
         }

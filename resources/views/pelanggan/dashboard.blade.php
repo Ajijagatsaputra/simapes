@@ -616,6 +616,93 @@
             </div>
         </div>
 
+        {{-- Real-time Production Progress Card --}}
+        @if($produksiBerjalan->isNotEmpty())
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="card-header-flex"
+                    style="margin-bottom: 16px; border-bottom: 1px dashed #e2e8f4; padding-bottom: 12px;">
+                    <span class="card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" style="color: #eab308;">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                        Transparansi Progres Produksi Aktif (Real-time)
+                    </span>
+                    <span style="font-size: 0.72rem; color: #8ca0bf; font-weight: 600;">Pembaruan langsung dari workshop</span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    @foreach($produksiBerjalan as $pesanan)
+                        <div style="border: 1px solid #e2e8f4; border-radius: 12px; padding: 16px; background: #fafbfc;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                                <div>
+                                    <span
+                                        style="font-weight: 800; font-size: 0.9rem; color: #1a2b4a;">{{ $pesanan->no_pesanan }}</span>
+                                    <span style="font-size: 0.75rem; color: #6b7e9f; margin-left: 8px;">·
+                                        {{ $pesanan->user->nama_sekolah ?? '-' }}</span>
+                                </div>
+                                <a href="{{ route('pelanggan.pesanan.show', $pesanan->id) }}" class="card-link"
+                                    style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none;">
+                                    Detail Timeline
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polyline points="9 18 15 12 9 6" />
+                                    </svg>
+                                </a>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                                @forelse($pesanan->progresProduksis as $prog)
+                                    <div
+                                        style="background: #fff; border: 1px solid #e8eef8; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 6px rgba(74, 144, 217, 0.02);">
+                                        <div>
+                                            <div
+                                                style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 6px;">
+                                                <span
+                                                    style="font-weight: 700; font-size: 0.8rem; color: #1a2b4a; line-height: 1.2;">{{ $prog->tahapan }}</span>
+                                                <span
+                                                    style="background: #e8f0fd; color: #4A90D9; padding: 2px 6px; border-radius: 6px; font-weight: 800; font-size: 0.7rem; white-space: nowrap;">{{ $prog->jumlah_pcs }}
+                                                    Pcs</span>
+                                            </div>
+                                            @if($prog->catatan)
+                                                <p
+                                                    style="font-size: 0.72rem; color: #5a7090; margin-bottom: 8px; line-height: 1.3; font-style: italic;">
+                                                    "{{ $prog->catatan }}"
+                                                </p>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            @if($prog->dokumentasi)
+                                                <div style="margin-top: 8px; margin-bottom: 6px;">
+                                                    <a href="{{ asset('storage/' . $prog->dokumentasi) }}" target="_blank">
+                                                        <img src="{{ asset('storage/' . $prog->dokumentasi) }}"
+                                                            style="width: 100%; height: 110px; object-fit: cover; border-radius: 6px; border: 1px solid #f0f4fb;"
+                                                            alt="Dokumentasi">
+                                                    </a>
+                                                </div>
+                                            @endif
+                                            <div style="font-size: 0.65rem; color: #a0aec0; text-align: right;">
+                                                Update: {{ $prog->updated_at->diffForHumans() }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div
+                                        style="grid-column: 1 / -1; text-align: center; padding: 16px; color: #8ca0bf; font-size: 0.8rem;">
+                                        Menunggu inisiasi pengerjaan oleh tim produksi.
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         {{-- Main Content Grid --}}
         <div class="main-grid">
             {{-- Left Side Column Wrapper --}}

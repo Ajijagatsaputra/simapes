@@ -82,6 +82,12 @@ class DashboardController extends Controller
 
         $breakdown = array_values($breakdownRaw);
 
+        $produksiBerjalan = Pesanan::where('user_id', $user->id)
+            ->where('status', 'dikerjakan')
+            ->with(['progresProduksis'])
+            ->latest()
+            ->get();
+
         return view('pelanggan.dashboard', compact(
             'totalPesanan',
             'pesananDiproses',
@@ -92,7 +98,8 @@ class DashboardController extends Controller
             'pcsBelumDikerjakan',
             'pcsSedangDiproses',
             'pcsSelesai',
-            'breakdown'
+            'breakdown',
+            'produksiBerjalan'
         ));
     }
 }

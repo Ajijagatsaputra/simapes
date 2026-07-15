@@ -112,6 +112,18 @@ class PesananController extends Controller
         $pesanan->update(['status' => $request->status]);
         ActivityLog::log('Mengubah status pesanan ' . $pesanan->no_pesanan . ' menjadi ' . $request->status, 'Pesanan', $pesanan->id);
 
+        if ($request->status === 'dikerjakan') {
+            if (!$pesanan->progresProduksis()->exists()) {
+                $totalPcs = $pesanan->details->sum('total_item');
+                $pesanan->progresProduksis()->create([
+                    'tahapan' => 'Persiapan Bahan',
+                    'jumlah_pcs' => $totalPcs,
+                    'dokumentasi' => null,
+                    'catatan' => 'Memulai proses produksi.',
+                ]);
+            }
+        }
+
         // Return JSON jika AJAX request
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([

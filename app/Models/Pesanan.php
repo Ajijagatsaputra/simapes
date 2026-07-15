@@ -43,6 +43,11 @@ class Pesanan extends Model
         return $this->hasMany(Pembayaran::class);
     }
 
+    public function progresProduksis()
+    {
+        return $this->hasMany(ProgresProduksi::class);
+    }
+
     /* ── Helper: Hitung ulang total pembayaran ── */
     public function recalculatePembayaran(): void
     {

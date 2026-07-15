@@ -74,13 +74,15 @@
 
     /* ── Aksi ── */
     .aksi-wrap { display: flex; gap: 6px; justify-content: center; }
-    .btn-edit, .btn-hapus, .btn-status, .btn-print, .btn-bayar { width: 30px; height: 30px; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .15s, transform .15s; }
+    .btn-edit, .btn-hapus, .btn-status, .btn-print, .btn-bayar, .btn-progres { width: 30px; height: 30px; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .15s, transform .15s; text-decoration: none; }
     .btn-status { background: #e8f0fd; color: #4A90D9; }
     .btn-edit  { background: #4A90D9; color: #fff; }
     .btn-hapus { background: #e05a5a; color: #fff; }
     .btn-print { background: #8a63d2; color: #fff; text-decoration: none; }
     .btn-bayar { background: #10b981; color: #fff; text-decoration: none; }
-    .btn-edit:hover, .btn-hapus:hover, .btn-status:hover, .btn-print:hover, .btn-bayar:hover { opacity: .85; transform: scale(1.08); }
+    .btn-progres { background: #eab308; color: #fff; }
+    .btn-progres.disabled { background: #e2e8f4; color: #a0aec0; cursor: not-allowed; pointer-events: none; }
+    .btn-edit:hover, .btn-hapus:hover, .btn-status:hover, .btn-print:hover, .btn-bayar:hover, .btn-progres:hover { opacity: .85; transform: scale(1.08); }
 
     /* Payment Status */
     .pay-status { display:inline-flex; padding:3px 7px; border-radius:12px; font-size:.65rem; font-weight:700; }
@@ -375,6 +377,22 @@
                                         <line x1="1" y1="10" x2="23" y2="10"/>
                                     </svg>
                                 </a>
+
+                                 @if(in_array($p->status, ['dikerjakan', 'selesai']))
+                                     <a href="{{ route('admin.pesanan.progres', $p->id) }}" class="btn-progres" title="Kelola Progres Produksi">
+                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                             <circle cx="12" cy="12" r="3"></circle>
+                                             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                         </svg>
+                                     </a>
+                                 @else
+                                     <button class="btn-progres disabled" disabled title="Progres hanya dapat dikelola saat status Dikerjakan atau Selesai">
+                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                             <circle cx="12" cy="12" r="3"></circle>
+                                             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                         </svg>
+                                     </button>
+                                 @endif
                             </div>
                         </td>
                     </tr>
