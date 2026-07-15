@@ -33,20 +33,14 @@ class ProgresProduksiController extends Controller
         $request->validate([
             'stages' => 'required|array|min:1',
             'stages.*.tahapan' => 'required|string|max:100',
-            'stages.*.jumlah_pcs' => 'required|integer|min:0',
+            'stages.*.jumlah_pcs' => "required|integer|min:0|max:{$totalPcs}",
             'stages.*.dokumentasi' => 'nullable|image|mimes:jpg,jpeg,png|max:3072',
             'stages.*.catatan' => 'nullable|string|max:1000',
             'stages.*.id' => 'nullable|integer|exists:progres_produksis,id',
+        ], [
+            'stages.*.jumlah_pcs.max' => "Jumlah pcs pada setiap tahapan tidak boleh melebihi total target pesanan ({$totalPcs} pcs).",
         ]);
-
         $stages = $request->input('stages', []);
-        $sumPcs = array_sum(array_column($stages, 'jumlah_pcs'));
-
-        if ($sumPcs !== $totalPcs) {
-            return redirect()->back()
-                ->withErrors(['stages' => "Total keseluruhan pcs pada seluruh tahapan ({$sumPcs} pcs) harus tetap sesuai dengan jumlah pesanan ({$totalPcs} pcs)."])
-                ->withInput();
-        }
 
         DB::beginTransaction();
         try {

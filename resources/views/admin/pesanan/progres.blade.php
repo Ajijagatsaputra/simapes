@@ -326,7 +326,7 @@
                                         </td>
                                         <td>
                                             <input type="number" name="stages[{{ $index }}][jumlah_pcs]" class="form-input stage-pcs" 
-                                                min="0" placeholder="0" value="{{ $progres->jumlah_pcs }}" oninput="calcTotalPcs()" required>
+                                                min="0" max="{{ $totalPcs }}" placeholder="0" value="{{ $progres->jumlah_pcs }}" oninput="calcTotalPcs()" required>
                                         </td>
                                         <td>
                                             <input type="file" name="stages[{{ $index }}][dokumentasi]" class="form-input" style="font-size: 0.72rem; padding: 4px 6px;" accept="image/*">
@@ -446,7 +446,7 @@
                 </td>
                 <td>
                     <input type="number" name="stages[${rowIndex}][jumlah_pcs]" class="form-input stage-pcs" 
-                        min="0" placeholder="0" value="0" oninput="calcTotalPcs()" required>
+                        min="0" max="${targetPcs}" placeholder="0" value="0" oninput="calcTotalPcs()" required>
                 </td>
                 <td>
                     <input type="file" name="stages[${rowIndex}][dokumentasi]" class="form-input" style="font-size: 0.72rem; padding: 4px 6px;" accept="image/*">
@@ -475,9 +475,18 @@
         }
 
         function calcTotalPcs() {
-            let total = 0;
-            document.querySelectorAll('.stage-pcs').forEach(input => {
-                total += parseInt(input.value) || 0;
+            let hasError = false;
+            let offendingStage = '';
+
+            document.querySelectorAll('.stage-row').forEach(row => {
+                const tahapanInput = row.querySelector('.stage-tahapan');
+                const pcsInput = row.querySelector('.stage-pcs');
+                const pcs = parseInt(pcsInput.value) || 0;
+                
+                if (pcs > targetPcs) {
+                    hasError = true;
+                    offendingStage = tahapanInput.value || 'Salah satu tahapan';
+                }
             });
 
             const banner = document.getElementById('calculatorBanner');
@@ -485,20 +494,15 @@
             const bannerDesc = document.getElementById('bannerDesc');
             const submitBtn = document.getElementById('btnSubmitProgres');
 
-            if (total === targetPcs) {
+            if (!hasError) {
                 banner.className = 'calculator-banner banner-success';
-                bannerTitle.textContent = '✓ Total Pcs Sesuai';
-                bannerDesc.textContent = `Jumlah pcs di seluruh tahapan (${total} pcs) pas dengan target pesanan (${targetPcs} pcs). Anda dapat menyimpan progres.`;
+                bannerTitle.textContent = '✓ Progres Valid';
+                bannerDesc.textContent = `Jumlah pcs pada masing-masing tahapan tidak melebihi target pesanan (${targetPcs} pcs). Anda dapat menyimpan progres.`;
                 submitBtn.disabled = false;
             } else {
                 banner.className = 'calculator-banner banner-warning';
-                bannerTitle.textContent = '⚠️ Total Pcs Belum Sesuai';
-                const diff = targetPcs - total;
-                if (diff > 0) {
-                    bannerDesc.textContent = `Jumlah pcs saat ini: ${total} pcs (Kurang ${diff} pcs dari target ${targetPcs} pcs).`;
-                } else {
-                    bannerDesc.textContent = `Jumlah pcs saat ini: ${total} pcs (Kelebihan ${Math.abs(diff)} pcs dari target ${targetPcs} pcs).`;
-                }
+                bannerTitle.textContent = '⚠️ Jumlah Pcs Melebihi Target';
+                bannerDesc.textContent = `Jumlah pcs pada tahapan "${offendingStage}" melebihi target pesanan (${targetPcs} pcs). Harap perbaiki sebelum menyimpan.`;
                 submitBtn.disabled = true;
             }
         }

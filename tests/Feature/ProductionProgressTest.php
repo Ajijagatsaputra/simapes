@@ -114,25 +114,20 @@ class ProductionProgressTest extends TestCase
     {
         $pesanan = $this->createOrder('dikerjakan');
 
-        // Total items is 50. If we submit stages sum equal to 45 or 55, it should fail validation.
+        // Total items is 50. If we submit a stage with 51 pcs, it should fail validation.
         $response = $this
             ->actingAs($this->admin)
             ->post(route('admin.pesanan.progres.update', $pesanan->id), [
                 'stages' => [
                     [
                         'tahapan' => 'Persiapan Bahan',
-                        'jumlah_pcs' => 20,
-                        'catatan' => 'Sebagian bahan siap',
-                    ],
-                    [
-                        'tahapan' => 'Proses Jahit',
-                        'jumlah_pcs' => 25, // Sum is 45, which is not 50
-                        'catatan' => 'Mulai dijahit',
+                        'jumlah_pcs' => 51, // Exceeds target of 50
+                        'catatan' => 'Bahan siap',
                     ]
                 ]
             ]);
 
-        $response->assertSessionHasErrors(['stages']);
+        $response->assertSessionHasErrors(['stages.0.jumlah_pcs']);
         $this->assertCount(0, $pesanan->fresh()->progresProduksis); // Should not have saved
     }
 
@@ -154,13 +149,19 @@ class ProductionProgressTest extends TestCase
                     ],
                     [
                         'tahapan' => 'Proses Jahit',
-                        'jumlah_pcs' => 30, // Sum is 50, which matches total items
+                        'jumlah_pcs' => 30,
                         'catatan' => 'Jahit bagian lengan',
                         'dokumentasi' => $fakeImage,
                     ]
                 ]
             ]);
 
+        if ($response->getSession() && $response->getSession()->get('error')) {
+            dd($response->getSession()->get('error'));
+        }
+        if ($response->getSession() && $response->getSession()->get('errors')) {
+            dd($response->getSession()->get('errors')->getBag('default')->getMessages());
+        }
         $response->assertRedirect(route('admin.pesanan.index'));
         $response->assertSessionHas('success');
 
