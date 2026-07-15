@@ -689,6 +689,23 @@
                                                         style="background: #e6fffa; color: #00a389; padding: 2px 6px; border-radius: 6px; font-weight: 800; font-size: 0.7rem; white-space: nowrap;">{{ $stagePct }}%</span>
                                                 </div>
                                             </div>
+
+                                            {{-- Progress Bar --}}
+                                            @php
+                                                $barColor = '#4A90D9';
+                                                if ($prog->tahapan === 'Selesai Produksi') {
+                                                    $barColor = '#10b981';
+                                                } elseif (str_contains(strtolower($prog->tahapan), 'qc') || str_contains(strtolower($prog->tahapan), 'packing')) {
+                                                    $barColor = '#3b82f6';
+                                                } elseif (str_contains(strtolower($prog->tahapan), 'kancing') || str_contains(strtolower($prog->tahapan), 'jahit')) {
+                                                    $barColor = '#f5a54a';
+                                                } elseif (str_contains(strtolower($prog->tahapan), 'potong')) {
+                                                    $barColor = '#8b5cf6';
+                                                }
+                                            @endphp
+                                            <div style="width: 100%; height: 6px; background: #e8eef8; border-radius: 999px; overflow: hidden; margin-top: 4px; margin-bottom: 8px;">
+                                                <div style="width: {{ $stagePct }}%; height: 100%; background: {{ $barColor }}; border-radius: 999px; transition: width 0.3s ease;"></div>
+                                            </div>
                                             @if($prog->catatan)
                                                 <p
                                                     style="font-size: 0.72rem; color: #5a7090; margin-bottom: 8px; line-height: 1.3; font-style: italic;">

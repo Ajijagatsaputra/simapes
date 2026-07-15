@@ -805,6 +805,39 @@
                                 </div>
                         @endif
 
+                        {{-- Visualisasi Progress Bar per Tahap --}}
+                        <div style="background: #fff; border: 1px solid #e1ecfa; border-radius: 12px; padding: 18px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(30, 60, 114, 0.02);">
+                            <div style="font-size: 0.78rem; font-weight: 700; color: #1e3c72; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; border-bottom: 1px dashed #e1ecfa; padding-bottom: 8px;">
+                                Visualisasi Distribusi Produksi (Target: {{ $totalPcs }} Pcs)
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 14px;">
+                                @foreach($pesanan->progresProduksis as $prog)
+                                    @php
+                                        $stagePct = $totalPcs > 0 ? round(($prog->jumlah_pcs / $totalPcs) * 100, 1) : 0;
+                                        $barColor = '#4A90D9';
+                                        if ($prog->tahapan === 'Selesai Produksi') {
+                                            $barColor = '#10b981';
+                                        } elseif (str_contains(strtolower($prog->tahapan), 'qc') || str_contains(strtolower($prog->tahapan), 'packing')) {
+                                            $barColor = '#3b82f6';
+                                        } elseif (str_contains(strtolower($prog->tahapan), 'kancing') || str_contains(strtolower($prog->tahapan), 'jahit')) {
+                                            $barColor = '#f5a54a';
+                                        } elseif (str_contains(strtolower($prog->tahapan), 'potong')) {
+                                            $barColor = '#8b5cf6';
+                                        }
+                                    @endphp
+                                    <div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; margin-bottom: 5px;">
+                                            <span style="font-weight: 600; color: #2d4060;">{{ $prog->tahapan }}</span>
+                                            <span style="font-weight: 700; color: #1a2b4a;">{{ $prog->jumlah_pcs }} / {{ $totalPcs }} Pcs ({{ $stagePct }}%)</span>
+                                        </div>
+                                        <div style="width: 100%; height: 8px; background: #e8eef8; border-radius: 999px; overflow: hidden;">
+                                            <div style="width: {{ $stagePct }}%; height: 100%; background: {{ $barColor }}; border-radius: 999px; transition: width 0.3s ease;"></div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
                         <div style="position: relative; padding-left: 28px; margin-top: 14px;">
                             <div style="position: absolute; left: 9px; top: 4px; bottom: 4px; width: 2px; background: #e8eef8;">
                             </div>
@@ -831,6 +864,23 @@
                                                     <span
                                                         style="background: #e6fffa; color: #00a389; font-weight: 800; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px;">{{ $stagePct }}%</span>
                                                 </div>
+                                            </div>
+
+                                            {{-- Progress Bar --}}
+                                            @php
+                                                $barColor = '#4A90D9';
+                                                if ($prog->tahapan === 'Selesai Produksi') {
+                                                    $barColor = '#10b981';
+                                                } elseif (str_contains(strtolower($prog->tahapan), 'qc') || str_contains(strtolower($prog->tahapan), 'packing')) {
+                                                    $barColor = '#3b82f6';
+                                                } elseif (str_contains(strtolower($prog->tahapan), 'kancing') || str_contains(strtolower($prog->tahapan), 'jahit')) {
+                                                    $barColor = '#f5a54a';
+                                                } elseif (str_contains(strtolower($prog->tahapan), 'potong')) {
+                                                    $barColor = '#8b5cf6';
+                                                }
+                                            @endphp
+                                            <div style="width: 100%; height: 6px; background: #e8eef8; border-radius: 999px; overflow: hidden; margin-bottom: 10px;">
+                                                <div style="width: {{ $stagePct }}%; height: 100%; background: {{ $barColor }}; border-radius: 999px;"></div>
                                             </div>
 
                                             @if($prog->catatan)
