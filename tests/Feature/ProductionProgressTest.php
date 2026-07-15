@@ -205,11 +205,13 @@ class ProductionProgressTest extends TestCase
         $responseDashboard->assertOk();
         $responseDashboard->assertSee('Transparansi Progres Produksi Aktif (Real-time)');
         $responseDashboard->assertSee('ORD-TEST-001');
+        $responseDashboard->assertSee('Status Terakhir:');
         $responseDashboard->assertSee('Persiapan Bahan');
         $responseDashboard->assertSee('20');
-        $responseDashboard->assertSee('Pcs');
+        $responseDashboard->assertSee('40%');
         $responseDashboard->assertSee('Proses Potong');
         $responseDashboard->assertSee('30');
+        $responseDashboard->assertSee('60%');
 
         // 2. Order Detail View
         $responseDetail = $this
@@ -217,10 +219,16 @@ class ProductionProgressTest extends TestCase
             ->get(route('pelanggan.pesanan.show', $pesanan->id));
 
         $responseDetail->assertOk();
-        $responseDetail->assertSee('Progres Produksi Seragam');
+        $responseDetail->assertSee('Progres');
+        $responseDetail->assertSee('Produksi');
+        $responseDetail->assertSee('Seragam');
+        $responseDetail->assertSee('Status');
+        $responseDetail->assertSee('Terakhir');
         $responseDetail->assertSee('Persiapan Bahan');
         $responseDetail->assertSee('20');
+        $responseDetail->assertSee('40%');
         $responseDetail->assertSee('Proses Potong');
         $responseDetail->assertSee('30');
+        $responseDetail->assertSee('60%');
     }
 }

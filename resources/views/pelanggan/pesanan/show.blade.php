@@ -765,52 +765,99 @@
                             ⏳ Menunggu tim produksi memulai proses pengerjaan.
                         </div>
                     @else
+                        @php
+                            $latestProgress = $pesanan->progresProduksis->sortByDesc('updated_at')->first();
+                            $totalPcs = $pesanan->details->sum('total_item');
+                        @endphp
+                        @if($latestProgress)
+                                <div
+                                    style="background: #f4f8fd; border: 1px solid #e1ecfa; border-radius: 12px; padding: 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(30, 60, 114, 0.03);">
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; border-bottom: 1px solid #e1ecfa; padding-bottom: 8px;">
+                                        <span
+                                            style="font-size: 0.75rem; font-weight: 700; color: #1e3c72; text-transform: uppercase; letter-spacing: 0.5px;">Status
+                                            Terakhir Proses Produksi</span>
+                                        <span style="font-size: 0.72rem; color: #8ca0bf; font-weight: 600;">Terakhir Diperbarui:
+                                            {{ $latestProgress->updated_at->diffForHumans() }}</span>
+                                    </div>
+                                    <div
+                                        style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                                        <div>
+                                            <strong style="font-size: 1rem; color: #1a2b4a;">{{ $latestProgress->tahapan }}</strong>
+                                        </div>
+                                        <div style="display: flex; gap: 6px; align-items: center;">
+                                            <span
+                                                style="background: #e8f0fd; color: #4A90D9; font-weight: 800; font-size: 0.72rem; padding: 4px 8px; border-radius: 6px;">{{ $latestProgress->jumlah_pcs }}
+                                                Pcs</span>
+                              @php
+                                $latestPct = $totalPcs > 0 ? round(($latestProgress->jumlah_pcs / $totalPcs) * 100, 1) : 0;
+                            @endphp
+                            <span
+                                                style="background: #e6fffa; color: #00a389; font-weight: 800; font-size: 0.72rem; padding: 4px 8px; border-radius: 6px;">{{ $latestPct }}%</span>
+                                        </div>
+                                    </div>
+                                    @if($latestProgress->catatan)
+                                        <div
+                                            style="font-size: 0.78rem; color: #5a7090; font-style: italic; margin-top: 8px; background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #eef2f6;">
+                                            "{{ $latestProgress->catatan }}"
+                                        </div>
+                                    @endif
+                                </div>
+                        @endif
+
                         <div style="position: relative; padding-left: 28px; margin-top: 14px;">
                             <div style="position: absolute; left: 9px; top: 4px; bottom: 4px; width: 2px; background: #e8eef8;">
                             </div>
 
                             @foreach($pesanan->progresProduksis as $prog)
-                                <div style="position: relative; margin-bottom: 24px;">
-                                    <div
-                                        style="position: absolute; left: -24px; top: 4px; width: 12px; height: 12px; border-radius: 50%; border: 2.5px solid #fff; background: {{ $prog->tahapan === 'Selesai Produksi' ? '#10b981' : '#4A90D9' }}; box-shadow: 0 0 0 3px {{ $prog->tahapan === 'Selesai Produksi' ? 'rgba(16,185,129,0.15)' : 'rgba(74,144,217,0.15)' }};">
-                                    </div>
-
-                                    <div
-                                        style="background: #fdfeff; border: 1px solid #dde8f8; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(74, 144, 217, 0.02);">
+                                    <div style="position: relative; margin-bottom: 24px;">
                                         <div
-                                            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
-                                            <span
-                                                style="font-weight: 700; color: #1a2b4a; font-size: 0.88rem;">{{ $prog->tahapan }}</span>
-                                            <span
-                                                style="background: #e8f0fd; color: #4A90D9; font-weight: 800; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px;">{{ $prog->jumlah_pcs }}
-                                                Pcs</span>
+                                            style="position: absolute; left: -24px; top: 4px; width: 12px; height: 12px; border-radius: 50%; border: 2.5px solid #fff; background: {{ $prog->tahapan === 'Selesai Produksi' ? '#10b981' : '#4A90D9' }}; box-shadow: 0 0 0 3px {{ $prog->tahapan === 'Selesai Produksi' ? 'rgba(16,185,129,0.15)' : 'rgba(74,144,217,0.15)' }};">
                                         </div>
 
-                                        @if($prog->catatan)
-                                            <div style="font-size: 0.78rem; color: #5a7090; margin-bottom: 10px; font-style: italic;">
-                                                "{{ $prog->catatan }}"
+                                        <div
+                                            style="background: #fdfeff; border: 1px solid #dde8f8; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(74, 144, 217, 0.02);">
+                                            <div
+                                                style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+                                                <span
+                                                    style="font-weight: 700; color: #1a2b4a; font-size: 0.88rem;">{{ $prog->tahapan }}</span>
+                                                <div style="display: flex; gap: 6px; align-items: center;">
+                                                    <span
+                                                        style="background: #e8f0fd; color: #4A90D9; font-weight: 800; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px;">{{ $prog->jumlah_pcs }}
+                                                        Pcs</span>
+                                @php
+                                    $stagePct = $totalPcs > 0 ? round(($prog->jumlah_pcs / $totalPcs) * 100, 1) : 0;
+                                @endphp
+                                                    <span
+                                                        style="background: #e6fffa; color: #00a389; font-weight: 800; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px;">{{ $stagePct }}%</span>
+                                                </div>
                                             </div>
-                                        @endif
 
-                                        @if($prog->dokumentasi)
-                                            <div style="margin-top: 10px; margin-bottom: 6px;">
-                                                <a href="{{ asset('storage/' . $prog->dokumentasi) }}" target="_blank"
-                                                    style="display: inline-block;">
-                                                    <img src="{{ asset('storage/' . $prog->dokumentasi) }}"
-                                                        style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid #e2e8f4; object-fit: contain;"
-                                                        alt="Dokumentasi">
-                                                </a>
-                                                <div style="font-size: 0.65rem; color: #8ca0bf; margin-top: 4px;">🔍 Klik gambar untuk
-                                                    memperbesar</div>
+                                            @if($prog->catatan)
+                                                <div style="font-size: 0.78rem; color: #5a7090; margin-bottom: 10px; font-style: italic;">
+                                                    "{{ $prog->catatan }}"
+                                                </div>
+                                            @endif
+
+                                            @if($prog->dokumentasi)
+                                                <div style="margin-top: 10px; margin-bottom: 6px;">
+                                                    <a href="{{ asset('storage/' . $prog->dokumentasi) }}" target="_blank"
+                                                        style="display: inline-block;">
+                                                        <img src="{{ asset('storage/' . $prog->dokumentasi) }}"
+                                                            style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid #e2e8f4; object-fit: contain;"
+                                                            alt="Dokumentasi">
+                                                    </a>
+                                                    <div style="font-size: 0.65rem; color: #8ca0bf; margin-top: 4px;">🔍 Klik gambar untuk
+                                                        memperbesar</div>
+                                                </div>
+                                            @endif
+
+                                            <div style="font-size: 0.68rem; color: #8ca0bf; text-align: right; margin-top: 6px;">
+                                                Terakhir diupdate: {{ $prog->updated_at->isoFormat('DD MMMM YYYY, HH:mm') }} WIB
+                                                ({{ $prog->updated_at->diffForHumans() }})
                                             </div>
-                                        @endif
-
-                                        <div style="font-size: 0.68rem; color: #8ca0bf; text-align: right; margin-top: 6px;">
-                                            Terakhir diupdate: {{ $prog->updated_at->isoFormat('DD MMMM YYYY, HH:mm') }} WIB
-                                            ({{ $prog->updated_at->diffForHumans() }})
                                         </div>
                                     </div>
-                                </div>
                             @endforeach
                         </div>
                     @endif

@@ -655,6 +655,21 @@
                                 </a>
                             </div>
 
+                            @php
+                                $latestProgress = $pesanan->progresProduksis->sortByDesc('updated_at')->first();
+                                $totalPcs = $pesanan->details->sum('total_item');
+                            @endphp
+                            @if($latestProgress)
+                                <div style="font-size: 0.76rem; background: #e8f0fd; border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; color: #1e3c72; border: 1px solid #d0e1fd;">
+                                    <strong>Status Terakhir:</strong> <span style="font-weight: 700;">{{ $latestProgress->tahapan }}</span>
+                                    <span style="background: #3b82f6; color: #fff; font-size: 0.65rem; padding: 1px 6px; border-radius: 12px; font-weight: 800; margin-left: 4px;">{{ $latestProgress->jumlah_pcs }} Pcs</span>
+                                    @php
+                                        $latestPct = $totalPcs > 0 ? round(($latestProgress->jumlah_pcs / $totalPcs) * 100, 1) : 0;
+                                    @endphp
+                                    <span style="background: #10b981; color: #fff; font-size: 0.65rem; padding: 1px 6px; border-radius: 12px; font-weight: 800; margin-left: 4px;">{{ $latestPct }}%</span>
+                                </div>
+                            @endif
+
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
                                 @forelse($pesanan->progresProduksis as $prog)
                                     <div
@@ -664,9 +679,15 @@
                                                 style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 6px;">
                                                 <span
                                                     style="font-weight: 700; font-size: 0.8rem; color: #1a2b4a; line-height: 1.2;">{{ $prog->tahapan }}</span>
-                                                <span
-                                                    style="background: #e8f0fd; color: #4A90D9; padding: 2px 6px; border-radius: 6px; font-weight: 800; font-size: 0.7rem; white-space: nowrap;">{{ $prog->jumlah_pcs }}
-                                                    Pcs</span>
+                                                <div style="display: flex; gap: 4px; align-items: center;">
+                                                    <span
+                                                        style="background: #e8f0fd; color: #4A90D9; padding: 2px 6px; border-radius: 6px; font-weight: 800; font-size: 0.7rem; white-space: nowrap;">{{ $prog->jumlah_pcs }} Pcs</span>
+                                                    @php
+                                                        $stagePct = $totalPcs > 0 ? round(($prog->jumlah_pcs / $totalPcs) * 100, 1) : 0;
+                                                    @endphp
+                                                    <span
+                                                        style="background: #e6fffa; color: #00a389; padding: 2px 6px; border-radius: 6px; font-weight: 800; font-size: 0.7rem; white-space: nowrap;">{{ $stagePct }}%</span>
+                                                </div>
                                             </div>
                                             @if($prog->catatan)
                                                 <p
