@@ -18,6 +18,8 @@ class Pembayaran extends Model
         'catatan',
         'bukti_bayar',
         'catatan_pelanggan',
+        'xendit_invoice_id',
+        'xendit_invoice_url',
         'status',
         'verified_by',
         'verified_at',

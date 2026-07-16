@@ -88,10 +88,49 @@ class PesananController extends Controller
         $pesanan = Pesanan::where('user_id', Auth::id())
             ->with([
                 'details.produk',
-                'pembayarans' => fn($q) => $q->where('status', 'verified')->orderBy('termin_ke'),
+                'pembayarans' => fn($q) => $q->orderBy('termin_ke'),
                 'pembayarans.details.detailPesanan.produk',
             ])
             ->findOrFail($id);
+
+        // Perbarui status Xendit invoice yang pending jika ada
+        foreach ($pesanan->pembayarans as $pembayaran) {
+            if ($pembayaran->status === 'pending' && $pembayaran->xendit_invoice_id) {
+                try {
+                    $response = \Illuminate\Support\Facades\Http::withBasicAuth(env('XENDIT_API_KEY'), '')
+                        ->get('https://api.xendit.co/v2/invoices/' . $pembayaran->xendit_invoice_id);
+
+                    if ($response->successful()) {
+                        $xenditStatus = $response->json('status');
+                        if (in_array($xenditStatus, ['PAID', 'SETTLED'])) {
+                            DB::beginTransaction();
+                            $pembayaran->update([
+                                'status' => 'verified',
+                                'verified_at' => now(),
+                            ]);
+                            $pesanan->recalculatePembayaran();
+                            $pesanan->recalculateItemCoverage();
+                            DB::commit();
+                        } elseif ($xenditStatus === 'EXPIRED') {
+                            DB::beginTransaction();
+                            $pembayaran->update([
+                                'status' => 'rejected',
+                                'catatan' => 'Xendit Invoice Expired',
+                            ]);
+                            DB::commit();
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Gagal memverifikasi status Xendit: ' . $e->getMessage());
+                }
+            }
+        }
+
+        // Reload relasi setelah pembaruan status
+        $pesanan->load([
+            'pembayarans' => fn($q) => $q->orderBy('termin_ke'),
+            'pembayarans.details.detailPesanan.produk',
+        ]);
 
         return view('pelanggan.pesanan.show', compact('pesanan'));
     }

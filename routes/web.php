@@ -122,4 +122,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Xendit Webhook
+Route::post('/webhook/xendit', [\App\Http\Controllers\Webhook\XenditWebhookController::class, 'handle'])->name('webhook.xendit');
+
 require __DIR__ . '/auth.php';

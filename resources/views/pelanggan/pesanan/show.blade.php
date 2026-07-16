@@ -1053,9 +1053,9 @@
                                     @if($t1Verified)
                                         <span
                                             style="background:#ecfdf5;color:#059669;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">✓
-                                            Terverifikasi</span>
+                                            Terbayar</span>
                                     @elseif($t1Pending)
-                                        <span class="badge-pending-pay">⏳ Menunggu Verifikasi</span>
+                                        <span style="background:#fff3e6;color:#d97706;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">⏳ Menunggu Pembayaran</span>
                                     @else
                                         <span
                                             style="background:#fef2f2;color:#dc2626;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">Belum
@@ -1065,7 +1065,7 @@
                                 <div style="font-size:.72rem;color:#8ca0bf;margin-top:3px;">
                                     @if($t1Verified) Dibayar {{ $termin1->tanggal_bayar->isoFormat('DD MMM YYYY') }} ·
                                         {{ ucfirst($termin1->metode_pembayaran) }}
-                                    @elseif($t1Pending) Menunggu konfirmasi admin
+                                    @elseif($t1Pending) Silakan selesaikan pembayaran via Xendit
                                     @else Bayar untuk memulai produksi @endif
                                 </div>
                             </div>
@@ -1076,6 +1076,8 @@
                                 @if($bisaBayarT1)
                                     <button onclick="openModalBayar(1, {{ $dp50 }})" class="btn-bayar-termin">💳 Bayar
                                         DP</button>
+                                @elseif($t1Pending && $termin1->xendit_invoice_url)
+                                    <a href="{{ $termin1->xendit_invoice_url }}" target="_blank" class="btn-bayar-termin" style="background:#2563eb;color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">💳 Bayar Sekarang</a>
                                 @endif
                             </div>
                         </div>
@@ -1090,9 +1092,9 @@
                                     @if($t2Verified)
                                         <span
                                             style="background:#ecfdf5;color:#059669;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">✓
-                                            Terverifikasi</span>
+                                            Terbayar</span>
                                     @elseif($t2Pending)
-                                        <span class="badge-pending-pay">⏳ Menunggu Verifikasi</span>
+                                        <span style="background:#fff3e6;color:#d97706;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">⏳ Menunggu Pembayaran</span>
                                     @elseif($t1Verified)
                                         <span
                                             style="background:#fff3e6;color:#d97706;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">Siap
@@ -1105,7 +1107,7 @@
                                 <div style="font-size:.72rem;color:#8ca0bf;margin-top:3px;">
                                     @if($t2Verified) Dibayar {{ $termin2->tanggal_bayar->isoFormat('DD MMM YYYY') }} ·
                                         {{ ucfirst($termin2->metode_pembayaran) }}
-                                    @elseif($t2Pending) Menunggu konfirmasi admin
+                                    @elseif($t2Pending) Silakan selesaikan pembayaran via Xendit
                                     @elseif($t1Verified) Termin 1 sudah lunas — silakan lanjut pelunasan
                                     @else Selesaikan Termin 1 terlebih dahulu @endif
                                 </div>
@@ -1117,6 +1119,8 @@
                                 @if($bisaBayarT2)
                                     <button onclick="openModalBayar(2, {{ $lunas50 }})"
                                         class="btn-bayar-termin btn-bayar-lunas">💳 Bayar Lunas</button>
+                                @elseif($t2Pending && $termin2->xendit_invoice_url)
+                                    <a href="{{ $termin2->xendit_invoice_url }}" target="_blank" class="btn-bayar-termin btn-bayar-lunas" style="background:#2563eb;color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">💳 Bayar Sekarang</a>
                                 @endif
                             </div>
                         </div>
@@ -1163,12 +1167,11 @@
                     <div class="modal-header">
                         <div>
                             <h3 id="modalTitle">Bayar Termin 1 — DP</h3>
-                            <span id="modalSubtitle">Upload bukti transfer atau QRIS</span>
+                            <span id="modalSubtitle">Gateway Pembayaran Otomatis Xendit</span>
                         </div>
                         <button type="button" class="modal-close" onclick="closeModal()">✕</button>
                     </div>
-                    <form method="POST" action="{{ route('pelanggan.pesanan.bayar', $pesanan->id) }}"
-                        enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('pelanggan.pesanan.bayar', $pesanan->id) }}">
                         @csrf
                         <input type="hidden" name="termin_ke" id="inputTerminKe" value="1">
                         <div class="modal-body">
@@ -1176,54 +1179,23 @@
                                 <span class="nh-label">Nominal yang harus dibayar</span>
                                 <span class="nh-value" id="modalNominal">Rp 0</span>
                             </div>
-                            <label class="form-lbl" style="margin-bottom:8px;">Pilih Metode Pembayaran</label>
-                            <div class="pay-method-grid">
-                                <label class="pay-method-btn" id="btnQris">
-                                    <input type="radio" name="metode_pembayaran" value="qris" style="display:none;"
-                                        onchange="selectMethod('qris')" required>
-                                    <div class="icon">📱</div>
-                                    <div class="label">QRIS</div>
-                                    <div class="sub">Scan kode QR</div>
-                                </label>
-                                <label class="pay-method-btn" id="btnTransfer">
-                                    <input type="radio" name="metode_pembayaran" value="transfer" style="display:none;"
-                                        onchange="selectMethod('transfer')">
-                                    <div class="icon">🏦</div>
-                                    <div class="label">Transfer Bank</div>
-                                    <div class="sub">ATM / Mobile Banking</div>
-                                </label>
+                            
+                            <div style="background:#f0f4fb;border-radius:10px;padding:16px;margin-bottom:14px;font-size:.82rem;color:#1a2b4a;line-height:1.5;border:1px solid #dde8f8;">
+                                💳 <strong>Pembayaran Instan via Xendit</strong><br>
+                                <span style="color:#5a7090;margin-top:6px;display:block;">
+                                    Anda akan dialihkan ke halaman pembayaran aman Xendit untuk menyelesaikan transaksi menggunakan Virtual Account (Transfer Bank), QRIS, E-Wallet, atau metode pembayaran lainnya.
+                                </span>
                             </div>
-                            <div id="infoQris"
-                                style="display:none;background:#f0f4fb;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.78rem;color:#1a2b4a;">
-                                📱 <strong>Scan QRIS</strong> di aplikasi dompet digital Anda (GoPay, OVO, Dana, ShopeePay,
-                                dll.)<br>
-                                <span style="color:#8ca0bf;margin-top:4px;display:block;">Nama Toko: <strong>TB.
-                                        SIMAPES</strong></span>
-                            </div>
-                            <div id="infoTransfer"
-                                style="display:none;background:#f0f4fb;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.78rem;color:#1a2b4a;">
-                                🏦 <strong>Transfer ke:</strong><br>
-                                <span style="color:#8ca0bf;">Bank BCA · No. Rek: <strong
-                                        style="color:#1a2b4a;">1234-5678-90</strong> a/n TB. SIMAPES</span>
-                            </div>
-                            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileBukti').click()">
-                                <div class="uz-icon">📎</div>
-                                <div class="uz-text">Klik untuk upload bukti pembayaran</div>
-                                <div class="uz-text" style="font-size:.65rem;margin-top:2px;">JPG, PNG, PDF — Maks 3 MB
-                                </div>
-                                <div class="uz-file" id="fileNameDisplay" style="display:none;"></div>
-                            </div>
-                            <input type="file" id="fileBukti" name="bukti_bayar" accept=".jpg,.jpeg,.png,.pdf"
-                                style="display:none;" onchange="handleFileSelect(this)" required>
+
                             <div>
                                 <label class="form-lbl" for="catatanPelanggan">Catatan (opsional)</label>
                                 <textarea class="form-ctrl" id="catatanPelanggan" name="catatan_pelanggan" rows="2"
-                                    placeholder="Contoh: Transfer dari BCA atas nama Budi..."></textarea>
+                                    placeholder="Ada catatan untuk pembayaran ini?"></textarea>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn-cancel-modal" onclick="closeModal()">Batal</button>
-                            <button type="submit" class="btn-submit-bayar">Kirim Bukti Pembayaran</button>
+                            <button type="submit" class="btn-submit-bayar" style="background:#2563eb;color:white;border:none;">Bayar Sekarang via Xendit</button>
                         </div>
                     </form>
                 </div>
@@ -1298,10 +1270,10 @@
 
             if (termin === 1) {
                 title.innerText = 'Bayar Termin 1 — DP';
-                subtitle.innerText = 'Upload bukti pembayaran DP 50% untuk memulai produksi';
+                subtitle.innerText = 'Bayar DP 50% melalui Xendit untuk memulai produksi';
             } else {
                 title.innerText = 'Bayar Termin 2 — Pelunasan';
-                subtitle.innerText = 'Upload bukti pembayaran Pelunasan 50% untuk pengiriman produk';
+                subtitle.innerText = 'Bayar Pelunasan 50% melalui Xendit untuk pengiriman produk';
             }
 
             modal.classList.add('open');
@@ -1314,57 +1286,12 @@
             document.body.style.overflow = '';
 
             // Reset Form
-            document.getElementById('fileBukti').value = '';
-            document.getElementById('fileNameDisplay').style.display = 'none';
             document.getElementById('catatanPelanggan').value = '';
-
-            const qris = document.getElementById('btnQris');
-            const transfer = document.getElementById('btnTransfer');
-            qris.classList.remove('selected');
-            transfer.classList.remove('selected');
-
-            document.getElementById('infoQris').style.display = 'none';
-            document.getElementById('infoTransfer').style.display = 'none';
         }
 
         function closeModalOnOverlay(e) {
             if (e.target.id === 'modalBayar') {
                 closeModal();
-            }
-        }
-
-        function selectMethod(method) {
-            const qris = document.getElementById('btnQris');
-            const transfer = document.getElementById('btnTransfer');
-            const infoQris = document.getElementById('infoQris');
-            const infoTransfer = document.getElementById('infoTransfer');
-
-            if (method === 'qris') {
-                qris.classList.add('selected');
-                transfer.classList.remove('selected');
-                infoQris.style.display = 'block';
-                infoTransfer.style.display = 'none';
-            } else {
-                transfer.classList.add('selected');
-                qris.classList.remove('selected');
-                infoTransfer.style.display = 'block';
-                infoQris.style.display = 'none';
-            }
-        }
-
-        function handleFileSelect(input) {
-            const uzText = document.querySelector('#uploadZone .uz-text');
-            const fileNameDisplay = document.getElementById('fileNameDisplay');
-            const uploadZone = document.getElementById('uploadZone');
-
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                fileNameDisplay.innerText = '✓ ' + file.name + ' (' + (file.size / 1024 / 1024).toFixed(2) + ' MB)';
-                fileNameDisplay.style.display = 'block';
-                uploadZone.classList.add('has-file');
-            } else {
-                fileNameDisplay.style.display = 'none';
-                uploadZone.classList.remove('has-file');
             }
         }
     </script>
