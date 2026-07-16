@@ -475,7 +475,7 @@
         }
 
         function calcTotalPcs() {
-            let hasError = false;
+            let singleStageError = false;
             let offendingStage = '';
 
             document.querySelectorAll('.stage-row').forEach(row => {
@@ -484,7 +484,7 @@
                 const pcs = parseInt(pcsInput.value) || 0;
                 
                 if (pcs > targetPcs) {
-                    hasError = true;
+                    singleStageError = true;
                     offendingStage = tahapanInput.value || 'Salah satu tahapan';
                 }
             });
@@ -494,16 +494,16 @@
             const bannerDesc = document.getElementById('bannerDesc');
             const submitBtn = document.getElementById('btnSubmitProgres');
 
-            if (!hasError) {
-                banner.className = 'calculator-banner banner-success';
-                bannerTitle.textContent = '✓ Progres Valid';
-                bannerDesc.textContent = `Jumlah pcs pada masing-masing tahapan tidak melebihi target pesanan (${targetPcs} pcs). Anda dapat menyimpan progres.`;
-                submitBtn.disabled = false;
-            } else {
+            if (singleStageError) {
                 banner.className = 'calculator-banner banner-warning';
                 bannerTitle.textContent = '⚠️ Jumlah Pcs Melebihi Target';
                 bannerDesc.textContent = `Jumlah pcs pada tahapan "${offendingStage}" melebihi target pesanan (${targetPcs} pcs). Harap perbaiki sebelum menyimpan.`;
                 submitBtn.disabled = true;
+            } else {
+                banner.className = 'calculator-banner banner-success';
+                bannerTitle.textContent = '✓ Progres Valid';
+                bannerDesc.textContent = `Jumlah pcs pada setiap tahapan tidak melebihi target pesanan (${targetPcs} pcs). Anda dapat menyimpan progres.`;
+                submitBtn.disabled = false;
             }
         }
 

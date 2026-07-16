@@ -232,4 +232,30 @@ class ProductionProgressTest extends TestCase
         $responseDetail->assertSee('30');
         $responseDetail->assertSee('60%');
     }
+
+    public function test_admin_can_submit_progress_stages_whose_sum_exceeds_total_quantity_if_each_stage_is_within_limit(): void
+    {
+        $pesanan = $this->createOrder('dikerjakan', 50); // Total is 50
+
+        // Submit two stages, 30 pcs and 30 pcs. Sum is 60 (exceeds 50), but each stage (30) is <= 50.
+        $response = $this
+            ->actingAs($this->admin)
+            ->post(route('admin.pesanan.progres.update', $pesanan->id), [
+                'stages' => [
+                    [
+                        'tahapan' => 'Persiapan Bahan',
+                        'jumlah_pcs' => 30,
+                        'catatan' => 'Bahan siap',
+                    ],
+                    [
+                        'tahapan' => 'Proses Potong',
+                        'jumlah_pcs' => 30,
+                        'catatan' => 'Potong kain',
+                    ]
+                ]
+            ]);
+
+        $response->assertRedirect(route('admin.pesanan.index'));
+        $this->assertCount(2, $pesanan->fresh()->progresProduksis); // Should save successfully
+    }
 }

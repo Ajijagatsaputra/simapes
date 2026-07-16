@@ -40,6 +40,7 @@ class ProgresProduksiController extends Controller
         ], [
             'stages.*.jumlah_pcs.max' => "Jumlah pcs pada setiap tahapan tidak boleh melebihi total target pesanan ({$totalPcs} pcs).",
         ]);
+
         $stages = $request->input('stages', []);
 
         DB::beginTransaction();
