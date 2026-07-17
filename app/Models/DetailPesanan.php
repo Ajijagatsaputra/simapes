@@ -17,6 +17,8 @@ class DetailPesanan extends Model
         'total_item',
         'jumlah_terbayar',
         'subtotal',
+        'catatan',
+        'path_gambar',
     ];
 
     protected $casts = [

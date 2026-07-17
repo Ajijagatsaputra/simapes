@@ -350,7 +350,7 @@
         </p>
     </div>
 
-    <form method="POST" action="{{ route('pelanggan.pesanan.store') }}" id="orderForm">
+    <form method="POST" action="{{ route('pelanggan.pesanan.store') }}" id="orderForm" enctype="multipart/form-data">
         @csrf
 
         <div class="order-container">
@@ -558,16 +558,19 @@
                     // Inject rows ke tabel
                     if (json.items && json.items.length > 0) {
                         // Hapus baris pertama jika kosong (produk belum dipilih)
-                        const firstRow = document.querySelector('#itemsBody tr');
+                        const firstRow = document.querySelector('#itemsBody tr:not(.accordion-row)');
                         if (firstRow) {
                             const firstSelect = firstRow.querySelector('select[name*="[produk_id]"]');
                             if (firstSelect && firstSelect.value === '') {
+                                const rowId = firstRow.id.replace('row-', '');
+                                const accordion = document.getElementById(`row-accordion-${rowId}`);
                                 firstRow.remove();
+                                if (accordion) accordion.remove();
                             }
                         }
 
                         json.items.forEach(item => {
-                            addRowFromExcel(item.produk_id, item.ukuran, item.jumlah);
+                            addRowFromExcel(item.produk_id, item.ukuran, item.jumlah, item.catatan);
                         });
 
                         let msg = '✅ ' + json.message;
@@ -605,7 +608,7 @@
         }
 
         /** Tambah row ke tabel dari data Excel */
-        function addRowFromExcel(produkId, ukuran, jumlah) {
+        function addRowFromExcel(produkId, ukuran, jumlah, catatan) {
             addRow(produkId);
             const lastRow = document.getElementById(`row-${rowCount}`);
             if (!lastRow) return;
@@ -619,6 +622,12 @@
             if (jumlahInput) {
                 jumlahInput.value = jumlah;
                 calculateRowSubtotal(rowCount);
+            }
+
+            // Set catatan
+            const catatanTextarea = document.querySelector(`textarea[name="items[${rowCount}][catatan]"]`);
+            if (catatanTextarea) {
+                catatanTextarea.value = catatan || '';
             }
         }
 
@@ -636,49 +645,151 @@
             });
 
             row.innerHTML = `
-                                            <td>
-                                                <select name="items[${rowCount}][produk_id]" class="form-select" onchange="calculateRowSubtotal(${rowCount})" required>
-                                                    ${options}
-                                                </select>
+                                                <td>
+                                                    <select name="items[${rowCount}][produk_id]" class="form-select" onchange="calculateRowSubtotal(${rowCount})" required>
+                                                        ${options}
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <select name="items[${rowCount}][ukuran]" class="form-select" style="text-align: center;" required>
+                                                        <option value="" disabled>-- Ukuran --</option>
+                                                        <option value="S">S</option>
+                                                        <option value="M" selected>M</option>
+                                                        <option value="L">L</option>
+                                                        <option value="XL">XL</option>
+                                                        <option value="XXL">XXL</option>
+                                                        <option value="3XL">3XL</option>
+                                                        <option value="4XL">4XL</option>
+                                                        <option value="5XL">5XL</option>
+                                                    </select>
+                                                </td>
+                                            <td style="text-align: center; position: relative; padding-bottom: 22px;">
+                                                <input type="number" name="items[${rowCount}][total_item]" class="form-input" value="1" min="1" oninput="calculateRowSubtotal(${rowCount})" required style="text-align: center; max-width: 80px; margin: 0 auto; display: block;">
+                                                <span style="font-size: .65rem; color: #8ca0bf; position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; white-space: nowrap;">Agregat semua kelas</span>
                                             </td>
-                                            <td>
-                                                <select name="items[${rowCount}][ukuran]" class="form-select" style="text-align: center;" required>
-                                                    <option value="" disabled>-- Ukuran --</option>
-                                                    <option value="S">S</option>
-                                                    <option value="M" selected>M</option>
-                                                    <option value="L">L</option>
-                                                    <option value="XL">XL</option>
-                                                    <option value="XXL">XXL</option>
-                                                    <option value="3XL">3XL</option>
-                                                    <option value="4XL">4XL</option>
-                                                    <option value="5XL">5XL</option>
-                                                </select>
-                                            </td>
-                                        <td style="text-align: center; position: relative; padding-bottom: 22px;">
-                                            <input type="number" name="items[${rowCount}][total_item]" class="form-input" value="1" min="1" oninput="calculateRowSubtotal(${rowCount})" required style="text-align: center; max-width: 80px; margin: 0 auto; display: block;">
-                                            <span style="font-size: .65rem; color: #8ca0bf; position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; white-space: nowrap;">Agregat semua kelas</span>
-                                        </td>
-                                            <td style="text-align: right; font-weight: 700; color: #1a2b4a;" id="subtotal-${rowCount}">
-                                                Rp 0
-                                            </td>
-                                            <td style="text-align: center;">
-                                                <button type="button" class="btn-remove-row" onclick="removeRow(${rowCount})" title="Hapus item">
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                                    </svg>
-                                                </button>
-                                            </td>
-                                        `;
+                                                <td style="text-align: right; font-weight: 700; color: #1a2b4a;" id="subtotal-${rowCount}">
+                                                    Rp 0
+                                                </td>
+                                                <td style="text-align: center; white-space: nowrap;">
+                                                    <div style="display: flex; gap: 6px; justify-content: center; align-items: center;">
+                                                        <button type="button" class="btn-note-row" onclick="toggleAccordion(${rowCount})" title="Tambah Catatan / Gambar" style="width: 32px; height: 32px; background: #e8f0fd; color: #4A90D9; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s;">
+                                                            📝
+                                                        </button>
+                                                        <button type="button" class="btn-remove-row" onclick="removeRow(${rowCount})" title="Hapus item">
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            `;
+
+            const accordionRow = document.createElement('tr');
+            accordionRow.id = `row-accordion-${rowCount}`;
+            accordionRow.className = 'accordion-row';
+            accordionRow.style.display = 'none';
+            accordionRow.style.background = '#fafcff';
+            accordionRow.innerHTML = `
+                    <td colspan="5" style="padding: 12px 20px; border-bottom: 1px solid #e2e8f4;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+                            <div>
+                                <label class="form-label" style="margin-bottom: 6px; font-weight: 700; color: #1a2b4a; text-align: left;">Catatan Pesanan (Maksimal 250 Karakter)</label>
+                                <textarea name="items[${rowCount}][catatan]" class="form-input" rows="3" maxlength="250" placeholder="Contoh: Bordir logo OSIS di lengan kanan" style="width: 100%; border: 1.5px solid #c5d8f5; border-radius: 10px; padding: 10px; font-family: inherit; font-size: .82rem; background: #fff; outline: none; transition: border-color 0.2s; box-sizing: border-box; text-align: left;"></textarea>
+                            </div>
+                            <div>
+                                <label class="form-label" style="margin-bottom: 6px; font-weight: 700; color: #1a2b4a; text-align: left;">Gambar Acuan (Maksimal 5MB, JPG/JPEG/PNG)</label>
+                                <div style="display: flex; gap: 12px; align-items: center;">
+                                    <input type="file" name="items[${rowCount}][gambar]" accept=".jpg,.jpeg,.png" id="file-input-${rowCount}" onchange="previewImage(${rowCount}, this)" style="display: none;">
+                                    <button type="button" class="btn-excel" onclick="document.getElementById('file-input-${rowCount}').click()" style="margin: 0; padding: 8px 14px; border: 1.5px solid #4A90D9; background: #e8f0fd; color: #4A90D9; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                        📁 Pilih Gambar
+                                    </button>
+                                    <span id="file-name-${rowCount}" style="font-size: 0.78rem; color: #6b7e9f;">Belum ada berkas</span>
+                                </div>
+                                <div id="preview-container-${rowCount}" style="margin-top: 10px; display: none; position: relative; width: fit-content;">
+                                    <img id="preview-img-${rowCount}" src="" style="max-height: 100px; max-width: 150px; border-radius: 8px; border: 1.5px solid #c5d8f5; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                                    <button type="button" onclick="clearPreviewImage(${rowCount})" style="position: absolute; top: -6px; right: -6px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.2);">X</button>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                `;
 
             body.appendChild(row);
+            body.appendChild(accordionRow);
             calculateRowSubtotal(rowCount);
         }
 
+        function toggleAccordion(id) {
+            const accordionRow = document.getElementById(`row-accordion-${id}`);
+            const btn = document.querySelector(`#row-${id} .btn-note-row`);
+            if (accordionRow.style.display === 'none') {
+                accordionRow.style.display = 'table-row';
+                btn.style.background = '#4A90D9';
+                btn.style.color = '#fff';
+            } else {
+                accordionRow.style.display = 'none';
+                btn.style.background = '#e8f0fd';
+                btn.style.color = '#4A90D9';
+            }
+        }
+
+        function previewImage(id, input) {
+            const file = input.files[0];
+            const nameSpan = document.getElementById(`file-name-${id}`);
+            const container = document.getElementById(`preview-container-${id}`);
+            const img = document.getElementById(`preview-img-${id}`);
+
+            if (file) {
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    showToast('Format file wajib: .jpg, .jpeg, .png', 'error');
+                    input.value = '';
+                    nameSpan.textContent = 'Belum ada berkas';
+                    container.style.display = 'none';
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('Ukuran berkas maksimal 5MB', 'error');
+                    input.value = '';
+                    nameSpan.textContent = 'Belum ada berkas';
+                    container.style.display = 'none';
+                    return;
+                }
+
+                nameSpan.textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    img.src = e.target.result;
+                    container.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                nameSpan.textContent = 'Belum ada berkas';
+                container.style.display = 'none';
+            }
+        }
+
+        function clearPreviewImage(id) {
+            const input = document.getElementById(`file-input-${id}`);
+            const nameSpan = document.getElementById(`file-name-${id}`);
+            const container = document.getElementById(`preview-container-${id}`);
+            const img = document.getElementById(`preview-img-${id}`);
+
+            input.value = '';
+            nameSpan.textContent = 'Belum ada berkas';
+            container.style.display = 'none';
+            img.src = '';
+        }
+
         function removeRow(id) {
-            const row = document.getElementById(`row-${id}`);
-            if (document.querySelectorAll('#itemsBody tr').length > 1) {
-                row.remove();
+            const mainRows = document.querySelectorAll('#itemsBody tr[id^="row-"]:not([id*="accordion"])');
+            if (mainRows.length > 1) {
+                const row = document.getElementById(`row-${id}`);
+                const accordion = document.getElementById(`row-accordion-${id}`);
+                if (row) row.remove();
+                if (accordion) accordion.remove();
                 calculateGrandTotal();
             } else {
                 showToast('Minimal harus ada 1 item pesanan', 'warning');
@@ -706,7 +817,7 @@
             let grandTotal = 0;
             let totalItems = 0;
 
-            document.querySelectorAll('#itemsBody tr').forEach(row => {
+            document.querySelectorAll('#itemsBody tr:not(.accordion-row)').forEach(row => {
                 const subtotalCell = row.querySelector('td[id^="subtotal-"]');
                 const quantityInput = row.querySelector('input[name*="[total_item]"]');
 

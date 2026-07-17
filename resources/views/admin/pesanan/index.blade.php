@@ -332,11 +332,28 @@
                         </td>
                         <td>
                             @foreach($p->details as $d)
-                                <div class="item-produk-row">
-                                    <strong>{{ $d->produk->nama_produk ?? 'Produk Terhapus' }}</strong> 
-                                    <span class="item-badge-ukuran">{{ $d->ukuran }}</span> 
-                                    <span style="color: #6b7e9f;">x {{ $d->total_item }}</span>
-                                    <span style="float: right; color:#8ca0bf;">Rp {{ number_format($d->subtotal, 0, ',', '.') }}</span>
+                                <div class="item-produk-row" style="display: flex; gap: 8px; align-items: start; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #e8eef8;">
+                                    @if($d->path_gambar)
+                                        <div style="flex-shrink: 0; cursor: pointer;" onclick="openLightbox('{{ asset('storage/' . $d->path_gambar) }}')">
+                                            <img src="{{ asset('storage/' . $d->path_gambar) }}" alt="Preview" style="width: 42px; height: 42px; object-fit: cover; border-radius: 6px; border: 1px solid #c5d8f5; box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                        </div>
+                                    @endif
+                                    <div style="flex-grow: 1;">
+                                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                                            <div>
+                                                <strong>{{ $d->produk->nama_produk ?? 'Produk Terhapus' }}</strong>
+                                                <span class="item-badge-ukuran" style="margin-left: 4px;">{{ $d->ukuran }}</span>
+                                                <span style="color: #6b7e9f; margin-left: 4px;">x{{ $d->total_item }}</span>
+                                            </div>
+                                            <span style="color:#8ca0bf; font-weight: 600; margin-left: 10px;">Rp {{ number_format($d->subtotal, 0, ',', '.') }}</span>
+                                        </div>
+                                        @if($d->catatan)
+                                            <div style="font-size: 0.72rem; color: #d97706; background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 2px 6px; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; max-width: 100%; word-break: break-word;">
+                                                <span>📝</span>
+                                                <span>{{ $d->catatan }}</span>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                             @endforeach
                         </td>
@@ -534,6 +551,14 @@
 
     </div>
 
+    {{-- Lightbox Modal --}}
+    <div id="lightboxModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 99999; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.25s ease;" onclick="closeLightbox()">
+        <div style="position: relative; max-width: 90%; max-height: 90%;" onclick="event.stopPropagation()">
+            <button onclick="closeLightbox()" style="position: absolute; top: -40px; right: 0; background: none; border: none; color: #fff; font-size: 30px; font-weight: bold; cursor: pointer;">&times;</button>
+            <img id="lightboxImage" src="" style="max-width: 100%; max-height: 80vh; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); border: 2px solid #fff;">
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
@@ -647,5 +672,24 @@
     function resetForm() { openForm(); }
 
     document.addEventListener('DOMContentLoaded', function() { openForm(); });
+
+    // ── Lightbox Functions ──
+    function openLightbox(src) {
+        const modal = document.getElementById('lightboxModal');
+        const img = document.getElementById('lightboxImage');
+        img.src = src;
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.style.opacity = '1';
+        }, 10);
+    }
+
+    function closeLightbox() {
+        const modal = document.getElementById('lightboxModal');
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 250);
+    }
 </script>
 @endpush

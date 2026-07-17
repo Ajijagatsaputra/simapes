@@ -32,7 +32,6 @@ class PesananController extends Controller
         return view('pelanggan.pesanan.create', compact('produk'));
     }
 
-    /** Simpan pesanan baru dari pelanggan */
     public function store(Request $request)
     {
         $request->validate([
@@ -40,6 +39,8 @@ class PesananController extends Controller
             'items.*.produk_id' => 'required|exists:produks,id',
             'items.*.ukuran' => 'required|in:S,M,L,XL,XXL,3XL,4XL,5XL',
             'items.*.total_item' => 'required|integer|min:1',
+            'items.*.catatan' => 'nullable|string|max:250',
+            'items.*.gambar' => 'nullable|image|mimes:jpeg,jpg,png|max:5120',
         ]);
 
         DB::beginTransaction();
@@ -53,10 +54,16 @@ class PesananController extends Controller
             ]);
 
             $totalHarga = 0;
-            foreach ($request->items as $item) {
+            foreach ($request->items as $key => $item) {
                 $produk = Produk::findOrFail($item['produk_id']);
                 $subtotal = $produk->harga * $item['total_item'];
                 $totalHarga += $subtotal;
+
+                $pathGambar = null;
+                if ($request->hasFile("items.{$key}.gambar")) {
+                    $file = $request->file("items.{$key}.gambar");
+                    $pathGambar = $file->store('pesanan/gambar_acuan', 'public');
+                }
 
                 DetailPesanan::create([
                     'pesanan_id' => $pesanan->id,
@@ -65,6 +72,8 @@ class PesananController extends Controller
                     'harga_satuan' => $produk->harga,
                     'total_item' => $item['total_item'],
                     'subtotal' => $subtotal,
+                    'catatan' => $item['catatan'] ?? null,
+                    'path_gambar' => $pathGambar,
                 ]);
             }
 
@@ -146,27 +155,27 @@ class PesananController extends Controller
 
         // Baris 1: Judul / instruksi
         $rows[] = ['TEMPLATE PEMESANAN MASSAL SERAGAM - SIMAPES'];
-        $rows[] = ['Petunjuk: Isi kolom Nama_Produk, Ukuran, dan Jumlah. Jangan ubah header baris 5.'];
+        $rows[] = ['Petunjuk: Isi kolom Nama_Produk, Ukuran, Jumlah, dan Catatan. Jangan ubah header baris 5.'];
         $rows[] = ['Ukuran yang valid: S, M, L, XL, XXL, 3XL, 4XL, 5XL'];
         $rows[] = ['']; // baris kosong
 
         // Baris 5: Header data
-        $rows[] = ['No', 'Nama_Produk', 'Ukuran', 'Jumlah'];
+        $rows[] = ['No', 'Nama_Produk', 'Ukuran', 'Jumlah', 'Catatan'];
 
         // Contoh data (3 baris)
         $contoh = [
-            ['S', 30],
-            ['M', 50],
-            ['XL', 20],
+            ['S', 30, 'Bordir logo OSIS di lengan kanan'],
+            ['M', 50, 'Tanpa saku depan'],
+            ['XL', 20, 'Bordir nama sekolah di belakang'],
         ];
         $idx = 1;
         foreach ($produkList->take(3) as $i => $p) {
-            $rows[] = [$idx++, $p->nama_produk, $contoh[$i][0], $contoh[$i][1]];
+            $rows[] = [$idx++, $p->nama_produk, $contoh[$i][0], $contoh[$i][1], $contoh[$i][2]];
         }
 
         // Jika produk < 3, isi sisa baris contoh dengan kosong
         for ($j = $produkList->count(); $j < 3; $j++) {
-            $rows[] = [$idx++, 'Nama Seragam (contoh)', $contoh[$j][0], $contoh[$j][1]];
+            $rows[] = [$idx++, 'Nama Seragam (contoh)', $contoh[$j][0], $contoh[$j][1], $contoh[$j][2] ?? ''];
         }
 
         $rows[] = ['']; // baris kosong
@@ -276,6 +285,7 @@ class PesananController extends Controller
             $namaProduk = trim($cols[1] ?? '');
             $ukuran = strtoupper(trim($cols[2] ?? ''));
             $jumlah = (int) trim($cols[3] ?? 0);
+            $catatan = trim($cols[4] ?? '');
 
             if ($namaProduk === '')
                 continue;
@@ -316,6 +326,7 @@ class PesananController extends Controller
                 'harga' => $produkData['harga'],
                 'ukuran' => $ukuran,
                 'jumlah' => $jumlah,
+                'catatan' => $catatan,
                 'subtotal' => $produkData['harga'] * $jumlah,
             ];
         }
