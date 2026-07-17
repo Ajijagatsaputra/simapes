@@ -21,7 +21,7 @@ class ProdukController extends Controller
     {
         $validated = $request->validate([
             'nama_produk' => 'required|string|max:255',
-            'jenis_seragam' => 'required|in:SD,SMP,SMA/SMK,Umum,Atribut',
+            'jenis_seragam' => 'required|in:TK,SD,SMP,SMA/SMK,Umum,Atribut',
             'harga' => 'required|numeric|min:0',
             'deskripsi' => 'nullable|string',
             'stok' => 'required|integer|min:0',
@@ -51,7 +51,7 @@ class ProdukController extends Controller
     {
         $validated = $request->validate([
             'nama_produk' => 'required|string|max:255',
-            'jenis_seragam' => 'required|in:SD,SMP,SMA/SMK,Umum,Atribut',
+            'jenis_seragam' => 'required|in:TK,SD,SMP,SMA/SMK,Umum,Atribut',
             'harga' => 'required|numeric|min:0',
             'deskripsi' => 'nullable|string',
             'stok' => 'required|integer|min:0',

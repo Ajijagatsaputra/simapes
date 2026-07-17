@@ -469,6 +469,7 @@
                     <label class="form-label" for="jenisSeragam">Kategori</label>
                     <select class="form-select" id="jenisSeragam" name="jenis_seragam" required>
                         <option value="" disabled selected>-- Pilih Kategori --</option>
+                        <option value="TK">TK/PAUD</option>
                         <option value="SD">SD</option>
                         <option value="SMP">SMP</option>
                         <option value="SMA/SMK">SMA/SMK</option>

@@ -107,6 +107,20 @@ class DatabaseSeeder extends Seeder
                 'harga' => 150000,
                 'stok' => 0, // Status Empty
                 'deskripsi' => 'Jas almamater puring penuh.'
+            ],
+            [
+                'nama_produk' => 'Seragam Olahraga TK/PAUD',
+                'jenis_seragam' => 'TK',
+                'harga' => 70000,
+                'stok' => 50,
+                'deskripsi' => 'Bahan kaos nyaman untuk anak TK/PAUD.'
+            ],
+            [
+                'nama_produk' => 'Seragam TK Islam Terpadu',
+                'jenis_seragam' => 'TK',
+                'harga' => 80000,
+                'stok' => 30,
+                'deskripsi' => 'Satu set seragam lengkap baju dan celana/rok.'
             ]
         ];
 

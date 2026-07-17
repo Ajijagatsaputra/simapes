@@ -130,4 +130,31 @@ class AdminProdukTest extends TestCase
         $this->assertDatabaseMissing('produks', ['id' => $produk->id]);
         $this->assertFileDoesNotExist($imagePath);
     }
+
+    public function test_admin_can_add_product_with_tk_category()
+    {
+        $admin = User::factory()->create([
+            'email' => 'admin@gmail.com',
+            'role' => 'admin',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post(route('admin.produk.store'), [
+                'nama_produk' => 'Baju Seragam TK Baru',
+                'jenis_seragam' => 'TK',
+                'harga' => 65000,
+                'deskripsi' => 'Deskripsi seragam TK baru',
+                'stok' => 45,
+            ]);
+
+        $response->assertRedirect(route('admin.produk.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('produks', [
+            'nama_produk' => 'Baju Seragam TK Baru',
+            'jenis_seragam' => 'TK',
+            'harga' => 65000.00,
+            'stok' => 45,
+        ]);
+    }
 }

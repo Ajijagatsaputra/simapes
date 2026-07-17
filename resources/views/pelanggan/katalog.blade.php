@@ -159,6 +159,11 @@
             color: #d97706;
         }
 
+        .badge-tk {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
         .badge-atribut {
             background: #f3e8ff;
             color: #7c3aed;
@@ -295,9 +300,11 @@
             </div>
             <div class="filter-options">
                 <button class="filter-btn active" onclick="filterCategory('all', this)">Semua</button>
+                <button class="filter-btn" onclick="filterCategory('TK', this)">TK/PAUD</button>
                 <button class="filter-btn" onclick="filterCategory('SD', this)">SD</button>
                 <button class="filter-btn" onclick="filterCategory('SMP', this)">SMP</button>
                 <button class="filter-btn" onclick="filterCategory('SMA', this)">SMA/SMK</button>
+                <button class="filter-btn" onclick="filterCategory('Umum', this)">Umum</button>
                 <button class="filter-btn" onclick="filterCategory('Atribut', this)">Atribut</button>
             </div>
         </div>
@@ -308,7 +315,9 @@
                 @php
                     $jenisLower = strtolower($p->jenis_seragam);
                     $badgeClass = 'badge-umum';
-                    if (str_contains($jenisLower, 'sd')) {
+                    if ($jenisLower === 'tk') {
+                        $badgeClass = 'badge-tk';
+                    } elseif (str_contains($jenisLower, 'sd')) {
                         $badgeClass = 'badge-sd';
                     } elseif (str_contains($jenisLower, 'smp')) {
                         $badgeClass = 'badge-smp';
@@ -320,7 +329,8 @@
                 @endphp
                 <div class="product-card" data-name="{{ strtolower($p->nama_produk) }}" data-category="{{ $p->jenis_seragam }}">
                     <div class="product-thumb">
-                        <span class="product-badge {{ $badgeClass }}">{{ $p->jenis_seragam }}</span>
+                        <span
+                            class="product-badge {{ $badgeClass }}">{{ $p->jenis_seragam === 'TK' ? 'TK/PAUD' : $p->jenis_seragam }}</span>
                         @if($p->gambar)
                             <img src="{{ asset($p->gambar) }}" alt="{{ $p->nama_produk }}"
                                 style="width: 100%; height: 100%; object-fit: cover;">
@@ -398,7 +408,7 @@
                 } else if (currentCategory === 'Atribut') {
                     matchesCategory = category === 'Atribut';
                 } else {
-                    matchesCategory = category.includes(currentCategory);
+                    matchesCategory = category.toLowerCase() === currentCategory.toLowerCase();
                 }
 
                 const matchesSearch = name.includes(query);
