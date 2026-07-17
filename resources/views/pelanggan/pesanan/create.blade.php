@@ -442,6 +442,17 @@
                     <p style="font-size: .75rem; color: #6b7e9f; margin-top: 4px; margin-bottom: 12px;">Upload file
                         CSV/Excel pesanan sekolah — sistem akan otomatis mengisi daftar pesanan.</p>
 
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: .75rem; color: #475569; line-height: 1.4;">
+                        <strong style="color: #1a2b4a; display: block; margin-bottom: 4px; font-size: .78rem;">💡 Petunjuk Pengisian File:</strong>
+                        <ul style="padding-left: 16px; margin: 0; display: flex; flex-direction: column; gap: 4px; list-style-type: disc;">
+                            <li>Gunakan template CSV resmi yang diunduh di Langkah 1.</li>
+                            <li>Kolom <strong>Nama_Produk</strong> harus sama persis dengan nama di katalog.</li>
+                            <li>Kolom <strong>Ukuran</strong> diisi ukuran yang tersedia (misal: S, M, L, XL).</li>
+                            <li>Kolom <strong>Jumlah</strong> diisi angka bulat positif saja.</li>
+                            <li>Kolom <strong>Catatan</strong> dapat diisi instruksi khusus (misal: bordir nama).</li>
+                        </ul>
+                    </div>
+
                     {{-- Step 1: Download Template --}}
                     <div
                         style="margin-bottom:10px; font-size:.72rem; font-weight:700; color:#8ca0bf; text-transform:uppercase; letter-spacing:.5px;">
