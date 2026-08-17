@@ -26,6 +26,9 @@ class ProdukController extends Controller
             'deskripsi' => 'nullable|string',
             'stok' => 'required|integer|min:0',
             'gambar' => 'nullable|file|mimes:jpeg,png,jpg,webp,svg|max:2048',
+            'spesifikasi_bahan' => 'nullable|string',
+            'size_chart' => 'nullable|string',
+            'estimasi_bb_tb' => 'nullable|string',
         ]);
 
         if ($request->hasFile('gambar')) {
@@ -56,6 +59,9 @@ class ProdukController extends Controller
             'deskripsi' => 'nullable|string',
             'stok' => 'required|integer|min:0',
             'gambar' => 'nullable|file|mimes:jpeg,png,jpg,webp,svg|max:2048',
+            'spesifikasi_bahan' => 'nullable|string',
+            'size_chart' => 'nullable|string',
+            'estimasi_bb_tb' => 'nullable|string',
         ]);
 
         $produk = Produk::findOrFail($id);

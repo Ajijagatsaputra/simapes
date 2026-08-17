@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\OtpCode;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -16,7 +18,7 @@ class RegistrationTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_new_users_can_register(): void
+    public function test_new_users_can_register_and_verify_otp(): void
     {
         $response = $this->post('/register', [
             'name' => 'Test User',
@@ -25,7 +27,23 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('pelanggan.dashboard', absolute: false));
+        $response->assertRedirect(route('otp.verify'));
+
+        $user = User::where('email', 'test@example.com')->first();
+        $this->assertNotNull($user);
+        $this->assertNull($user->email_verified_at);
+
+        $otp = OtpCode::where('user_id', $user->id)->first();
+        $this->assertNotNull($otp);
+
+        // Submit valid OTP
+        $verifyResponse = $this->withSession(['otp_user_id' => $user->id])
+            ->post(route('otp.verify.submit'), [
+                'code' => $otp->code,
+            ]);
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertNotNull($user->fresh()->email_verified_at);
+        $verifyResponse->assertRedirect(route('pelanggan.dashboard', absolute: false));
     }
 }

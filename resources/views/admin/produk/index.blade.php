@@ -379,7 +379,8 @@
                                         '{{ (int)$p->harga }}',
                                         '{{ addslashes($p->deskripsi ?? '') }}',
                                         {{ $p->stok }},
-                                        '{{ $p->gambar }}'
+                                        '{{ $p->gambar }}',
+                                        '{{ addslashes($p->spesifikasi_bahan ?? '') }}'
                                     )">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                                          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -492,6 +493,12 @@
                 </div>
 
                 <div class="form-group" style="margin-top:14px">
+                    <label class="form-label" for="spesifikasiBahan">Spesifikasi Bahan (Opsional)</label>
+                    <textarea class="form-textarea" id="spesifikasiBahan" name="spesifikasi_bahan"
+                               placeholder="Cth: Atasan Katun Deluxe | Bawahan Drill Famatex... (Kosongkan jika ingin memakai standar otomatis)"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-top:14px">
                     <label class="form-label" for="deskripsi">Deskripsi</label>
                     <textarea class="form-textarea" id="deskripsi" name="deskripsi"
                                placeholder="Deskripsi produk..."></textarea>
@@ -548,7 +555,7 @@
     }
 
     // ── Edit ─────────────────────────────────────────────────────────
-    function editProduk(id, nama, jenis, harga, deskripsi, stok, gambarUrl) {
+    function editProduk(id, nama, jenis, harga, deskripsi, stok, gambarUrl, spesifikasiBahan) {
         document.getElementById('formTitle').textContent = 'Edit Produk';
         document.getElementById('formMethod').value = 'PUT';
         document.getElementById('formProduk').action = '/admin/produk/' + id;
@@ -557,6 +564,9 @@
         document.getElementById('harga').value        = formatRibuan(harga);
         document.getElementById('stok').value         = stok;
         document.getElementById('deskripsi').value    = deskripsi;
+        if (document.getElementById('spesifikasiBahan')) {
+            document.getElementById('spesifikasiBahan').value = spesifikasiBahan || '';
+        }
         document.getElementById('btnSimpan').textContent = 'Update';
 
         const currentImgContainer = document.getElementById('currentImageContainer');
