@@ -372,16 +372,17 @@
                         <td>
                             <div class="aksi-wrap">
                                 <button class="btn-edit" title="Edit"
-                                    onclick="editProduk(
-                                        {{ $p->id }},
-                                        '{{ addslashes($p->nama_produk) }}',
-                                        '{{ addslashes($p->jenis_seragam) }}',
-                                        '{{ (int)$p->harga }}',
-                                        '{{ addslashes($p->deskripsi ?? '') }}',
-                                        {{ $p->stok }},
-                                        '{{ $p->gambar }}',
-                                        '{{ addslashes($p->spesifikasi_bahan ?? '') }}'
-                                    )">
+                                    data-id="{{ $p->id }}"
+                                    data-nama="{{ $p->nama_produk }}"
+                                    data-jenis="{{ $p->jenis_seragam }}"
+                                    data-harga="{{ (int)$p->harga }}"
+                                    data-deskripsi="{{ $p->deskripsi ?? '' }}"
+                                    data-stok="{{ $p->stok }}"
+                                    data-gambar="{{ $p->gambar ?? '' }}"
+                                    data-spesifikasi_bahan="{{ $p->spesifikasi_bahan ?? '' }}"
+                                    data-size_chart="{{ $p->size_chart ?? '' }}"
+                                    data-estimasi_bb_tb="{{ $p->estimasi_bb_tb ?? '' }}"
+                                    onclick="editProdukFromBtn(this)">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                                          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -495,7 +496,19 @@
                 <div class="form-group" style="margin-top:14px">
                     <label class="form-label" for="spesifikasiBahan">Spesifikasi Bahan (Opsional)</label>
                     <textarea class="form-textarea" id="spesifikasiBahan" name="spesifikasi_bahan"
-                               placeholder="Cth: Atasan Katun Deluxe | Bawahan Drill Famatex... (Kosongkan jika ingin memakai standar otomatis)"></textarea>
+                               placeholder="Cth: Atasan Katun Deluxe | Bawahan Drill Famatex (Adem & tidak panas)..."></textarea>
+                </div>
+
+                <div class="form-group" style="margin-top:14px">
+                    <label class="form-label" for="sizeChart">Tabel Ukuran / Size Chart (Opsional)</label>
+                    <textarea class="form-textarea" id="sizeChart" name="size_chart"
+                               placeholder="Cth: S (LD: 88cm, PB: 65cm) | M (LD: 94cm, PB: 68cm) | L (LD: 100cm, PB: 71cm)..."></textarea>
+                </div>
+
+                <div class="form-group" style="margin-top:14px">
+                    <label class="form-label" for="estimasiBbTb">Estimasi BB / TB (Opsional)</label>
+                    <textarea class="form-textarea" id="estimasiBbTb" name="estimasi_bb_tb"
+                               placeholder="Cth: S (BB: 35-45kg, TB: 145-155cm) | M (BB: 45-55kg, TB: 155-165cm)..."></textarea>
                 </div>
 
                 <div class="form-group" style="margin-top:14px">
@@ -555,7 +568,23 @@
     }
 
     // ── Edit ─────────────────────────────────────────────────────────
-    function editProduk(id, nama, jenis, harga, deskripsi, stok, gambarUrl, spesifikasiBahan) {
+    function editProdukFromBtn(btn) {
+        const ds = btn.dataset;
+        editProduk(
+            ds.id,
+            ds.nama,
+            ds.jenis,
+            ds.harga,
+            ds.deskripsi,
+            ds.stok,
+            ds.gambar,
+            ds.spesifikasi_bahan,
+            ds.size_chart,
+            ds.estimasi_bb_tb
+        );
+    }
+
+    function editProduk(id, nama, jenis, harga, deskripsi, stok, gambarUrl, spesifikasiBahan, sizeChart, estimasiBbTb) {
         document.getElementById('formTitle').textContent = 'Edit Produk';
         document.getElementById('formMethod').value = 'PUT';
         document.getElementById('formProduk').action = '/admin/produk/' + id;
@@ -566,6 +595,12 @@
         document.getElementById('deskripsi').value    = deskripsi;
         if (document.getElementById('spesifikasiBahan')) {
             document.getElementById('spesifikasiBahan').value = spesifikasiBahan || '';
+        }
+        if (document.getElementById('sizeChart')) {
+            document.getElementById('sizeChart').value = sizeChart || '';
+        }
+        if (document.getElementById('estimasiBbTb')) {
+            document.getElementById('estimasiBbTb').value = estimasiBbTb || '';
         }
         document.getElementById('btnSimpan').textContent = 'Update';
 

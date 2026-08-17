@@ -651,8 +651,9 @@
                         data-stockclass="{{ $p->stok > 0 ? 'stock-available' : 'stock-empty' }}"
                         data-image="{{ $p->gambar ? asset($p->gambar) : '' }}"
                         data-desc="{{ $p->deskripsi ?? 'Seragam sekolah dibuat dari bahan berkualitas tinggi, jahitan rapi ganda, serta nyaman dipakai sepanjang hari.' }}"
-                        data-bahan="{{ $p->spesifikasi_bahan_formatted }}" data-sizechart='{{ $sizeChartJson }}'
-                        data-estimasi='{{ $estimasiJson }}'
+                        data-bahan="{{ $p->spesifikasi_bahan_formatted }}"
+                        data-sizechartcustom="{{ $p->size_chart_custom ?? '' }}" data-sizechart='{{ $sizeChartJson }}'
+                        data-estimasicustom="{{ $p->estimasi_bb_tb_custom ?? '' }}" data-estimasi='{{ $estimasiJson }}'
                         data-orderurl="{{ route('pelanggan.pesanan.create', ['produk_id' => $p->id]) }}"
                         data-hasstock="{{ $p->stok > 0 ? '1' : '0' }}">
                     </div>
@@ -720,7 +721,10 @@
                         <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 6px;">
                             *Toleransi ukuran jahitan &plusmn; 1-2 cm.
                         </p>
-                        <table class="detail-table">
+                        <div id="mSizeChartText"
+                            style="display:none; white-space: pre-line; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f4; margin-bottom: 8px;">
+                        </div>
+                        <table class="detail-table" id="mSizeChartTable">
                             <thead>
                                 <tr>
                                     <th>Ukuran (Size)</th>
@@ -738,7 +742,10 @@
                         <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 6px;">
                             *Panduan rekomendasi ukuran berdasarkan Berat Badan (BB) & Tinggi Badan (TB).
                         </p>
-                        <table class="detail-table">
+                        <div id="mEstimasiText"
+                            style="display:none; white-space: pre-line; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f4; margin-bottom: 8px;">
+                        </div>
+                        <table class="detail-table" id="mEstimasiTable">
                             <thead>
                                 <tr>
                                     <th>Ukuran (Size)</th>
@@ -819,43 +826,59 @@
                 imgBox.innerHTML = `<img src="${dataEl.dataset.image}" alt="${dataEl.dataset.name}">`;
             } else {
                 imgBox.innerHTML = `
-                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" stroke-width="1.2">
-                            <path d="M20.38 3.46L16 6.5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3.5L3.62 3.46a1 1 0 0 0-1.46.9l1.5 14.5a2 2 0 0 0 2 1.8h12.68a2 2 0 0 0 2-1.8l1.5-14.5a1 1 0 0 0-1.46-.9z"/>
-                            <path d="M12 2v7M8 9h8"/>
-                        </svg>`;
+                                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" stroke-width="1.2">
+                                    <path d="M20.38 3.46L16 6.5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3.5L3.62 3.46a1 1 0 0 0-1.46.9l1.5 14.5a2 2 0 0 0 2 1.8h12.68a2 2 0 0 0 2-1.8l1.5-14.5a1 1 0 0 0-1.46-.9z"/>
+                                    <path d="M12 2v7M8 9h8"/>
+                                </svg>`;
             }
 
             // Bahan & Desc
             document.getElementById('mBahan').textContent = dataEl.dataset.bahan;
             document.getElementById('mDesc').textContent = dataEl.dataset.desc;
 
-            // Size Chart Table
-            const sizeChart = JSON.parse(dataEl.dataset.sizechart || '[]');
-            const scTbody = document.getElementById('mSizeChartBody');
-            scTbody.innerHTML = '';
-            sizeChart.forEach(row => {
-                scTbody.innerHTML += `
-                        <tr>
-                            <td><strong>${row.size}</strong></td>
-                            <td>${row.baju_ld || '-'}</td>
-                            <td>${row.baju_pb || '-'}</td>
-                            <td>${row.bawahan_lp || '-'}</td>
-                            <td>${row.bawahan_pc || '-'}</td>
-                        </tr>`;
-            });
+            // Size Chart: Custom Text vs Default Table
+            if (dataEl.dataset.sizechartcustom && dataEl.dataset.sizechartcustom.trim() !== '') {
+                document.getElementById('mSizeChartText').textContent = dataEl.dataset.sizechartcustom;
+                document.getElementById('mSizeChartText').style.display = 'block';
+                document.getElementById('mSizeChartTable').style.display = 'none';
+            } else {
+                document.getElementById('mSizeChartText').style.display = 'none';
+                document.getElementById('mSizeChartTable').style.display = 'table';
+                const sizeChart = JSON.parse(dataEl.dataset.sizechart || '[]');
+                const scTbody = document.getElementById('mSizeChartBody');
+                scTbody.innerHTML = '';
+                sizeChart.forEach(row => {
+                    scTbody.innerHTML += `
+                                    <tr>
+                                        <td><strong>${row.size}</strong></td>
+                                        <td>${row.baju_ld || '-'}</td>
+                                        <td>${row.baju_pb || '-'}</td>
+                                        <td>${row.bawahan_lp || '-'}</td>
+                                        <td>${row.bawahan_pc || '-'}</td>
+                                    </tr>`;
+                });
+            }
 
-            // Estimasi BB/TB Table
-            const estimasi = JSON.parse(dataEl.dataset.estimasi || '[]');
-            const estTbody = document.getElementById('mEstimasiBody');
-            estTbody.innerHTML = '';
-            estimasi.forEach(row => {
-                estTbody.innerHTML += `
-                        <tr>
-                            <td><strong>${row.size}</strong></td>
-                            <td>${row.bb || '-'}</td>
-                            <td>${row.tb || '-'}</td>
-                        </tr>`;
-            });
+            // Estimasi BB/TB: Custom Text vs Default Table
+            if (dataEl.dataset.estimasicustom && dataEl.dataset.estimasicustom.trim() !== '') {
+                document.getElementById('mEstimasiText').textContent = dataEl.dataset.estimasicustom;
+                document.getElementById('mEstimasiText').style.display = 'block';
+                document.getElementById('mEstimasiTable').style.display = 'none';
+            } else {
+                document.getElementById('mEstimasiText').style.display = 'none';
+                document.getElementById('mEstimasiTable').style.display = 'table';
+                const estimasi = JSON.parse(dataEl.dataset.estimasi || '[]');
+                const estTbody = document.getElementById('mEstimasiBody');
+                estTbody.innerHTML = '';
+                estimasi.forEach(row => {
+                    estTbody.innerHTML += `
+                                    <tr>
+                                        <td><strong>${row.size}</strong></td>
+                                        <td>${row.bb || '-'}</td>
+                                        <td>${row.tb || '-'}</td>
+                                    </tr>`;
+                });
+            }
 
             // Order Button
             const orderBtn = document.getElementById('mOrderBtn');

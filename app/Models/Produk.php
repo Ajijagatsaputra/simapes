@@ -27,11 +27,11 @@ class Produk extends Model
     ];
 
     /**
-     * Dapatkan spesifikasi bahan (custom atau default berdasarkan jenis seragam).
+     * Dapatkan spesifikasi bahan (custom dari admin atau default).
      */
     public function getSpesifikasiBahanFormattedAttribute(): string
     {
-        if (!empty($this->spesifikasi_bahan)) {
+        if (!empty(trim($this->spesifikasi_bahan ?? ''))) {
             return $this->spesifikasi_bahan;
         }
 
@@ -48,7 +48,15 @@ class Produk extends Model
     }
 
     /**
-     * Dapatkan data Size Chart (Array default jika kosong).
+     * Dapatkan data Size Chart (Custom Teks/JSON atau default).
+     */
+    public function getSizeChartCustomAttribute(): ?string
+    {
+        return !empty(trim($this->size_chart ?? '')) ? $this->size_chart : null;
+    }
+
+    /**
+     * Dapatkan data Size Chart default jika kustom kosong.
      */
     public function getSizeChartDataAttribute(): array
     {
@@ -77,7 +85,6 @@ class Produk extends Model
             ];
         }
 
-        // SMP / SMA / SMK / Umum Default Size Chart
         return [
             ['size' => 'S', 'baju_ld' => '88 cm', 'baju_pb' => '65 cm', 'bawahan_lp' => '72-80 cm', 'bawahan_pc' => '92 cm'],
             ['size' => 'M', 'baju_ld' => '94 cm', 'baju_pb' => '68 cm', 'bawahan_lp' => '76-84 cm', 'bawahan_pc' => '95 cm'],
@@ -88,7 +95,15 @@ class Produk extends Model
     }
 
     /**
-     * Dapatkan data Estimasi BB & TB (Array default jika kosong).
+     * Dapatkan Estimasi BB/TB Custom jika diisi text oleh admin.
+     */
+    public function getEstimasiBbTbCustomAttribute(): ?string
+    {
+        return !empty(trim($this->estimasi_bb_tb ?? '')) ? $this->estimasi_bb_tb : null;
+    }
+
+    /**
+     * Dapatkan data Estimasi BB & TB default jika kustom kosong.
      */
     public function getEstimasiBbTbDataAttribute(): array
     {
@@ -117,7 +132,6 @@ class Produk extends Model
             ];
         }
 
-        // SMP / SMA / SMK / Umum Default Estimasi BB/TB
         return [
             ['size' => 'S', 'bb' => '35 - 45 kg', 'tb' => '145 - 155 cm'],
             ['size' => 'M', 'bb' => '45 - 55 kg', 'tb' => '155 - 165 cm'],
