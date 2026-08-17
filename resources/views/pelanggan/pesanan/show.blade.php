@@ -940,7 +940,21 @@
                                 @endphp
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
-                                    <td style="font-weight:700; color:#1a2b4a;">{{ $d->produk->nama_produk ?? 'Seragam' }}</td>
+                                    <td>
+                                        <div style="font-weight:700; color:#1a2b4a;">{{ $d->produk->nama_produk ?? 'Seragam' }}</div>
+                                        @if($d->catatan)
+                                            <div style="font-size:0.75rem; color:#5a7090; font-style:italic; margin-top:2px;">
+                                                📌 <strong>Catatan:</strong> {{ $d->catatan }}
+                                            </div>
+                                        @endif
+                                        @if($d->path_gambar)
+                                            <div style="margin-top:4px;">
+                                                <a href="{{ asset('storage/' . $d->path_gambar) }}" target="_blank" style="font-size:0.72rem; color:#1A56DB; text-decoration:none; font-weight:600; display:inline-flex; align-items:center; gap:4px;">
+                                                    🖼️ Lihat Gambar Referensi Model
+                                                </a>
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td style="text-align:center;"><span
                                             style="background:#e8f0fd;color:#4A90D9;padding:3px 8px;border-radius:6px;font-weight:600;">{{ $d->ukuran }}</span>
                                     </td>
