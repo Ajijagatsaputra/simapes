@@ -37,8 +37,6 @@ class PesananController extends Controller
         $request->validate([
             'items' => 'required|array|min:1',
             'items.*.produk_id' => 'required|exists:produks,id',
-            'items.*.ukuran' => 'required|in:S,M,L,XL,XXL,3XL,4XL,5XL',
-            'items.*.total_item' => 'required|integer|min:1',
             'items.*.catatan' => 'nullable|string|max:250',
             'items.*.gambar' => 'nullable|image|mimes:jpeg,jpg,png|max:5120',
         ]);
@@ -54,10 +52,10 @@ class PesananController extends Controller
             ]);
 
             $totalHarga = 0;
+            $hasDetail = false;
+
             foreach ($request->items as $key => $item) {
                 $produk = Produk::findOrFail($item['produk_id']);
-                $subtotal = $produk->harga * $item['total_item'];
-                $totalHarga += $subtotal;
 
                 $pathGambar = null;
                 if ($request->hasFile("items.{$key}.gambar")) {
@@ -65,16 +63,54 @@ class PesananController extends Controller
                     $pathGambar = $file->store('pesanan/gambar_acuan', 'public');
                 }
 
-                DetailPesanan::create([
-                    'pesanan_id' => $pesanan->id,
-                    'produk_id' => $item['produk_id'],
-                    'ukuran' => $item['ukuran'],
-                    'harga_satuan' => $produk->harga,
-                    'total_item' => $item['total_item'],
-                    'subtotal' => $subtotal,
-                    'catatan' => $item['catatan'] ?? null,
-                    'path_gambar' => $pathGambar,
-                ]);
+                // Multi-size breakdown structure (FR-ORD-02 & FR-ORD-03)
+                if (isset($item['sizes']) && is_array($item['sizes'])) {
+                    foreach ($item['sizes'] as $sizeKey => $sizeVal) {
+                        $ukuran = is_array($sizeVal) ? ($sizeVal['ukuran'] ?? $sizeKey) : $sizeKey;
+                        $jumlah = is_array($sizeVal) ? (int) ($sizeVal['jumlah'] ?? 0) : (int) $sizeVal;
+
+                        if ($jumlah > 0) {
+                            $subtotal = $produk->harga * $jumlah;
+                            $totalHarga += $subtotal;
+                            $hasDetail = true;
+
+                            DetailPesanan::create([
+                                'pesanan_id' => $pesanan->id,
+                                'produk_id' => $item['produk_id'],
+                                'ukuran' => $ukuran,
+                                'harga_satuan' => $produk->harga,
+                                'total_item' => $jumlah,
+                                'subtotal' => $subtotal,
+                                'catatan' => $item['catatan'] ?? null,
+                                'path_gambar' => $pathGambar,
+                            ]);
+                        }
+                    }
+                }
+                // Single item structure fallback (CSV upload / direct row)
+                elseif (isset($item['total_item']) && (int) $item['total_item'] > 0) {
+                    $jumlah = (int) $item['total_item'];
+                    $ukuran = $item['ukuran'] ?? 'All Size';
+                    $subtotal = $produk->harga * $jumlah;
+                    $totalHarga += $subtotal;
+                    $hasDetail = true;
+
+                    DetailPesanan::create([
+                        'pesanan_id' => $pesanan->id,
+                        'produk_id' => $item['produk_id'],
+                        'ukuran' => $ukuran,
+                        'harga_satuan' => $produk->harga,
+                        'total_item' => $jumlah,
+                        'subtotal' => $subtotal,
+                        'catatan' => $item['catatan'] ?? null,
+                        'path_gambar' => $pathGambar,
+                    ]);
+                }
+            }
+
+            if (!$hasDetail) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Gagal membuat pesanan: Silakan masukkan minimal 1 item produk dengan jumlah lebih dari 0.');
             }
 
             $pesanan->update([

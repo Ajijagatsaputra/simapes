@@ -32,822 +32,924 @@
             margin-bottom: 18px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            border-bottom: 1px dashed #e2e8f4;
-            padding-bottom: 12px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: .8rem;
-            font-weight: 600;
-            color: #5a7090;
-            margin-bottom: 6px;
-        }
-
-        /* ── Table Items ── */
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 16px;
-        }
-
-        .items-table th {
-            text-align: left;
-            padding: 10px;
-            font-size: .75rem;
-            font-weight: 600;
-            color: #8ca0bf;
-            border-bottom: 1px solid #e2e8f4;
-            text-transform: uppercase;
-        }
-
-        .items-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #f6f9fd;
-            vertical-align: middle;
-        }
-
-        .form-select,
-        .form-input {
-            width: 100%;
-            padding: 9px 12px;
-            font-family: inherit;
-            font-size: .82rem;
-            color: #1a2b4a;
-            background: #f5f8ff;
-            border: 1.5px solid #c5d8f5;
-            border-radius: 10px;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .form-select:focus,
-        .form-input:focus {
-            border-color: #4A90D9;
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.12);
-        }
-
-        .btn-add-row {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #e8f0fd;
-            color: #4A90D9;
-            border: none;
-            border-radius: 10px;
-            padding: 8px 16px;
-            font-size: .82rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .btn-add-row:hover {
-            background: #4A90D9;
-            color: #fff;
-        }
-
-        .btn-remove-row {
-            width: 32px;
-            height: 32px;
-            background: #fdeaea;
-            color: #e05a5a;
-            border: none;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .btn-remove-row:hover {
-            background: #e05a5a;
-            color: #fff;
-        }
-
-        /* ── Order Summary Box ── */
-        .summary-row {
-            display: flex;
             justify-content: space-between;
-            font-size: .85rem;
-            color: #5a7090;
-            margin-bottom: 10px;
-        }
-
-        .summary-total {
-            display: flex;
-            justify-content: space-between;
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: #1a2b4a;
-            border-top: 1px dashed #e2e8f4;
-            padding-top: 14px;
-            margin-top: 14px;
-        }
-
-        .btn-submit {
-            display: block;
-            width: 100%;
-            background: #10b981;
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            padding: 12px;
-            font-size: .9rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.15s, transform 0.1s;
-            margin-top: 18px;
-            text-align: center;
-        }
-
-        .btn-submit:hover {
-            background: #059669;
-            transform: translateY(-1px);
-        }
-
-        /* ── Excel Section ── */
-        .excel-card {
-            background: #fff;
-            border: 1px solid #e2e8f4;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 4px 16px rgba(26, 43, 74, .03);
-        }
-
-        .btn-excel {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #f5f8ff;
-            border: 1px dashed #c5d8f5;
-            color: #4A90D9;
-            border-radius: 10px;
-            padding: 10px 16px;
-            font-size: .8rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .btn-excel:hover {
-            background: #e8f0fd;
-            border-style: solid;
-        }
-
-        /* Upload Drop Zone */
-        .drop-zone {
-            margin-top: 14px;
-            border: 2px dashed #c5d8f5;
-            border-radius: 12px;
-            padding: 18px 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: #f9fbff;
-            position: relative;
-        }
-
-        .drop-zone.drag-over {
-            border-color: #4A90D9;
-            background: #eaf2fd;
-        }
-
-        .drop-zone input[type=file] {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .drop-zone-icon {
-            font-size: 1.6rem;
-        }
-
-        .drop-zone p {
-            font-size: .75rem;
-            color: #6b7e9f;
-            margin: 4px 0 0;
-        }
-
-        .drop-zone strong {
-            font-size: .78rem;
-            color: #4A90D9;
-        }
-
-        /* Upload status */
-        .excel-status {
-            display: none;
-            margin-top: 10px;
-            padding: 10px 12px;
-            border-radius: 10px;
-            font-size: .78rem;
-            line-height: 1.5;
-        }
-
-        .excel-status.success {
-            background: #ecfdf5;
-            border: 1px solid #6ee7b7;
-            color: #065f46;
-            display: block;
-        }
-
-        .excel-status.error {
-            background: #fef2f2;
-            border: 1px solid #fca5a5;
-            color: #991b1b;
-            display: block;
-        }
-
-        .excel-status.warning {
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            color: #92400e;
-            display: block;
-        }
-
-        .btn-upload-excel {
-            display: block;
-            width: 100%;
-            margin-top: 10px;
-            background: linear-gradient(135deg, #217346 0%, #1a9c55 100%);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            padding: 10px;
-            font-size: .82rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: opacity 0.15s, transform 0.1s;
-        }
-
-        .btn-upload-excel:hover {
-            opacity: .88;
-            transform: translateY(-1px);
-        }
-
-        .btn-upload-excel:disabled {
-            opacity: .55;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid rgba(255, 255, 255, .4);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin .6s linear infinite;
-            vertical-align: middle;
-            margin-right: 6px;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
+                border-bottom: 1px dashed #e2e8f4;
+                padding-bottom: 12px;
             }
-        }
 
-        .excel-preview-list {
-            margin-top: 8px;
-            text-align: left;
-            font-size: .74rem;
-            color: #374151;
-            max-height: 100px;
-            overflow-y: auto;
-            padding: 6px 10px;
-            background: #f0fdf4;
-            border-radius: 8px;
-            border: 1px solid #bbf7d0;
-        }
+            .card-title-text {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
 
-        .excel-preview-list li {
-            margin-bottom: 2px;
-        }
-    </style>
+            /* ── Product Card Block (Multi-Size) ── */
+            .product-block {
+                background: #ffffff;
+                border: 1.5px solid #e2e8f4;
+                border-radius: 14px;
+                padding: 18px;
+                margin-bottom: 18px;
+                transition: border-color 0.2s, box-shadow 0.2s;
+            }
+
+            .product-block:hover {
+                border-color: #bad3f5;
+                box-shadow: 0 6px 20px rgba(26, 79, 171, 0.05);
+            }
+
+            .product-block-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 14px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid #f0f4fb;
+            }
+
+            .product-block-info {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+            }
+
+            .product-block-thumb {
+                width: 52px;
+                height: 52px;
+                border-radius: 10px;
+                background: #f4f7fc;
+                border: 1px solid #e2e8f4;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                object-fit: contain;
+                flex-shrink: 0;
+                overflow: hidden;
+            }
+
+            .product-block-thumb img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+            }
+
+            .product-block-title h4 {
+                font-size: 0.98rem;
+                font-weight: 700;
+                color: #1a2b4a;
+                margin-bottom: 2px;
+            }
+
+            .product-block-title .price-tag {
+                font-size: 0.85rem;
+                font-weight: 800;
+                color: #1A56DB;
+            }
+
+            .btn-remove-block {
+                background: #fde8e8;
+                color: #e05a5a;
+                border: none;
+                border-radius: 8px;
+                width: 34px;
+                height: 34px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.15s;
+            }
+
+            .btn-remove-block:hover {
+                background: #e05a5a;
+                color: #fff;
+            }
+
+            /* ── Multi-Size Grid (FR-ORD-02) ── */
+            .size-grid-label {
+                font-size: 0.78rem;
+                font-weight: 700;
+                color: #5a7090;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 10px;
+            }
+
+            .size-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+                gap: 10px;
+                margin-bottom: 14px;
+            }
+
+            .size-item-box {
+                background: #f8fafc;
+                border: 1px solid #e2e8f4;
+                border-radius: 10px;
+                padding: 8px;
+                text-align: center;
+                transition: all 0.15s;
+            }
+
+            .size-item-box:focus-within {
+                border-color: #1A56DB;
+                background: #ffffff;
+                box-shadow: 0 0 0 2px rgba(26, 86, 219, 0.12);
+            }
+
+            .size-name {
+                font-size: 0.75rem;
+                font-weight: 800;
+                color: #1a2b4a;
+                margin-bottom: 4px;
+            }
+
+            .size-qty-input {
+                width: 100%;
+                text-align: center;
+                font-weight: 700;
+                font-size: 0.9rem;
+                padding: 6px 4px;
+                border: 1px solid #cbd5e1;
+                border-radius: 6px;
+                outline: none;
+                background: #ffffff;
+                color: #1a2b4a;
+            }
+
+            /* All Size Single Input (FR-ORD-03) */
+            .all-size-box {
+                background: #eff6ff;
+                border: 1px solid #bfdbfe;
+                border-radius: 10px;
+                padding: 12px 16px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 14px;
+            }
+
+            .all-size-info {
+                font-size: 0.85rem;
+                font-weight: 700;
+                color: #1e40af;
+            }
+
+            .all-size-qty-input {
+                width: 110px;
+                text-align: center;
+                font-weight: 800;
+                font-size: 1rem;
+                padding: 8px;
+                border: 2px solid #3b82f6;
+                border-radius: 8px;
+                outline: none;
+            }
+
+            .block-extra-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-top: 10px;
+                padding-top: 10px;
+                border-top: 1px dashed #e2e8f4;
+            }
+
+            @media (max-width: 600px) {
+                .block-extra-row {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            .form-input, .form-textarea {
+                width: 100%;
+                padding: 9px 12px;
+                font-family: inherit;
+                font-size: .82rem;
+                color: #1a2b4a;
+                background: #f5f8ff;
+                border: 1.5px solid #c5d8f5;
+                border-radius: 10px;
+                outline: none;
+                transition: all 0.2s;
+            }
+
+            .form-input:focus, .form-textarea:focus {
+                border-color: #1A56DB;
+                background: #fff;
+                box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.12);
+            }
+
+            /* ── Search & Select Product Button & Modal (FR-ORD-01) ── */
+            .btn-open-search {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                background: #1A56DB;
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                padding: 10px 18px;
+                font-size: .85rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: background 0.15s;
+            }
+
+            .btn-open-search:hover {
+                background: #1648c4;
+            }
+
+            .btn-csv-upload {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background: #f0f4fb;
+                color: #1A4FAB;
+                border: 1px solid #c5d8f5;
+                border-radius: 10px;
+                padding: 8px 14px;
+                font-size: .8rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.15s;
+            }
+
+            .btn-csv-upload:hover {
+                background: #e2e8f4;
+            }
+
+            /* Search Modal Overlay */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(15, 23, 42, 0.55);
+                backdrop-filter: blur(4px);
+                z-index: 9999;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+
+            .modal-overlay.active {
+                display: flex;
+                animation: fadeIn 0.2s ease-out;
+            }
+
+            .modal-box {
+                background: #ffffff;
+                width: 100%;
+                max-width: 760px;
+                max-height: 85vh;
+                border-radius: 20px;
+                box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            .modal-header {
+                padding: 18px 24px;
+                border-bottom: 1px solid #e2e8f4;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: #fafcff;
+            }
+
+            .modal-header h3 {
+                font-size: 1.15rem;
+                font-weight: 800;
+                color: #1a2b4a;
+            }
+
+            .btn-close-modal {
+                background: #f0f4fb;
+                border: none;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                font-size: 1.3rem;
+                color: #5a7494;
+                cursor: pointer;
+            }
+
+            .modal-search-bar {
+                padding: 16px 24px;
+                border-bottom: 1px solid #f0f4fb;
+                background: #ffffff;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .modal-search-input {
+                width: 100%;
+                padding: 11px 16px;
+                font-size: 0.9rem;
+                border: 2px solid #c5d8f5;
+                border-radius: 12px;
+                outline: none;
+                background: #f8fafc;
+            }
+
+            .modal-search-input:focus {
+                border-color: #1A56DB;
+                background: #ffffff;
+            }
+
+            .modal-pills {
+                display: flex;
+                gap: 6px;
+                overflow-x: auto;
+                padding-bottom: 4px;
+            }
+
+            .pill-btn {
+                background: #f0f4fb;
+                color: #5a7494;
+                border: 1px solid #dde8f8;
+                padding: 6px 12px;
+                border-radius: 8px;
+                font-size: 0.78rem;
+                font-weight: 600;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+
+            .pill-btn.active {
+                background: #1A56DB;
+                color: #ffffff;
+                border-color: #1A56DB;
+            }
+
+            .modal-product-list {
+                padding: 16px 24px;
+                overflow-y: auto;
+                max-height: 50vh;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .search-product-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: #ffffff;
+                border: 1px solid #e2e8f4;
+                border-radius: 12px;
+                padding: 12px 16px;
+                cursor: pointer;
+                transition: all 0.15s;
+            }
+
+            .search-product-item:hover {
+                border-color: #1A56DB;
+                background: #f5f8ff;
+                transform: translateX(3px);
+            }
+
+            .item-left {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .item-thumb {
+                width: 44px;
+                height: 44px;
+                border-radius: 8px;
+                background: #f4f7fc;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                object-fit: contain;
+                overflow: hidden;
+                flex-shrink: 0;
+            }
+
+            .item-thumb img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+            }
+
+            .item-title {
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: #1a2b4a;
+            }
+
+            .item-price {
+                font-size: 0.88rem;
+                font-weight: 800;
+                color: #1A56DB;
+            }
+
+            .badge-cat {
+                font-size: 0.7rem;
+                font-weight: 700;
+                padding: 2px 8px;
+                border-radius: 12px;
+                background: #eef4ff;
+                color: #1A56DB;
+                display: inline-block;
+                margin-top: 2px;
+            }
+
+            /* Summary Card */
+            .summary-box {
+                background: #fafcff;
+                border: 1.5px solid #d0e1fd;
+                border-radius: 14px;
+                padding: 18px;
+                margin-top: 16px;
+            }
+
+            .summary-row {
+                display: flex;
+                justify-content: space-between;
+                font-size: .85rem;
+                color: #5a7090;
+                margin-bottom: 8px;
+            }
+
+            .summary-total {
+                display: flex;
+                justify-content: space-between;
+                font-size: 1.15rem;
+                font-weight: 800;
+                color: #1a2b4a;
+                border-top: 1px dashed #c5d8f5;
+                padding-top: 10px;
+                margin-top: 8px;
+            }
+
+            .btn-submit-order {
+                width: 100%;
+                background: #1A56DB;
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                padding: 14px;
+                font-size: .95rem;
+                font-weight: 800;
+                cursor: pointer;
+                transition: background 0.15s;
+                margin-top: 16px;
+            }
+
+            .btn-submit-order:hover {
+                background: #1648c4;
+            }
+        </style>
 @endpush
 
 @section('content')
-    <div style="margin-bottom: 24px;">
-        <h1 style="font-size: 1.6rem; font-weight: 800; color: #1a2b4a;">Buat Pesanan Baru</h1>
-        <p style="font-size: .85rem; color: #6b7e9f; margin-top: 4px;">Masukkan total akumulasi per ukuran baju dari seluruh
-            kelas (Kelas 1 – Kelas 6). Setiap kombinasi produk dan ukuran dicatat sebagai satu baris pesanan.</p>
-        <p
-            style="font-size: .78rem; color: #8ca0bf; margin-top: 6px; background: #f5f8ff; border: 1px solid #dde8f8; border-radius: 8px; padding: 10px 14px; line-height: 1.6;">
-            <strong style="color: #4A90D9;">💡 Contoh:</strong> Kaos Olahraga Ukuran M (50 pcs), Kaos Olahraga Ukuran XL (50
-            pcs) — masing-masing diinput pada baris terpisah. Tidak ada batasan jumlah pesanan.
-        </p>
-    </div>
-
-    <form method="POST" action="{{ route('pelanggan.pesanan.store') }}" id="orderForm" enctype="multipart/form-data">
+    <form action="{{ route('pelanggan.pesanan.store') }}" method="POST" enctype="multipart/form-data" id="orderForm">
         @csrf
-
         <div class="order-container">
-            {{-- Left Side: Items --}}
-            <div>
+            {{-- Kolom Kiri: Daftar Produk yang Dipesan --}}
+            <div class="left-col">
                 <div class="card">
                     <div class="card-title">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="9" cy="21" r="1"></circle>
-                            <circle cx="20" cy="21" r="1"></circle>
-                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                        </svg>
-                        Daftar Pesanan Seragam
+                        <div class="card-title-text">
+                            🛍️ Item Produk yang Dipesan
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" class="btn-csv-upload" onclick="openCsvModal()">
+                                📄 Upload CSV / Excel
+                            </button>
+                            <button type="button" class="btn-open-search" onclick="openSearchModal()">
+                                🔍 + Tambah Produk
+                            </button>
+                        </div>
                     </div>
 
-                    <div style="overflow-x: auto; width: 100%;">
-                        <table class="items-table" id="itemsTable">
-                            <thead>
-                                <tr>
-                                    <th>Jenis Seragam</th>
-                                    <th style="width: 120px; text-align: center;">Ukuran</th>
-                                    <th style="width: 150px; text-align: center;">Jumlah</th>
-                                    <th style="width: 130px; text-align: right;">Subtotal</th>
-                                    <th style="width: 40px;"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="itemsBody">
-                                <!-- Dynamic rows will be inserted here -->
-                            </tbody>
-                        </table>
+                    @if(session('error'))
+                        <div style="background: #fde8e8; color: #9b1c1c; padding: 12px 16px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 16px;">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    {{-- Container Produk Terpilih --}}
+                    <div id="selectedProductsContainer">
+                        {{-- Diisi secara dinamis via JavaScript --}}
                     </div>
 
-                    <button type="button" class="btn-add-row" onclick="addRow()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                    {{-- Empty State jika belum ada produk --}}
+                    <div id="emptyOrderState" style="text-align: center; padding: 40px 20px; border: 2px dashed #c5d8f5; border-radius: 14px; background: #f8fafc;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#8ca0bf" stroke-width="1.5" style="margin-bottom: 10px;">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
                         </svg>
-                        Tambah Seragam
-                    </button>
+                        <h4 style="font-size: 1rem; color: #1a2b4a; font-weight: 700; margin-bottom: 4px;">Belum Ada Produk Dipilih</h4>
+                        <p style="font-size: 0.83rem; color: #6b7e9f; margin-bottom: 16px;">Klik "+ Tambah Produk" untuk mencari dan memilih seragam yang ingin dipesan.</p>
+                        <button type="button" class="btn-open-search" onclick="openSearchModal()">
+                            🔍 Cari & Pilih Produk
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {{-- Right Side: Summary --}}
-            <div>
+            {{-- Kolom Kanan: Ringkasan Pesanan & Target Tanggal --}}
+            <div class="right-col">
                 <div class="card">
                     <div class="card-title">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                            <polyline points="10 9 9 9 8 9"></polyline>
-                        </svg>
-                        Ringkasan Pesanan
+                        <div class="card-title-text">
+                            📋 Ringkasan Transaksi
+                        </div>
                     </div>
 
-                    <div class="summary-row">
-                        <span>Total Jumlah Item</span>
-                        <span id="summaryTotalItems">0 Pcs</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Status Pengajuan</span>
-                        <span style="color: #d97706; font-weight: 600;">Menunggu Tinjauan Admin</span>
-                    </div>
-
-                    <div class="summary-total">
-                        <span>Estimasi Total</span>
-                        <span id="summaryGrandTotal" style="color: #4A90D9;">Rp 0</span>
-                    </div>
-
-                    <p style="font-size: .72rem; color: #8ca0bf; margin-top: 10px; line-height: 1.5; text-align: center;">
-                        Pembayaran dilakukan setelah pesanan ditinjau dan disetujui oleh admin.
-                    </p>
-
-                    <button type="submit" class="btn-submit">
-                        Ajukan Pesanan
-                    </button>
-                </div>
-
-                {{-- Excel Import/Export Card --}}
-                <div class="excel-card">
-                    <h3
-                        style="font-size: .92rem; font-weight: 700; color: #1a2b4a; display:flex; align-items:center; gap:6px;">
-                        <span style="font-size:1.1rem;">📊</span> Pemesanan Massal via Excel
-                    </h3>
-                    <p style="font-size: .75rem; color: #6b7e9f; margin-top: 4px; margin-bottom: 12px;">Upload file
-                        CSV/Excel pesanan sekolah — sistem akan otomatis mengisi daftar pesanan.</p>
-
-                    <div
-                        style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: .75rem; color: #475569; line-height: 1.4;">
-                        <strong style="color: #1a2b4a; display: block; margin-bottom: 4px; font-size: .78rem;">💡 Petunjuk
-                            Pengisian File:</strong>
-                        <ul
-                            style="padding-left: 16px; margin: 0; display: flex; flex-direction: column; gap: 4px; list-style-type: disc;">
-                            <li>Gunakan template CSV resmi yang diunduh di Langkah 1.</li>
-                            <li>Kolom <strong>Nama_Produk</strong> harus sama persis dengan nama di katalog.</li>
-                            <li>Kolom <strong>Ukuran</strong> diisi ukuran yang tersedia (misal: S, M, L, XL).</li>
-                            <li>Kolom <strong>Jumlah</strong> diisi angka bulat positif saja.</li>
-                            <li>Kolom <strong>Catatan</strong> dapat diisi instruksi khusus (misal: bordir nama).</li>
-                        </ul>
+                    <div class="summary-box">
+                        <div class="summary-row">
+                            <span>Jumlah Produk Unik</span>
+                            <span id="summaryUniqueCount" style="font-weight: 700;">0 Produk</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Total Pcs (Item)</span>
+                            <span id="summaryTotalPcs" style="font-weight: 700;">0 pcs</span>
+                        </div>
+                        <div class="summary-total">
+                            <span>Total Harga</span>
+                            <span id="summaryTotalPrice" style="color: #1A56DB;">Rp 0</span>
+                        </div>
                     </div>
 
-                    {{-- Step 1: Download Template --}}
-                    <div
-                        style="margin-bottom:10px; font-size:.72rem; font-weight:700; color:#8ca0bf; text-transform:uppercase; letter-spacing:.5px;">
-                        Step 1 — Unduh Template</div>
-                    <a href="{{ route('pelanggan.pesanan.template') }}" class="btn-excel" id="btnUnduhTemplate">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                        Unduh Template CSV
-                    </a>
-                    <p style="font-size:.7rem; color:#94a3b8; margin-top:5px;">Isi template, lalu upload kembali di bawah.
-                    </p>
-
-                    {{-- Step 2: Upload --}}
-                    <div
-                        style="margin-top:14px; margin-bottom:6px; font-size:.72rem; font-weight:700; color:#8ca0bf; text-transform:uppercase; letter-spacing:.5px;">
-                        Step 2 — Upload File</div>
-
-                    <div class="drop-zone" id="dropZone">
-                        <input type="file" id="excelFileInput" accept=".csv,.xlsx,.xls">
-                        <div class="drop-zone-icon">📁</div>
-                        <strong id="dropZoneLabel">Klik atau seret file ke sini</strong>
-                        <p>.csv, .xlsx, .xls — maks 5 MB</p>
-                    </div>
-
-                    <div class="excel-status" id="excelStatus"></div>
-
-                    <button type="button" class="btn-upload-excel" id="btnUploadExcel" disabled>
-                        <span class="spinner" id="uploadSpinner" style="display:none;"></span>
-                        <span id="btnUploadText">Proses & Masukkan ke Pesanan</span>
+                    <button type="submit" class="btn-submit-order" id="btnSubmitOrder" disabled>
+                        Ajukan Pesanan Sekarang
                     </button>
                 </div>
             </div>
         </div>
     </form>
 
-    <script>
-        const produkList = @json($produk);
-        const preselectedProdukId = @json(request()->query('produk_id'));
-        const uploadUrl = '{{ route('pelanggan.pesanan.upload') }}';
-        const csrfToken = '{{ csrf_token() }}';
-        let rowCount = 0;
+    {{-- MODAL SEARCH & SELECT PRODUCT (FR-ORD-01) --}}
+    <div class="modal-overlay" id="searchModalOverlay" onclick="closeSearchModalOnBackdrop(event)">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>🔍 Pilih Produk Seragam</h3>
+                <button type="button" class="btn-close-modal" onclick="closeSearchModal()">&times;</button>
+            </div>
+            <div class="modal-search-bar">
+                <input type="text" id="modalSearchInput" class="modal-search-input" placeholder="Cari nama seragam sekolah..." oninput="filterModalProducts()">
+                <div class="modal-pills">
+                    <button type="button" class="pill-btn active" onclick="filterModalCategory('all', this)">Semua</button>
+                    <button type="button" class="pill-btn" onclick="filterModalCategory('TK', this)">TK/PAUD</button>
+                    <button type="button" class="pill-btn" onclick="filterModalCategory('SD', this)">SD</button>
+                    <button type="button" class="pill-btn" onclick="filterModalCategory('SMP', this)">SMP</button>
+                    <button type="button" class="pill-btn" onclick="filterModalCategory('SMA', this)">SMA/SMK</button>
+                    <button type="button" class="pill-btn" onclick="filterModalCategory('Umum', this)">Umum</button>
+                    <button type="button" class="pill-btn" onclick="filterModalCategory('Atribut', this)">Atribut</button>
+                </div>
+            </div>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            addRow(preselectedProdukId);
-            initExcelUpload();
+            <div class="modal-product-list" id="modalProductList">
+                @foreach($produk as $p)
+                    @php
+                        $isAtribut = (strtolower($p->jenis_seragam) === 'atribut');
+                    @endphp
+                    <div class="search-product-item"
+                        data-name="{{ strtolower($p->nama_produk) }}"
+                        data-category="{{ $p->jenis_seragam }}"
+                        onclick="selectProductFromModal({{ $p->id }}, '{{ addslashes($p->nama_produk) }}', '{{ $p->jenis_seragam }}', {{ (int) $p->harga }}, '{{ $p->gambar ? asset($p->gambar) : '' }}', {{ $isAtribut ? 'true' : 'false' }})">
+                        <div class="item-left">
+                            <div class="item-thumb">
+                                @if($p->gambar)
+                                    <img src="{{ asset($p->gambar) }}" alt="{{ $p->nama_produk }}">
+                                @else
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8ca0bf" stroke-width="1.5">
+                                        <path d="M20.38 3.46L16 6.5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3.5L3.62 3.46a1 1 0 0 0-1.46.9l1.5 14.5a2 2 0 0 0 2 1.8h12.68a2 2 0 0 0 2-1.8l1.5-14.5a1 1 0 0 0-1.46-.9z"/>
+                                    </svg>
+                                @endif
+                            </div>
+                            <div>
+                                <div class="item-title">{{ $p->nama_produk }}</div>
+                                <span class="badge-cat">{{ $p->jenis_seragam === 'TK' ? 'TK/PAUD' : $p->jenis_seragam }}</span>
+                            </div>
+                        </div>
+                        <div class="item-price">
+                            Rp {{ number_format($p->harga, 0, ',', '.') }}
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL UPLOAD CSV / EXCEL --}}
+    <div class="modal-overlay" id="csvModalOverlay" onclick="closeCsvModalOnBackdrop(event)">
+        <div class="modal-box" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3>📄 Import Pesanan Massal (CSV)</h3>
+                <button type="button" class="btn-close-modal" onclick="closeCsvModal()">&times;</button>
+            </div>
+            <div style="padding: 24px;">
+                <p style="font-size: 0.85rem; color: #5a7090; margin-bottom: 16px;">
+                    Upload file CSV sesuai format template SIMAPES untuk memasukkan pesanan massal secara otomatis.
+                </p>
+                <div style="margin-bottom: 16px;">
+                    <a href="{{ route('pelanggan.pesanan.template') }}" class="btn-csv-upload" style="display: inline-flex; width: 100%; justify-content: center;">
+                        ⬇️ Download Template CSV
+                    </a>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Pilih File CSV</label>
+                    <input type="file" id="csvFileInput" accept=".csv, .txt, .xlsx, .xls" class="form-input">
+                </div>
+                <button type="button" class="btn-submit-order" onclick="processCsvUpload()" style="margin-top: 10px;">
+                    Proses Import Pesanan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const allProducts = @json($produk);
+        let selectedProductBlocks = []; // Dataset produk yang ada di form
+        let modalCategoryFilter = 'all';
+
+        const standardSizes = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Auto add product if URL query param ?produk_id=XX exists
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialProdukId = urlParams.get('produk_id');
+            if (initialProdukId) {
+                const found = allProducts.find(p => p.id == initialProdukId);
+                if (found) {
+                    const isAtribut = (found.jenis_seragam.toLowerCase() === 'atribut');
+                    addProductBlock(found.id, found.nama_produk, found.jenis_seragam, parseInt(found.harga), found.gambar ? `/` + found.gambar : '', isAtribut);
+                }
+            }
         });
 
-        /* ═══════════════════════════════════════════════
-           EXCEL UPLOAD LOGIC
-        ═══════════════════════════════════════════════ */
-        function initExcelUpload() {
-            const dropZone = document.getElementById('dropZone');
-            const fileInput = document.getElementById('excelFileInput');
-            const btnUpload = document.getElementById('btnUploadExcel');
-            const statusBox = document.getElementById('excelStatus');
-            const labelEl = document.getElementById('dropZoneLabel');
-            const spinner = document.getElementById('uploadSpinner');
-            const btnText = document.getElementById('btnUploadText');
+        // Open & Close Search Modal
+        function openSearchModal() {
+            document.getElementById('searchModalOverlay').classList.add('active');
+            document.getElementById('modalSearchInput').focus();
+        }
 
-            let selectedFile = null;
+        function closeSearchModal() {
+            document.getElementById('searchModalOverlay').classList.remove('active');
+        }
 
-            // Drag & drop visual feedback
-            dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-            dropZone.addEventListener('drop', e => {
-                e.preventDefault();
-                dropZone.classList.remove('drag-over');
-                const f = e.dataTransfer.files[0];
-                if (f) handleFileSelected(f);
+        function closeSearchModalOnBackdrop(e) {
+            if (e.target.id === 'searchModalOverlay') closeSearchModal();
+        }
+
+        // Filter Products inside Modal
+        function filterModalCategory(cat, btn) {
+            modalCategoryFilter = cat;
+            document.querySelectorAll('.modal-pills .pill-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filterModalProducts();
+        }
+
+        function filterModalProducts() {
+            const query = document.getElementById('modalSearchInput').value.toLowerCase();
+            const items = document.querySelectorAll('#modalProductList .search-product-item');
+
+            items.forEach(item => {
+                const name = item.dataset.name;
+                const cat = item.dataset.category;
+
+                let matchCat = (modalCategoryFilter === 'all') ||
+                    (modalCategoryFilter === 'SMA' && (cat.toLowerCase().includes('sma') || cat.toLowerCase().includes('smk'))) ||
+                    (cat.toLowerCase() === modalCategoryFilter.toLowerCase());
+
+                let matchQuery = name.includes(query);
+                item.style.display = (matchCat && matchQuery) ? 'flex' : 'none';
             });
+        }
 
-            fileInput.addEventListener('change', () => {
-                if (fileInput.files[0]) handleFileSelected(fileInput.files[0]);
-            });
+        // Select product from modal
+        function selectProductFromModal(id, nama, jenis, harga, gambar, isAtribut) {
+            closeSearchModal();
+            addProductBlock(id, nama, jenis, harga, gambar, isAtribut);
+        }
 
-            function handleFileSelected(file) {
-                selectedFile = file;
-                labelEl.textContent = '📄 ' + file.name;
-                btnUpload.disabled = false;
-                clearStatus();
+        // Add Product Card Block to Form (FR-ORD-01, FR-ORD-02, FR-ORD-03)
+        function addProductBlock(id, nama, jenis, harga, gambar, isAtribut) {
+            // Check if already added
+            const existingIndex = selectedProductBlocks.findIndex(b => b.id === id);
+            if (existingIndex !== -1) {
+                alert(`Produk "${nama}" sudah ada di dalam daftar pesanan Anda.`);
+                return;
             }
 
-            btnUpload.addEventListener('click', async () => {
-                if (!selectedFile) return;
+            const blockIndex = selectedProductBlocks.length;
+            const blockData = {
+                index: blockIndex,
+                id: id,
+                nama: nama,
+                jenis: jenis,
+                harga: harga,
+                gambar: gambar,
+                isAtribut: isAtribut,
+                sizes: {}
+            };
 
-                // Loading state
-                btnUpload.disabled = true;
-                spinner.style.display = 'inline-block';
-                btnText.textContent = 'Memproses...';
-                clearStatus();
+            selectedProductBlocks.push(blockData);
+            renderSelectedBlocks();
+        }
 
-                try {
-                    const formData = new FormData();
-                    formData.append('file_excel', selectedFile);
-                    formData.append('_token', csrfToken);
+        // Render Product Blocks
+        function renderSelectedBlocks() {
+            const container = document.getElementById('selectedProductsContainer');
+            const emptyState = document.getElementById('emptyOrderState');
 
-                    const res = await fetch(uploadUrl, {
-                        method: 'POST',
-                        body: formData,
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            if (selectedProductBlocks.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                updateOrderSummary();
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.innerHTML = '';
+
+            selectedProductBlocks.forEach((block, idx) => {
+                const formattedPrice = new Intl.NumberFormat('id-ID').format(block.harga);
+                const badgeLabel = block.jenis === 'TK' ? 'TK/PAUD' : block.jenis;
+
+                let sizesHtml = '';
+
+                if (block.isAtribut) {
+                    // FR-ORD-03: All Size Single Input
+                    const qtyVal = block.sizes['All Size'] || '';
+                    sizesHtml = `
+                        <div class="all-size-box">
+                            <div class="all-size-info">
+                                🏷️ Kategori Atribut (All Size)
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label style="font-size: 0.8rem; font-weight: 700; color: #1e40af;">Jumlah (pcs):</label>
+                                <input type="number" min="0" class="all-size-qty-input"
+                                    name="items[${idx}][sizes][All Size]"
+                                    value="${qtyVal}"
+                                    placeholder="0"
+                                    oninput="updateBlockSizeQty(${idx}, 'All Size', this.value)">
+                            </div>
+                        </div>`;
+                } else {
+                    // FR-ORD-02: Multi-Size Grid (S, M, L, XL, XXL, 3XL, 4XL, 5XL)
+                    let gridItems = '';
+                    standardSizes.forEach(sz => {
+                        const qtyVal = block.sizes[sz] || '';
+                        gridItems += `
+                            <div class="size-item-box">
+                                <div class="size-name">${sz}</div>
+                                <input type="number" min="0" class="size-qty-input"
+                                    name="items[${idx}][sizes][${sz}]"
+                                    value="${qtyVal}"
+                                    placeholder="0"
+                                    oninput="updateBlockSizeQty(${idx}, '${sz}', this.value)">
+                            </div>`;
                     });
 
-                    const json = await res.json();
-
-                    if (!res.ok || !json.success) {
-                        showExcelStatus('error', '❌ ' + (json.message || 'Terjadi kesalahan saat memproses file.'));
-                        return;
-                    }
-
-                    // Inject rows ke tabel
-                    if (json.items && json.items.length > 0) {
-                        // Hapus baris pertama jika kosong (produk belum dipilih)
-                        const firstRow = document.querySelector('#itemsBody tr:not(.accordion-row)');
-                        if (firstRow) {
-                            const firstSelect = firstRow.querySelector('select[name*="[produk_id]"]');
-                            if (firstSelect && firstSelect.value === '') {
-                                const rowId = firstRow.id.replace('row-', '');
-                                const accordion = document.getElementById(`row-accordion-${rowId}`);
-                                firstRow.remove();
-                                if (accordion) accordion.remove();
-                            }
-                        }
-
-                        json.items.forEach(item => {
-                            addRowFromExcel(item.produk_id, item.ukuran, item.jumlah, item.catatan);
-                        });
-
-                        let msg = '✅ ' + json.message;
-                        let cls = 'success';
-
-                        if (json.errors && json.errors.length > 0) {
-                            cls = 'warning';
-                            msg += '<br><strong>Baris yang dilewati:</strong><ul style="margin:4px 0 0 16px;">';
-                            json.errors.forEach(e => { msg += `<li>${e}</li>`; });
-                            msg += '</ul>';
-                        }
-                        showExcelStatus(cls, msg);
-                    } else {
-                        showExcelStatus('error', '❌ Tidak ada baris valid yang berhasil diproses.<br>' +
-                            (json.errors ? json.errors.join('<br>') : ''));
-                    }
-
-                } catch (err) {
-                    showExcelStatus('error', '❌ Gagal menghubungi server: ' + err.message);
-                } finally {
-                    spinner.style.display = 'none';
-                    btnText.textContent = 'Proses & Masukkan ke Pesanan';
-                    btnUpload.disabled = false;
+                    sizesHtml = `
+                        <div class="size-grid-label">Pilih Ukuran & Jumlah (Multi-Ukuran):</div>
+                        <div class="size-grid">${gridItems}</div>`;
                 }
-            });
 
-            function showExcelStatus(type, html) {
-                statusBox.className = 'excel-status ' + type;
-                statusBox.innerHTML = html;
-            }
-            function clearStatus() {
-                statusBox.className = 'excel-status';
-                statusBox.innerHTML = '';
-            }
-        }
+                const blockHtml = `
+                    <div class="product-block" id="pBlock-${idx}">
+                        <input type="hidden" name="items[${idx}][produk_id]" value="${block.id}">
 
-        /** Tambah row ke tabel dari data Excel */
-        function addRowFromExcel(produkId, ukuran, jumlah, catatan) {
-            addRow(produkId);
-            const lastRow = document.getElementById(`row-${rowCount}`);
-            if (!lastRow) return;
-
-            // Set ukuran
-            const ukuranSelect = lastRow.querySelector(`select[name="items[${rowCount}][ukuran]"]`);
-            if (ukuranSelect) ukuranSelect.value = ukuran;
-
-            // Set jumlah
-            const jumlahInput = lastRow.querySelector(`input[name="items[${rowCount}][total_item]"]`);
-            if (jumlahInput) {
-                jumlahInput.value = jumlah;
-                calculateRowSubtotal(rowCount);
-            }
-
-            // Set catatan
-            const catatanTextarea = document.querySelector(`textarea[name="items[${rowCount}][catatan]"]`);
-            if (catatanTextarea) {
-                catatanTextarea.value = catatan || '';
-            }
-        }
-
-        function addRow(selectedId = null) {
-            rowCount++;
-            const body = document.getElementById('itemsBody');
-            const row = document.createElement('tr');
-            row.id = `row-${rowCount}`;
-
-            // Dropdown options
-            let options = '<option value="">-- Pilih Seragam --</option>';
-            produkList.forEach(p => {
-                const selectedAttr = (selectedId && Number(selectedId) === p.id) ? 'selected' : '';
-                options += `<option value="${p.id}" data-price="${p.harga}" ${selectedAttr}>${p.nama_produk} - Rp ${formatNumber(p.harga)}</option>`;
-            });
-
-            row.innerHTML = `
-                                                    <td>
-                                                        <select name="items[${rowCount}][produk_id]" class="form-select" onchange="calculateRowSubtotal(${rowCount})" required>
-                                                            ${options}
-                                                        </select>
-                                                    </td>
-                                                    <td>
-                                                        <select name="items[${rowCount}][ukuran]" class="form-select" style="text-align: center;" required>
-                                                            <option value="" disabled>-- Ukuran --</option>
-                                                            <option value="S">S</option>
-                                                            <option value="M" selected>M</option>
-                                                            <option value="L">L</option>
-                                                            <option value="XL">XL</option>
-                                                            <option value="XXL">XXL</option>
-                                                            <option value="3XL">3XL</option>
-                                                            <option value="4XL">4XL</option>
-                                                            <option value="5XL">5XL</option>
-                                                        </select>
-                                                    </td>
-                                                <td style="text-align: center; position: relative; padding-bottom: 22px;">
-                                                    <input type="number" name="items[${rowCount}][total_item]" class="form-input" value="1" min="1" oninput="calculateRowSubtotal(${rowCount})" required style="text-align: center; max-width: 80px; margin: 0 auto; display: block;">
-                                                    <span style="font-size: .65rem; color: #8ca0bf; position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; white-space: nowrap;">Agregat semua kelas</span>
-                                                </td>
-                                                    <td style="text-align: right; font-weight: 700; color: #1a2b4a;" id="subtotal-${rowCount}">
-                                                        Rp 0
-                                                    </td>
-                                                    <td style="text-align: center; white-space: nowrap;">
-                                                        <div style="display: flex; gap: 6px; justify-content: center; align-items: center;">
-                                                            <button type="button" class="btn-note-row" onclick="toggleAccordion(${rowCount})" title="Tambah Catatan / Gambar" style="width: 32px; height: 32px; background: #e8f0fd; color: #4A90D9; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s;">
-                                                                📝
-                                                            </button>
-                                                            <button type="button" class="btn-remove-row" onclick="removeRow(${rowCount})" title="Hapus item">
-                                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                                                </svg>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                `;
-
-            const accordionRow = document.createElement('tr');
-            accordionRow.id = `row-accordion-${rowCount}`;
-            accordionRow.className = 'accordion-row';
-            accordionRow.style.display = 'none';
-            accordionRow.style.background = '#fafcff';
-            accordionRow.innerHTML = `
-                        <td colspan="5" style="padding: 12px 20px; border-bottom: 1px solid #e2e8f4;">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
-                                <div>
-                                    <label class="form-label" style="margin-bottom: 6px; font-weight: 700; color: #1a2b4a; text-align: left;">Catatan Pesanan (Maksimal 250 Karakter)</label>
-                                    <textarea name="items[${rowCount}][catatan]" class="form-input" rows="3" maxlength="250" placeholder="Contoh: Bordir logo OSIS di lengan kanan" style="width: 100%; border: 1.5px solid #c5d8f5; border-radius: 10px; padding: 10px; font-family: inherit; font-size: .82rem; background: #fff; outline: none; transition: border-color 0.2s; box-sizing: border-box; text-align: left;"></textarea>
+                        <div class="product-block-header">
+                            <div class="product-block-info">
+                                <div class="product-block-thumb">
+                                    ${block.gambar ? `<img src="${block.gambar}" alt="${block.nama}">` : `
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8ca0bf" stroke-width="1.5">
+                                            <path d="M20.38 3.46L16 6.5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3.5L3.62 3.46a1 1 0 0 0-1.46.9l1.5 14.5a2 2 0 0 0 2 1.8h12.68a2 2 0 0 0 2-1.8l1.5-14.5a1 1 0 0 0-1.46-.9z"/>
+                                        </svg>`}
                                 </div>
-                                <div>
-                                    <label class="form-label" style="margin-bottom: 6px; font-weight: 700; color: #1a2b4a; text-align: left;">Gambar Acuan (Maksimal 5MB, JPG/JPEG/PNG)</label>
-                                    <div style="display: flex; gap: 12px; align-items: center;">
-                                        <input type="file" name="items[${rowCount}][gambar]" accept=".jpg,.jpeg,.png" id="file-input-${rowCount}" onchange="previewImage(${rowCount}, this)" style="display: none;">
-                                        <button type="button" class="btn-excel" onclick="document.getElementById('file-input-${rowCount}').click()" style="margin: 0; padding: 8px 14px; border: 1.5px solid #4A90D9; background: #e8f0fd; color: #4A90D9; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-                                            📁 Pilih Gambar
-                                        </button>
-                                        <span id="file-name-${rowCount}" style="font-size: 0.78rem; color: #6b7e9f;">Belum ada berkas</span>
-                                    </div>
-                                    <div id="preview-container-${rowCount}" style="margin-top: 10px; display: none; position: relative; width: fit-content;">
-                                        <img id="preview-img-${rowCount}" src="" style="max-height: 100px; max-width: 150px; border-radius: 8px; border: 1.5px solid #c5d8f5; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                                        <button type="button" onclick="clearPreviewImage(${rowCount})" style="position: absolute; top: -6px; right: -6px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.2);">X</button>
-                                    </div>
+                                <div class="product-block-title">
+                                    <h4>${block.nama}</h4>
+                                    <span class="badge-cat">${badgeLabel}</span>
+                                    <span class="price-tag" style="margin-left: 8px;">Rp ${formattedPrice} / pcs</span>
                                 </div>
                             </div>
-                        </td>
-                    `;
+                            <button type="button" class="btn-remove-block" onclick="removeProductBlock(${idx})" title="Hapus Produk Ini">
+                                ✕
+                            </button>
+                        </div>
 
-            body.appendChild(row);
-            body.appendChild(accordionRow);
-            calculateRowSubtotal(rowCount);
-        }
+                        ${sizesHtml}
 
-        function toggleAccordion(id) {
-            const accordionRow = document.getElementById(`row-accordion-${id}`);
-            const btn = document.querySelector(`#row-${id} .btn-note-row`);
-            if (accordionRow.style.display === 'none') {
-                accordionRow.style.display = 'table-row';
-                btn.style.background = '#4A90D9';
-                btn.style.color = '#fff';
-            } else {
-                accordionRow.style.display = 'none';
-                btn.style.background = '#e8f0fd';
-                btn.style.color = '#4A90D9';
-            }
-        }
+                        <div class="block-extra-row">
+                            <div>
+                                <label class="form-label">Catatan Khusus Produk (Opsional)</label>
+                                <input type="text" class="form-input" name="items[${idx}][catatan]" placeholder="Cth: Bordir logo OSIS di lengan kanan...">
+                            </div>
+                            <div>
+                                <label class="form-label">Gambar Acuan / Model (Opsional)</label>
+                                <input type="file" class="form-input" name="items[${idx}][gambar]" accept="image/*">
+                            </div>
+                        </div>
+                    </div>`;
 
-        function previewImage(id, input) {
-            const file = input.files[0];
-            const nameSpan = document.getElementById(`file-name-${id}`);
-            const container = document.getElementById(`preview-container-${id}`);
-            const img = document.getElementById(`preview-img-${id}`);
-
-            if (file) {
-                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-                if (!validTypes.includes(file.type)) {
-                    showToast('Format file wajib: .jpg, .jpeg, .png', 'error');
-                    input.value = '';
-                    nameSpan.textContent = 'Belum ada berkas';
-                    container.style.display = 'none';
-                    return;
-                }
-
-                if (file.size > 5 * 1024 * 1024) {
-                    showToast('Ukuran berkas maksimal 5MB', 'error');
-                    input.value = '';
-                    nameSpan.textContent = 'Belum ada berkas';
-                    container.style.display = 'none';
-                    return;
-                }
-
-                nameSpan.textContent = file.name;
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    img.src = e.target.result;
-                    container.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-            } else {
-                nameSpan.textContent = 'Belum ada berkas';
-                container.style.display = 'none';
-            }
-        }
-
-        function clearPreviewImage(id) {
-            const input = document.getElementById(`file-input-${id}`);
-            const nameSpan = document.getElementById(`file-name-${id}`);
-            const container = document.getElementById(`preview-container-${id}`);
-            const img = document.getElementById(`preview-img-${id}`);
-
-            input.value = '';
-            nameSpan.textContent = 'Belum ada berkas';
-            container.style.display = 'none';
-            img.src = '';
-        }
-
-        function removeRow(id) {
-            const mainRows = document.querySelectorAll('#itemsBody tr[id^="row-"]:not([id*="accordion"])');
-            if (mainRows.length > 1) {
-                const row = document.getElementById(`row-${id}`);
-                const accordion = document.getElementById(`row-accordion-${id}`);
-                if (row) row.remove();
-                if (accordion) accordion.remove();
-                calculateGrandTotal();
-            } else {
-                showToast('Minimal harus ada 1 item pesanan', 'warning');
-            }
-        }
-
-        function calculateRowSubtotal(id) {
-            const row = document.getElementById(`row-${id}`);
-            const select = row.querySelector(`select[name="items[${id}][produk_id]"]`);
-            const quantityInput = row.querySelector(`input[name="items[${id}][total_item]"]`);
-            const subtotalCell = document.getElementById(`subtotal-${id}`);
-
-            const selectedOption = select.options[select.selectedIndex];
-            const price = selectedOption.value ? parseFloat(selectedOption.getAttribute('data-price')) : 0;
-            const quantity = parseInt(quantityInput.value) || 0;
-
-            const subtotal = price * quantity;
-            subtotalCell.textContent = `Rp ${formatNumber(subtotal)}`;
-            subtotalCell.setAttribute('data-value', subtotal);
-
-            calculateGrandTotal();
-        }
-
-        function calculateGrandTotal() {
-            let grandTotal = 0;
-            let totalItems = 0;
-
-            document.querySelectorAll('#itemsBody tr:not(.accordion-row)').forEach(row => {
-                const subtotalCell = row.querySelector('td[id^="subtotal-"]');
-                const quantityInput = row.querySelector('input[name*="[total_item]"]');
-
-                const subtotal = parseFloat(subtotalCell.getAttribute('data-value')) || 0;
-                const quantity = parseInt(quantityInput.value) || 0;
-
-                grandTotal += subtotal;
-                totalItems += quantity;
+                container.innerHTML += blockHtml;
             });
 
-            document.getElementById('summaryTotalItems').textContent = `${totalItems} Pcs`;
-            document.getElementById('summaryGrandTotal').textContent = `Rp ${formatNumber(grandTotal)}`;
+            updateOrderSummary();
         }
 
-        function formatNumber(num) {
-            return new Intl.NumberFormat('id-ID').format(num);
+        // Update quantity for a size in a block
+        function updateBlockSizeQty(blockIdx, sizeName, value) {
+            const valInt = parseInt(value) || 0;
+            selectedProductBlocks[blockIdx].sizes[sizeName] = valInt > 0 ? valInt : 0;
+            updateOrderSummary();
+        }
+
+        // Remove Product Block
+        function removeProductBlock(idx) {
+            selectedProductBlocks.splice(idx, 1);
+            renderSelectedBlocks();
+        }
+
+        // Update Summary Totals
+        function updateOrderSummary() {
+            let uniqueCount = selectedProductBlocks.length;
+            let totalPcs = 0;
+            let totalPrice = 0;
+
+            selectedProductBlocks.forEach(block => {
+                Object.values(block.sizes).forEach(qty => {
+                    const q = parseInt(qty) || 0;
+                    totalPcs += q;
+                    totalPrice += (q * block.harga);
+                });
+            });
+
+            document.getElementById('summaryUniqueCount').textContent = `${uniqueCount} Produk`;
+            document.getElementById('summaryTotalPcs').textContent = `${totalPcs} pcs`;
+            document.getElementById('summaryTotalPrice').textContent = `Rp ${new Intl.NumberFormat('id-ID').format(totalPrice)}`;
+
+            const btnSubmit = document.getElementById('btnSubmitOrder');
+            btnSubmit.disabled = (totalPcs === 0);
+        }
+
+        // Modal CSV Upload Functions
+        function openCsvModal() {
+            document.getElementById('csvModalOverlay').classList.add('active');
+        }
+
+        function closeCsvModal() {
+            document.getElementById('csvModalOverlay').classList.remove('active');
+        }
+
+        function closeCsvModalOnBackdrop(e) {
+            if (e.target.id === 'csvModalOverlay') closeCsvModal();
+        }
+
+        function processCsvUpload() {
+            const fileInput = document.getElementById('csvFileInput');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Silakan pilih file CSV terlebih dahulu.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file_excel', fileInput.files[0]);
+            formData.append('_token', '{{ csrf_token() }}');
+
+            fetch('{{ route("pelanggan.pesanan.upload") }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.items) {
+                    data.items.forEach(item => {
+                        const prod = allProducts.find(p => p.id === item.produk_id);
+                        if (prod) {
+                            const isAtribut = (prod.jenis_seragam.toLowerCase() === 'atribut');
+                            let block = selectedProductBlocks.find(b => b.id === prod.id);
+                            if (!block) {
+                                addProductBlock(prod.id, prod.nama_produk, prod.jenis_seragam, parseInt(prod.harga), prod.gambar ? `/` + prod.gambar : '', isAtribut);
+                                block = selectedProductBlocks[selectedProductBlocks.length - 1];
+                            }
+                            block.sizes[item.ukuran] = (block.sizes[item.ukuran] || 0) + parseInt(item.jumlah);
+                        }
+                    });
+                    renderSelectedBlocks();
+                    closeCsvModal();
+                    alert(data.message);
+                } else {
+                    alert('Gagal mengunggah file CSV: ' + (data.message || 'Format tidak valid.'));
+                }
+            })
+            .catch(err => {
+                alert('Terjadi kesalahan saat mengunggah file CSV.');
+            });
         }
     </script>
 @endsection

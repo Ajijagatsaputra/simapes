@@ -165,4 +165,58 @@ class CustomerOrderNoteAndAttachmentTest extends TestCase
         $response->assertJsonPath('items.0.jumlah', 10);
         $response->assertJsonPath('items.0.ukuran', 'M');
     }
+
+    public function test_customer_can_order_multi_size_per_product_and_all_size(): void
+    {
+        $customer = User::factory()->create(['role' => 'pelanggan']);
+        $produkSeragam = Produk::create([
+            'nama_produk' => 'Baju Seragam Olahraga',
+            'jenis_seragam' => 'SD',
+            'harga' => 50000,
+            'stok' => 100,
+        ]);
+
+        $produkAtribut = Produk::create([
+            'nama_produk' => 'Topi SD',
+            'jenis_seragam' => 'Atribut',
+            'harga' => 15000,
+            'stok' => 100,
+        ]);
+
+        $response = $this
+            ->actingAs($customer)
+            ->post(route('pelanggan.pesanan.store'), [
+                'items' => [
+                    [
+                        'produk_id' => $produkSeragam->id,
+                        'sizes' => [
+                            'S' => 10,
+                            'M' => 10,
+                            'L' => 10,
+                        ],
+                        'catatan' => 'Bordir nama sekolah',
+                    ],
+                    [
+                        'produk_id' => $produkAtribut->id,
+                        'sizes' => [
+                            'All Size' => 40,
+                        ],
+                    ]
+                ]
+            ]);
+
+        $pesanan = Pesanan::first();
+        $this->assertNotNull($pesanan);
+
+        // Verify details created: S(10), M(10), L(10), All Size(40)
+        $this->assertEquals(4, DetailPesanan::count());
+
+        // Verify Total price: (30 * 50000) + (40 * 15000) = 1500000 + 600000 = 2100000
+        $this->assertEquals(2100000, $pesanan->total_harga);
+
+        $allSizeDetail = DetailPesanan::where('ukuran', 'All Size')->first();
+        $this->assertNotNull($allSizeDetail);
+        $this->assertEquals(40, $allSizeDetail->total_item);
+        $this->assertEquals(600000, $allSizeDetail->subtotal);
+    }
 }
