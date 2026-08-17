@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\SendOtpMail;
+use App\Models\OtpCode;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -47,12 +50,32 @@ class RegisteredUserController extends Controller
             'no_whatsapp' => $request->no_whatsapp,
             'alamat' => $request->alamat,
             'nama_sekolah' => $request->nama_sekolah,
+            'email_verified_at' => null,
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Generate OTP Code
+        $otpCode = sprintf('%06d', mt_rand(0, 999999));
 
-        return redirect(route('pelanggan.dashboard', absolute: false));
+        OtpCode::create([
+            'user_id' => $user->id,
+            'code' => $otpCode,
+            'purpose' => 'email_verification',
+            'expires_at' => now()->addMinutes(10),
+            'attempts' => 0,
+        ]);
+
+        // Send OTP Email
+        try {
+            Mail::to($user->email)->send(new SendOtpMail($user, $otpCode));
+        } catch (\Throwable $e) {
+            // Log error or ignore in dev if mail fail, but user can click resend
+            logger()->error('Gagal mengirim email OTP: ' . $e->getMessage());
+        }
+
+        session(['otp_user_id' => $user->id]);
+
+        return redirect()->route('otp.verify')->with('status', 'Pendaftaran berhasil! Kode OTP telah dikirimkan ke email Anda.');
     }
 }

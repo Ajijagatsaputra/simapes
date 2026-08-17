@@ -93,7 +93,7 @@ class AdminProdukTest extends TestCase
         $produk->refresh();
         $newImagePath = public_path($produk->gambar);
         $this->assertFileExists($newImagePath);
-        $this->assertFileDoesNotExist($oldImagePath); // Old image should be deleted
+        $this->assertFileDoesNotExist($oldImagePath);
 
         // Clean up
         if (file_exists($newImagePath)) {
