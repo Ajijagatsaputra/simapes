@@ -715,8 +715,13 @@
                     <h1>No. Pesanan: {{ $pesanan->no_pesanan }}</h1>
                     <span>Dibuat pada:
                         {{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->isoFormat('DD MMMM YYYY, HH:mm') }} WIB</span>
+                    @if($pesanan->target_tanggal_pengambilan)
+                        <span style="font-weight: 700; color: #1e40af; margin-top: 4px; display: inline-block; background: #eff6ff; padding: 4px 10px; border-radius: 6px; border: 1px solid #bfdbfe;">
+                            📅 Target Pengambilan: {{ \Carbon\Carbon::parse($pesanan->target_tanggal_pengambilan)->isoFormat('DD MMMM YYYY') }}
+                        </span>
+                    @endif
                 </div>
-                <div>
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                     @if($pesanan->status === 'pending')
                         <span class="status-badge badge-pending">Menunggu Persetujuan</span>
                     @elseif($pesanan->status === 'diproses')
@@ -727,6 +732,12 @@
                         <span class="status-badge badge-selesai">Selesai</span>
                     @else
                         <span class="status-badge badge-batal">Batal</span>
+                    @endif
+
+                    @if($pesanan->sisa_tagihan > 0)
+                        <a href="#invoicePaymentSection" class="btn-bayar-termin" style="padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; box-shadow: 0 4px 12px rgba(30, 86, 219, 0.25);">
+                            💳 Lanjut ke Pembayaran
+                        </a>
                     @endif
                 </div>
             </div>
@@ -1011,7 +1022,7 @@
                 $bisaBayarT1 = !$termin1;
                 $bisaBayarT2 = $t1Verified && !$termin2;
             @endphp
-            <div class="info-section" style="margin-bottom:24px;">
+            <div class="info-section" id="invoicePaymentSection" style="margin-bottom:24px;">
                 <h3>Invoice &amp; Pembayaran Termin</h3>
                 @if(session('success'))
                     <div

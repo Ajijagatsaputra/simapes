@@ -17,6 +17,7 @@ class Pesanan extends Model
         'sisa_tagihan',
         'status_pembayaran',
         'tanggal_pesanan',
+        'target_tanggal_pengambilan',
         'status',
     ];
 
@@ -25,6 +26,7 @@ class Pesanan extends Model
         'total_terbayar' => 'decimal:2',
         'sisa_tagihan' => 'decimal:2',
         'tanggal_pesanan' => 'date',
+        'target_tanggal_pengambilan' => 'date',
     ];
 
     /* ── Relasi ── */

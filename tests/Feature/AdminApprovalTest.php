@@ -29,6 +29,7 @@ class AdminApprovalTest extends TestCase
         $response = $this
             ->actingAs($customer)
             ->post(route('pelanggan.pesanan.store'), [
+                'target_tanggal_pengambilan' => now()->addDays(7)->format('Y-m-d'),
                 'items' => [
                     [
                         'produk_id' => $produk->id,

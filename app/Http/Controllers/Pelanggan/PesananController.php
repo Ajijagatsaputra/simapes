@@ -35,6 +35,7 @@ class PesananController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'target_tanggal_pengambilan' => 'required|date|after_or_equal:today',
             'items' => 'required|array|min:1',
             'items.*.produk_id' => 'required|exists:produks,id',
             'items.*.catatan' => 'nullable|string|max:250',
@@ -47,6 +48,7 @@ class PesananController extends Controller
                 'no_pesanan' => Pesanan::generateNoPesanan(),
                 'user_id' => Auth::id(),
                 'tanggal_pesanan' => now()->format('Y-m-d'),
+                'target_tanggal_pengambilan' => $request->target_tanggal_pengambilan,
                 'status' => 'pending',
                 'total_harga' => 0,
             ]);
