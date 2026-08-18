@@ -660,13 +660,18 @@
                                 $totalPcs = $pesanan->details->sum('total_item');
                             @endphp
                             @if($latestProgress)
-                                <div style="font-size: 0.76rem; background: #e8f0fd; border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; color: #1e3c72; border: 1px solid #d0e1fd;">
-                                    <strong>Status Terakhir:</strong> <span style="font-weight: 700;">{{ $latestProgress->tahapan }}</span>
-                                    <span style="background: #3b82f6; color: #fff; font-size: 0.65rem; padding: 1px 6px; border-radius: 12px; font-weight: 800; margin-left: 4px;">{{ $latestProgress->jumlah_pcs }} Pcs</span>
+                                <div
+                                    style="font-size: 0.76rem; background: #e8f0fd; border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; color: #1e3c72; border: 1px solid #d0e1fd;">
+                                    <strong>Status Terakhir:</strong> <span
+                                        style="font-weight: 700;">{{ $latestProgress->tahapan }}</span>
+                                    <span
+                                        style="background: #3b82f6; color: #fff; font-size: 0.65rem; padding: 1px 6px; border-radius: 12px; font-weight: 800; margin-left: 4px;">{{ $latestProgress->jumlah_pcs }}
+                                        Pcs</span>
                                     @php
                                         $latestPct = $totalPcs > 0 ? round(($latestProgress->jumlah_pcs / $totalPcs) * 100, 1) : 0;
                                     @endphp
-                                    <span style="background: #10b981; color: #fff; font-size: 0.65rem; padding: 1px 6px; border-radius: 12px; font-weight: 800; margin-left: 4px;">{{ $latestPct }}%</span>
+                                    <span
+                                        style="background: #10b981; color: #fff; font-size: 0.65rem; padding: 1px 6px; border-radius: 12px; font-weight: 800; margin-left: 4px;">{{ $latestPct }}%</span>
                                 </div>
                             @endif
 
@@ -681,7 +686,8 @@
                                                     style="font-weight: 700; font-size: 0.8rem; color: #1a2b4a; line-height: 1.2;">{{ $prog->tahapan }}</span>
                                                 <div style="display: flex; gap: 4px; align-items: center;">
                                                     <span
-                                                        style="background: #e8f0fd; color: #4A90D9; padding: 2px 6px; border-radius: 6px; font-weight: 800; font-size: 0.7rem; white-space: nowrap;">{{ $prog->jumlah_pcs }} Pcs</span>
+                                                        style="background: #e8f0fd; color: #4A90D9; padding: 2px 6px; border-radius: 6px; font-weight: 800; font-size: 0.7rem; white-space: nowrap;">{{ $prog->jumlah_pcs }}
+                                                        Pcs</span>
                                                     @php
                                                         $stagePct = $totalPcs > 0 ? round(($prog->jumlah_pcs / $totalPcs) * 100, 1) : 0;
                                                     @endphp
@@ -703,8 +709,11 @@
                                                     $barColor = '#8b5cf6';
                                                 }
                                             @endphp
-                                            <div style="width: 100%; height: 6px; background: #e8eef8; border-radius: 999px; overflow: hidden; margin-top: 4px; margin-bottom: 8px;">
-                                                <div style="width: {{ $stagePct }}%; height: 100%; background: {{ $barColor }}; border-radius: 999px; transition: width 0.3s ease;"></div>
+                                            <div
+                                                style="width: 100%; height: 6px; background: #e8eef8; border-radius: 999px; overflow: hidden; margin-top: 4px; margin-bottom: 8px;">
+                                                <div
+                                                    style="width: {{ $stagePct }}%; height: 100%; background: {{ $barColor }}; border-radius: 999px; transition: width 0.3s ease;">
+                                                </div>
                                             </div>
                                             @if($prog->catatan)
                                                 <p
@@ -724,7 +733,8 @@
                                                 </div>
                                             @endif
                                             <div style="font-size: 0.65rem; color: #a0aec0; text-align: right;">
-                                                Update: {{ $prog->updated_at->diffForHumans() }}
+                                                Update:
+                                                {{ optional($prog->selesai_pada ?? $prog->updated_at)->diffForHumans() ?? 'Baru saja' }}
                                             </div>
                                         </div>
                                     </div>

@@ -12,9 +12,18 @@ use Illuminate\Support\Facades\Storage;
 
 class ProgresProduksiController extends Controller
 {
+    /** 5 tahapan tetap */
+    const TAHAPAN = [
+        1 => 'Persiapan Bahan',
+        2 => 'Pemotongan Bahan',
+        3 => 'Penjahitan Baju',
+        4 => 'Packing / Finishing',
+        5 => 'Selesai',
+    ];
+
     public function show($id)
     {
-        $pesanan = Pesanan::with(['details.produk', 'progresProduksis'])->findOrFail($id);
+        $pesanan = Pesanan::with(['details.produk', 'progresProduksis', 'statusLogs'])->findOrFail($id);
 
         if (!in_array($pesanan->status, ['dikerjakan', 'selesai'])) {
             return redirect()->route('admin.pesanan.index')
@@ -22,86 +31,89 @@ class ProgresProduksiController extends Controller
         }
 
         $totalPcs = $pesanan->details->sum('total_item');
-        return view('admin.pesanan.progres', compact('pesanan', 'totalPcs'));
+
+        // Bangun 5 slot fixed — jika sudah ada record di DB, gunakan itu; jika belum, buat slot kosong
+        $existingByTahapan = $pesanan->progresProduksis->keyBy('tahapan_ke');
+        $slots = [];
+        foreach (self::TAHAPAN as $ke => $nama) {
+            $slots[$ke] = $existingByTahapan->get($ke) ?? null;
+        }
+
+        return view('admin.pesanan.progres', compact('pesanan', 'totalPcs', 'slots'));
     }
 
     public function update(Request $request, $id)
     {
-        $pesanan = Pesanan::findOrFail($id);
+        $pesanan = Pesanan::with('details')->findOrFail($id);
         $totalPcs = $pesanan->details->sum('total_item');
 
+        // Validasi: hanya tahap yang dikirim lewat POST
         $request->validate([
-            'stages' => 'required|array|min:1',
-            'stages.*.tahapan' => 'required|string|max:100',
-            'stages.*.jumlah_pcs' => "required|integer|min:0|max:{$totalPcs}",
-            'stages.*.dokumentasi' => 'nullable|image|mimes:jpg,jpeg,png|max:3072',
-            'stages.*.catatan' => 'nullable|string|max:1000',
-            'stages.*.id' => 'nullable|integer|exists:progres_produksis,id',
+            'tahapan_ke'   => 'required|integer|between:1,5',
+            'jumlah_pcs'   => "required|integer|min:0|max:{$totalPcs}",
+            'dokumentasi'  => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'catatan'      => 'nullable|string|max:1000',
+            'tandai_selesai' => 'nullable|boolean',
         ], [
-            'stages.*.jumlah_pcs.max' => "Jumlah pcs pada setiap tahapan tidak boleh melebihi total target pesanan ({$totalPcs} pcs).",
+            'jumlah_pcs.max' => "Jumlah pcs tidak boleh melebihi total target pesanan ({$totalPcs} pcs).",
         ]);
 
-        $stages = $request->input('stages', []);
+        $ke = (int) $request->tahapan_ke;
+
+        // ── Validasi Urutan: tahap sebelumnya harus selesai ──
+        if ($ke > 1) {
+            $prevSelesai = ProgresProduksi::where('pesanan_id', $pesanan->id)
+                ->where('tahapan_ke', $ke - 1)
+                ->whereNotNull('selesai_pada')
+                ->exists();
+
+            if (!$prevSelesai) {
+                $prevNama = self::TAHAPAN[$ke - 1] ?? "Tahap " . ($ke - 1);
+                return redirect()->back()->with('error', "Tahap {$ke} belum bisa diisi. Selesaikan dulu Tahap " . ($ke - 1) . " ({$prevNama}) terlebih dahulu.");
+            }
+        }
 
         DB::beginTransaction();
         try {
-            $submittedIds = [];
+            // Cari atau buat slot untuk tahapan ini
+            $progres = ProgresProduksi::firstOrNew([
+                'pesanan_id' => $pesanan->id,
+                'tahapan_ke' => $ke,
+            ]);
 
-            foreach ($stages as $index => $stageData) {
-                $stageId = $stageData['id'] ?? null;
+            $progres->tahapan    = self::TAHAPAN[$ke];
+            $progres->jumlah_pcs = $request->jumlah_pcs;
+            $progres->catatan    = $request->catatan;
 
-                $updateData = [
-                    'pesanan_id' => $pesanan->id,
-                    'tahapan' => $stageData['tahapan'],
-                    'jumlah_pcs' => $stageData['jumlah_pcs'],
-                    'catatan' => $stageData['catatan'] ?? null,
-                ];
-
-                // Handle file upload
-                if ($request->hasFile("stages.{$index}.dokumentasi")) {
-                    $file = $request->file("stages.{$index}.dokumentasi");
-                    // Store file in public/dokumentasi
-                    $path = $file->store('dokumentasi', 'public');
-                    $updateData['dokumentasi'] = $path;
-
-                    // If there was an old file, delete it
-                    if ($stageId) {
-                        $existingStage = ProgresProduksi::find($stageId);
-                        if ($existingStage && $existingStage->dokumentasi) {
-                            Storage::disk('public')->delete($existingStage->dokumentasi);
-                        }
-                    }
-                } elseif (isset($stageData['existing_dokumentasi'])) {
-                    // Retain old file if no new upload
-                    $updateData['dokumentasi'] = $stageData['existing_dokumentasi'];
-                }
-
-                if ($stageId) {
-                    $progress = ProgresProduksi::findOrFail($stageId);
-                    $progress->update($updateData);
-                    $submittedIds[] = $progress->id;
-                } else {
-                    $progress = ProgresProduksi::create($updateData);
-                    $submittedIds[] = $progress->id;
-                }
+            // Tandai selesai
+            $tandaiSelesai = filter_var($request->tandai_selesai, FILTER_VALIDATE_BOOLEAN);
+            if ($tandaiSelesai && is_null($progres->selesai_pada)) {
+                $progres->selesai_pada = now();
+            } elseif (!$tandaiSelesai) {
+                $progres->selesai_pada = null;
             }
 
-            // Delete any stages that were removed
-            $stagesToDelete = ProgresProduksi::where('pesanan_id', $pesanan->id)
-                ->whereNotIn('id', $submittedIds)
-                ->get();
-
-            foreach ($stagesToDelete as $oldStage) {
-                if ($oldStage->dokumentasi) {
-                    Storage::disk('public')->delete($oldStage->dokumentasi);
+            // Upload file dokumentasi / nota
+            if ($request->hasFile('dokumentasi')) {
+                // Hapus file lama jika ada
+                if ($progres->dokumentasi && Storage::disk('public')->exists($progres->dokumentasi)) {
+                    Storage::disk('public')->delete($progres->dokumentasi);
                 }
-                $oldStage->delete();
+                $folder = $ke === 5 ? 'nota_produksi' : 'dokumentasi_produksi';
+                $progres->dokumentasi = $request->file('dokumentasi')->store($folder, 'public');
             }
 
-            ActivityLog::log('Memperbarui progres produksi pesanan: ' . $pesanan->no_pesanan, 'Pesanan', $pesanan->id);
+            $progres->save();
+
+            ActivityLog::log(
+                'Update progres produksi Tahap ' . $ke . ' (' . self::TAHAPAN[$ke] . ') pesanan: ' . $pesanan->no_pesanan,
+                'Pesanan',
+                $pesanan->id
+            );
 
             DB::commit();
-            return redirect()->route('admin.pesanan.index')->with('success', 'Progres produksi berhasil diperbarui.');
+            return redirect()->route('admin.pesanan.progres', $pesanan->id)
+                ->with('success', 'Tahap ' . $ke . ' — ' . self::TAHAPAN[$ke] . ' berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal memperbarui progres: ' . $e->getMessage())->withInput();

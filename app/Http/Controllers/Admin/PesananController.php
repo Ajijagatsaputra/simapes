@@ -8,6 +8,7 @@ use App\Models\DetailPesanan;
 use App\Models\Produk;
 use App\Models\User;
 use App\Models\ActivityLog;
+use App\Models\StatusLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -127,22 +128,19 @@ class PesananController extends Controller
 
         $pesanan->update(['status' => $request->status]);
 
+        // ── Simpan log status dengan timestamp ──
+        StatusLog::create([
+            'pesanan_id' => $pesanan->id,
+            'status' => $request->status,
+            'label' => StatusLog::LABELS[$request->status] ?? ucfirst($request->status),
+            'catatan' => $request->input('catatan'),
+            'created_at' => now(),
+        ]);
+
         if ($request->status === 'batal') {
             ActivityLog::log('Membatalkan/menolak pesanan: ' . $pesanan->no_pesanan, 'Pesanan', $pesanan->id);
         } else {
             ActivityLog::log('Mengubah status pesanan ' . $pesanan->no_pesanan . ' menjadi ' . $request->status, 'Pesanan', $pesanan->id);
-        }
-
-        if ($request->status === 'dikerjakan') {
-            if (!$pesanan->progresProduksis()->exists()) {
-                $totalPcs = $pesanan->details->sum('total_item');
-                $pesanan->progresProduksis()->create([
-                    'tahapan' => 'Persiapan Bahan',
-                    'jumlah_pcs' => $totalPcs,
-                    'dokumentasi' => null,
-                    'catatan' => 'Memulai proses produksi.',
-                ]);
-            }
         }
 
         // Return JSON jika AJAX request

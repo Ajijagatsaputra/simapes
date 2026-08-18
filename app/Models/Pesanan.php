@@ -47,7 +47,12 @@ class Pesanan extends Model
 
     public function progresProduksis()
     {
-        return $this->hasMany(ProgresProduksi::class);
+        return $this->hasMany(ProgresProduksi::class)->orderBy('tahapan_ke');
+    }
+
+    public function statusLogs()
+    {
+        return $this->hasMany(StatusLog::class)->orderBy('created_at');
     }
 
     /* ── Helper: Hitung ulang total pembayaran ── */

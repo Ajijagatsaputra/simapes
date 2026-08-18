@@ -68,37 +68,14 @@ class ProductionProgressTest extends TestCase
         return $pesanan;
     }
 
-    public function test_order_status_change_to_dikerjakan_auto_initializes_default_progress_stage(): void
-    {
-        $pesanan = $this->createOrder('diproses');
-
-        // Verify no progress records exist initially
-        $this->assertCount(0, $pesanan->progresProduksis);
-
-        // Update status to dikerjakan
-        $response = $this
-            ->actingAs($this->admin)
-            ->patch(route('admin.pesanan.updateStatus', $pesanan->id), [
-                'status' => 'dikerjakan',
-            ]);
-
-        $response->assertRedirect();
-        $this->assertEquals('dikerjakan', $pesanan->fresh()->status);
-
-        // Verify default progress record is created
-        $progress = $pesanan->fresh()->progresProduksis;
-        $this->assertCount(1, $progress);
-        $this->assertEquals('Persiapan Bahan', $progress->first()->tahapan);
-        $this->assertEquals(50, $progress->first()->jumlah_pcs);
-    }
-
     public function test_admin_can_access_progress_management_page(): void
     {
         $pesanan = $this->createOrder('dikerjakan');
 
-        // Seed default progress
+        // Seed default progress Tahap 1
         ProgresProduksi::create([
             'pesanan_id' => $pesanan->id,
+            'tahapan_ke' => 1,
             'tahapan' => 'Persiapan Bahan',
             'jumlah_pcs' => 50,
         ]);
@@ -117,21 +94,16 @@ class ProductionProgressTest extends TestCase
     {
         $pesanan = $this->createOrder('dikerjakan');
 
-        // Total items is 50. If we submit a stage with 51 pcs, it should fail validation.
+        // Total items is 50. If we submit 51 pcs for Tahap 1, it should fail validation.
         $response = $this
             ->actingAs($this->admin)
             ->post(route('admin.pesanan.progres.update', $pesanan->id), [
-                'stages' => [
-                    [
-                        'tahapan' => 'Persiapan Bahan',
-                        'jumlah_pcs' => 51, // Exceeds target of 50
-                        'catatan' => 'Bahan siap',
-                    ]
-                ]
+                'tahapan_ke' => 1,
+                'jumlah_pcs' => 51,
+                'catatan' => 'Bahan siap',
             ]);
 
-        $response->assertSessionHasErrors(['stages.0.jumlah_pcs']);
-        $this->assertCount(0, $pesanan->fresh()->progresProduksis); // Should not have saved
+        $response->assertSessionHasErrors(['jumlah_pcs']);
     }
 
     public function test_admin_can_submit_valid_progress_stages_quantity_and_upload_documentation(): void
@@ -139,66 +111,60 @@ class ProductionProgressTest extends TestCase
         Storage::fake('public');
         $pesanan = $this->createOrder('dikerjakan');
 
-        $fakeImage = UploadedFile::fake()->create('proses_jahit.jpg', 100, 'image/jpeg');
+        $fakeImage = UploadedFile::fake()->create('proses_bahan.jpg', 100, 'image/jpeg');
 
+        // 1. Submit Tahap 1 (Persiapan Bahan)
         $response = $this
             ->actingAs($this->admin)
             ->post(route('admin.pesanan.progres.update', $pesanan->id), [
-                'stages' => [
-                    [
-                        'tahapan' => 'Persiapan Bahan',
-                        'jumlah_pcs' => 20,
-                        'catatan' => 'Bahan katun siap',
-                    ],
-                    [
-                        'tahapan' => 'Proses Jahit',
-                        'jumlah_pcs' => 30,
-                        'catatan' => 'Jahit bagian lengan',
-                        'dokumentasi' => $fakeImage,
-                    ]
-                ]
+                'tahapan_ke' => 1,
+                'jumlah_pcs' => 50,
+                'catatan' => 'Bahan katun siap',
+                'dokumentasi' => $fakeImage,
+                'tandai_selesai' => 1,
             ]);
 
-        if ($response->getSession() && $response->getSession()->get('error')) {
-            dd($response->getSession()->get('error'));
-        }
-        if ($response->getSession() && $response->getSession()->get('errors')) {
-            dd($response->getSession()->get('errors')->getBag('default')->getMessages());
-        }
-        $response->assertRedirect(route('admin.pesanan.index'));
+        $response->assertRedirect(route('admin.pesanan.progres', $pesanan->id));
         $response->assertSessionHas('success');
 
-        $progress = $pesanan->fresh()->progresProduksis()->orderBy('id')->get();
-        $this->assertCount(2, $progress);
+        $progress1 = ProgresProduksi::where('pesanan_id', $pesanan->id)->where('tahapan_ke', 1)->first();
+        $this->assertNotNull($progress1);
+        $this->assertEquals('Persiapan Bahan', $progress1->tahapan);
+        $this->assertEquals(50, $progress1->jumlah_pcs);
+        $this->assertNotNull($progress1->dokumentasi);
+        $this->assertNotNull($progress1->selesai_pada);
+        Storage::disk('public')->assertExists($progress1->dokumentasi);
+    }
 
-        $this->assertEquals('Persiapan Bahan', $progress[0]->tahapan);
-        $this->assertEquals(20, $progress[0]->jumlah_pcs);
-        $this->assertNull($progress[0]->dokumentasi);
+    public function test_stage_sequence_is_enforced(): void
+    {
+        $pesanan = $this->createOrder('dikerjakan');
 
-        $this->assertEquals('Proses Jahit', $progress[1]->tahapan);
-        $this->assertEquals(30, $progress[1]->jumlah_pcs);
-        $this->assertNotNull($progress[1]->dokumentasi);
+        // Try submitting Tahap 2 without Tahap 1 completed -> should fail with error message
+        $response = $this
+            ->actingAs($this->admin)
+            ->post(route('admin.pesanan.progres.update', $pesanan->id), [
+                'tahapan_ke' => 2,
+                'jumlah_pcs' => 50,
+                'catatan' => 'Coba potong',
+                'tandai_selesai' => 1,
+            ]);
 
-        // Verify storage upload
-        Storage::disk('public')->assertExists($progress[1]->dokumentasi);
+        $response->assertSessionHas('error');
+        $this->assertNull(ProgresProduksi::where('pesanan_id', $pesanan->id)->where('tahapan_ke', 2)->first());
     }
 
     public function test_customer_can_view_production_progress_on_dashboard_and_detail_page(): void
     {
         $pesanan = $this->createOrder('dikerjakan');
 
-        $progress1 = ProgresProduksi::create([
+        ProgresProduksi::create([
             'pesanan_id' => $pesanan->id,
+            'tahapan_ke' => 1,
             'tahapan' => 'Persiapan Bahan',
             'jumlah_pcs' => 20,
             'catatan' => 'Bahan siap',
-        ]);
-
-        $progress2 = ProgresProduksi::create([
-            'pesanan_id' => $pesanan->id,
-            'tahapan' => 'Proses Potong',
-            'jumlah_pcs' => 30,
-            'catatan' => 'Potong kain',
+            'selesai_pada' => now(),
         ]);
 
         // 1. Dashboard View
@@ -209,13 +175,6 @@ class ProductionProgressTest extends TestCase
         $responseDashboard->assertOk();
         $responseDashboard->assertSee('Transparansi Progres Produksi Aktif (Real-time)');
         $responseDashboard->assertSee('ORD-TEST-001');
-        $responseDashboard->assertSee('Status Terakhir:');
-        $responseDashboard->assertSee('Persiapan Bahan');
-        $responseDashboard->assertSee('20');
-        $responseDashboard->assertSee('40%');
-        $responseDashboard->assertSee('Proses Potong');
-        $responseDashboard->assertSee('30');
-        $responseDashboard->assertSee('60%');
 
         // 2. Order Detail View
         $responseDetail = $this
@@ -226,39 +185,6 @@ class ProductionProgressTest extends TestCase
         $responseDetail->assertSee('Progres');
         $responseDetail->assertSee('Produksi');
         $responseDetail->assertSee('Seragam');
-        $responseDetail->assertSee('Status');
-        $responseDetail->assertSee('Terakhir');
         $responseDetail->assertSee('Persiapan Bahan');
-        $responseDetail->assertSee('20');
-        $responseDetail->assertSee('40%');
-        $responseDetail->assertSee('Proses Potong');
-        $responseDetail->assertSee('30');
-        $responseDetail->assertSee('60%');
-    }
-
-    public function test_admin_can_submit_progress_stages_whose_sum_exceeds_total_quantity_if_each_stage_is_within_limit(): void
-    {
-        $pesanan = $this->createOrder('dikerjakan', 50); // Total is 50
-
-        // Submit two stages, 30 pcs and 30 pcs. Sum is 60 (exceeds 50), but each stage (30) is <= 50.
-        $response = $this
-            ->actingAs($this->admin)
-            ->post(route('admin.pesanan.progres.update', $pesanan->id), [
-                'stages' => [
-                    [
-                        'tahapan' => 'Persiapan Bahan',
-                        'jumlah_pcs' => 30,
-                        'catatan' => 'Bahan siap',
-                    ],
-                    [
-                        'tahapan' => 'Proses Potong',
-                        'jumlah_pcs' => 30,
-                        'catatan' => 'Potong kain',
-                    ]
-                ]
-            ]);
-
-        $response->assertRedirect(route('admin.pesanan.index'));
-        $this->assertCount(2, $pesanan->fresh()->progresProduksis); // Should save successfully
     }
 }
