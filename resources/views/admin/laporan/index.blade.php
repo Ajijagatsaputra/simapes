@@ -309,6 +309,11 @@
             font-weight: 600;
             padding: 0 4px;
         }
+
+        .sch-option:hover {
+            background: #f0f6ff !important;
+            color: #1e40af !important;
+        }
     </style>
 @endpush
 
@@ -343,14 +348,33 @@
                     <input class="form-input" type="date" name="end_date" id="end_date" value="{{ $endDate }}" required>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="sekolah">Per Sekolah / Instansi</label>
-                    <select class="form-select" name="sekolah" id="sekolah">
-                        <option value="semua" {{ $sekolahSelected == 'semua' ? 'selected' : '' }}>Semua Sekolah</option>
+                <div class="form-group" style="position: relative;">
+                    <label class="form-label" for="sekolahInput">Per Sekolah / Instansi</label>
+                    <input type="hidden" name="sekolah" id="sekolahVal" value="{{ $sekolahSelected }}">
+                    <div style="position: relative;">
+                        <input type="text" id="sekolahInput" class="form-input" placeholder="🔍 Cari nama sekolah / instansi..." 
+                            value="{{ $sekolahSelected === 'semua' ? '' : $sekolahSelected }}" autocomplete="off" 
+                            style="padding-right: 28px;">
+                        <button type="button" id="btnClearSekolah" 
+                            style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #8ca0bf; font-size: 0.85rem; cursor: pointer; display: {{ $sekolahSelected !== 'semua' && $sekolahSelected ? 'block' : 'none' }};">
+                            ✕
+                        </button>
+                    </div>
+
+                    {{-- Autocomplete Dropdown List Overlay --}}
+                    <div id="sekolahDropdown" 
+                        style="display: none; position: absolute; left: 0; right: 0; top: 100%; z-index: 100; background: #fff; border: 1.5px solid #dde8f8; border-radius: 10px; max-height: 220px; overflow-y: auto; box-shadow: 0 8px 24px rgba(26, 43, 74, 0.14); margin-top: 4px;">
+                        <div class="sch-option" data-value="semua" 
+                            style="padding: 9px 12px; font-size: 0.82rem; cursor: pointer; color: #4A90D9; font-weight: 700; border-bottom: 1px dashed #edf2f7;">
+                            🏫 Semua Sekolah / Instansi
+                        </div>
                         @foreach($listSekolah as $sch)
-                            <option value="{{ $sch }}" {{ $sekolahSelected == $sch ? 'selected' : '' }}>{{ $sch }}</option>
+                            <div class="sch-option" data-value="{{ $sch }}" 
+                                style="padding: 9px 12px; font-size: 0.82rem; cursor: pointer; color: #1a2b4a; transition: background 0.15s;">
+                                {{ $sch }}
+                            </div>
                         @endforeach
-                    </select>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -517,3 +541,75 @@
 
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('sekolahInput');
+            const valInput = document.getElementById('sekolahVal');
+            const dropdown = document.getElementById('sekolahDropdown');
+            const clearBtn = document.getElementById('btnClearSekolah');
+
+            if (!input || !dropdown) return;
+
+            const options = dropdown.querySelectorAll('.sch-option');
+
+            function filterOptions() {
+                const query = input.value.toLowerCase().trim();
+
+                options.forEach(opt => {
+                    const val = opt.getAttribute('data-value');
+                    const text = opt.innerText.toLowerCase();
+
+                    if (val === 'semua') {
+                        opt.style.display = 'block';
+                    } else if (text.includes(query)) {
+                        opt.style.display = 'block';
+                    } else {
+                        opt.style.display = 'none';
+                    }
+                });
+
+                dropdown.style.display = 'block';
+                clearBtn.style.display = input.value.length > 0 ? 'block' : 'none';
+            }
+
+            input.addEventListener('focus', function() {
+                filterOptions();
+            });
+
+            input.addEventListener('input', function() {
+                filterOptions();
+                valInput.value = input.value.trim() === '' ? 'semua' : input.value.trim();
+            });
+
+            options.forEach(opt => {
+                opt.addEventListener('click', function() {
+                    const val = this.getAttribute('data-value');
+                    if (val === 'semua') {
+                        input.value = '';
+                        valInput.value = 'semua';
+                    } else {
+                        input.value = val;
+                        valInput.value = val;
+                    }
+                    dropdown.style.display = 'none';
+                    clearBtn.style.display = input.value.length > 0 ? 'block' : 'none';
+                });
+            });
+
+            clearBtn.addEventListener('click', function() {
+                input.value = '';
+                valInput.value = 'semua';
+                clearBtn.style.display = 'none';
+                dropdown.style.display = 'none';
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target) && !dropdown.contains(e.target) && !clearBtn.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        });
+    </script>
+@endpush

@@ -114,7 +114,7 @@ class LaporanController extends Controller
         $query = Pesanan::with(['user', 'details.produk'])
             ->whereBetween('tanggal_pesanan', [$startDate, $endDate]);
 
-        if ($sekolahSelected !== 'semua') {
+        if ($sekolahSelected && $sekolahSelected !== 'semua') {
             $query->whereHas('user', function ($q) use ($sekolahSelected) {
                 $q->where('nama_sekolah', $sekolahSelected);
             });
