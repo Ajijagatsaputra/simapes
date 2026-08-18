@@ -71,7 +71,7 @@ class DashboardController extends Controller
             }
         }
 
-        // Hitung status pembayaran per item breakdown
+        // Hitung status pembayaran & alur pesanan per item breakdown
         foreach ($breakdownRaw as &$item) {
             if ($item['total_terbayar_pcs'] == 0) {
                 $item['status_pembayaran'] = 'Belum dibayar';
@@ -80,6 +80,14 @@ class DashboardController extends Controller
             } else {
                 $pct = round(($item['total_terbayar_pcs'] / $item['total_pesanan']) * 100);
                 $item['status_pembayaran'] = "DP {$pct}%";
+            }
+
+            if ($item['selesai'] >= $item['total_pesanan']) {
+                $item['status_alur_pesanan'] = 'Selesai';
+            } elseif ($item['sedang_diproses'] > 0) {
+                $item['status_alur_pesanan'] = 'Sedang Dikerjakan';
+            } else {
+                $item['status_alur_pesanan'] = 'Menunggu Antrean';
             }
         }
 

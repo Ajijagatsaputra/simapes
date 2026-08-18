@@ -875,10 +875,8 @@
                                 <tr>
                                     <th>Jenis Produk</th>
                                     <th style="text-align: center;">Ukuran</th>
-                                    <th style="text-align: center;">Total Pesanan</th>
-                                    <th style="text-align: center;">Belum Dikerjakan</th>
-                                    <th style="text-align: center;">Sedang Diproses</th>
-                                    <th style="text-align: center;">Selesai</th>
+                                    <th style="text-align: center;">Total Item (Pcs)</th>
+                                    <th style="text-align: center;">Status Alur Pesanan</th>
                                     <th style="text-align: center;">Status Pembayaran</th>
                                 </tr>
                             </thead>
@@ -888,19 +886,22 @@
                                         <td style="font-weight: 700; color: #1a2b4a;">{{ $item['produk'] }}</td>
                                         <td style="text-align: center;">
                                             <span class="status-badge"
-                                                style="background:#e8f0fd; color:#4a90d9; border:none; padding: 2px 6px; font-weight:600;">
+                                                style="background:#e8f0fd; color:#4a90d9; border:none; padding: 2px 8px; font-weight:700;">
                                                 {{ $item['ukuran'] }}
                                             </span>
                                         </td>
-                                        <td style="text-align: center; font-weight: 600;">{{ $item['total_pesanan'] }} Pcs</td>
-                                        <td style="text-align: center; color: #ef4444; font-weight: 600;">
-                                            {{ $item['belum_dikerjakan'] }} Pcs
+                                        <td style="text-align: center; font-weight: 700; color: #1a2b4a;">
+                                            {{ $item['total_pesanan'] }} Pcs
                                         </td>
-                                        <td style="text-align: center; color: #d97706; font-weight: 600;">
-                                            {{ $item['sedang_diproses'] }} Pcs
+                                        <td style="text-align: center;">
+                                            @if(($item['status_alur_pesanan'] ?? '') === 'Selesai')
+                                                <span class="status-badge badge-selesai">Selesai</span>
+                                            @elseif(($item['status_alur_pesanan'] ?? '') === 'Sedang Dikerjakan')
+                                                <span class="status-badge badge-dikerjakan">Sedang Dikerjakan</span>
+                                            @else
+                                                <span class="status-badge badge-pending">Menunggu Antrean</span>
+                                            @endif
                                         </td>
-                                        <td style="text-align: center; color: #10b981; font-weight: 600;">{{ $item['selesai'] }}
-                                            Pcs</td>
                                         <td style="text-align: center;">
                                             @php
                                                 $pbClass = 'pb-belum';
@@ -915,7 +916,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" style="text-align: center; padding: 24px; color: #8ca0bf;">
+                                        <td colspan="5" style="text-align: center; padding: 24px; color: #8ca0bf;">
                                             Belum ada detail pengerjaan produksi seragam.
                                         </td>
                                     </tr>
@@ -949,6 +950,7 @@
                                 <tr>
                                     <th>No. Pesanan</th>
                                     <th>Tanggal</th>
+                                    <th>Target Pengambilan</th>
                                     <th style="text-align: right;">Total Bayar</th>
                                     <th style="text-align: center;">Status</th>
                                     <th style="width: 40px;"></th>
@@ -959,6 +961,17 @@
                                     <tr>
                                         <td style="font-weight: 700; color: #1a2b4a;">{{ $p->no_pesanan }}</td>
                                         <td>{{ \Carbon\Carbon::parse($p->tanggal_pesanan)->isoFormat('DD MMM YYYY') }}</td>
+                                        <td>
+                                            @if($p->target_tanggal_pengambilan)
+                                                <span
+                                                    style="font-weight: 600; color: #1e40af; background: #eff6ff; padding: 2px 7px; border-radius: 6px; font-size: 0.75rem; border: 1px solid #bfdbfe;">
+                                                    📅
+                                                    {{ \Carbon\Carbon::parse($p->target_tanggal_pengambilan)->isoFormat('DD MMM YYYY') }}
+                                                </span>
+                                            @else
+                                                <span style="color: #94a3b8; font-style: italic; font-size: 0.75rem;">Pending</span>
+                                            @endif
+                                        </td>
                                         <td style="text-align: right; font-weight: 700; color: #4A90D9;">
                                             Rp {{ number_format($p->total_harga, 0, ',', '.') }}
                                         </td>
@@ -988,7 +1001,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" style="text-align: center; padding: 24px; color: #8ca0bf;">
+                                        <td colspan="6" style="text-align: center; padding: 24px; color: #8ca0bf;">
                                             Belum ada transaksi pemesanan seragam.
                                         </td>
                                     </tr>

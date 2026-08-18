@@ -105,7 +105,7 @@ class CustomerDashboardTest extends TestCase
 
         // Verify HTML contents
         $response->assertSee('Transparansi Status Pengerjaan (Pcs)');
-        $response->assertSee('30 Pcs');
+        $response->assertSee('60 Pcs');
         $response->assertSee('20 Pcs');
         $response->assertSee('10 Pcs');
 
