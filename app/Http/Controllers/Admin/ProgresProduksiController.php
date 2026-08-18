@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pesanan;
 use App\Models\ProgresProduksi;
 use App\Models\ActivityLog;
+use App\Models\StatusLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -49,10 +50,10 @@ class ProgresProduksiController extends Controller
 
         // Validasi: hanya tahap yang dikirim lewat POST
         $request->validate([
-            'tahapan_ke'   => 'required|integer|between:1,5',
-            'jumlah_pcs'   => "required|integer|min:0|max:{$totalPcs}",
-            'dokumentasi'  => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
-            'catatan'      => 'nullable|string|max:1000',
+            'tahapan_ke' => 'required|integer|between:1,5',
+            'jumlah_pcs' => "required|integer|min:0|max:{$totalPcs}",
+            'dokumentasi' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'catatan' => 'nullable|string|max:1000',
             'tandai_selesai' => 'nullable|boolean',
         ], [
             'jumlah_pcs.max' => "Jumlah pcs tidak boleh melebihi total target pesanan ({$totalPcs} pcs).",
@@ -81,9 +82,14 @@ class ProgresProduksiController extends Controller
                 'tahapan_ke' => $ke,
             ]);
 
-            $progres->tahapan    = self::TAHAPAN[$ke];
+            $catatan = $request->catatan;
+            if ($ke === 4 && empty(trim($catatan ?? ''))) {
+                $catatan = 'Pesanan sudah selesai, silahkan lakukan pelunasan agar pesanan dapat diambil';
+            }
+
+            $progres->tahapan = self::TAHAPAN[$ke];
             $progres->jumlah_pcs = $request->jumlah_pcs;
-            $progres->catatan    = $request->catatan;
+            $progres->catatan = $catatan;
 
             // Tandai selesai
             $tandaiSelesai = filter_var($request->tandai_selesai, FILTER_VALIDATE_BOOLEAN);
@@ -104,6 +110,16 @@ class ProgresProduksiController extends Controller
             }
 
             $progres->save();
+
+            if ($ke === 4) {
+                StatusLog::create([
+                    'pesanan_id' => $pesanan->id,
+                    'status' => $pesanan->status,
+                    'label' => 'Packing / Finishing Selesai',
+                    'catatan' => $catatan,
+                    'created_at' => now(),
+                ]);
+            }
 
             ActivityLog::log(
                 'Update progres produksi Tahap ' . $ke . ' (' . self::TAHAPAN[$ke] . ') pesanan: ' . $pesanan->no_pesanan,

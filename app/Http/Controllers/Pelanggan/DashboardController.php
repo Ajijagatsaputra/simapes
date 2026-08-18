@@ -88,6 +88,17 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
+        // Pesanan yang sudah selesai/finishing dan membutuhkan pelunasan
+        $pesananSiapPelunasan = Pesanan::where('user_id', $user->id)
+            ->whereIn('status', ['dikerjakan', 'selesai'])
+            ->whereHas('progresProduksis', function ($q) {
+                $q->where('tahapan_ke', '>=', 4);
+            })
+            ->where('sisa_tagihan', '>', 0)
+            ->with(['progresProduksis', 'details.produk'])
+            ->latest()
+            ->get();
+
         return view('pelanggan.dashboard', compact(
             'totalPesanan',
             'pesananDiproses',
@@ -99,7 +110,8 @@ class DashboardController extends Controller
             'pcsSedangDiproses',
             'pcsSelesai',
             'breakdown',
-            'produksiBerjalan'
+            'produksiBerjalan',
+            'pesananSiapPelunasan'
         ));
     }
 }

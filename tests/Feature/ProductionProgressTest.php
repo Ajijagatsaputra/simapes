@@ -7,6 +7,7 @@ use App\Models\Pesanan;
 use App\Models\DetailPesanan;
 use App\Models\Produk;
 use App\Models\ProgresProduksi;
+use App\Http\Controllers\Admin\ProgresProduksiController;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -186,5 +187,48 @@ class ProductionProgressTest extends TestCase
         $responseDetail->assertSee('Produksi');
         $responseDetail->assertSee('Seragam');
         $responseDetail->assertSee('Persiapan Bahan');
+    }
+
+    public function test_finishing_stage_automatically_fills_catatan_and_triggers_settlement_notification_on_dashboard(): void
+    {
+        $pesanan = $this->createOrder('dikerjakan');
+
+        // Complete stages 1, 2, 3
+        for ($i = 1; $i <= 3; $i++) {
+            ProgresProduksi::create([
+                'pesanan_id' => $pesanan->id,
+                'tahapan_ke' => $i,
+                'tahapan' => ProgresProduksiController::TAHAPAN[$i],
+                'jumlah_pcs' => 50,
+                'selesai_pada' => now(),
+            ]);
+        }
+
+        // Admin updates Tahap 4 (Packing / Finishing) with empty catatan
+        $response = $this
+            ->actingAs($this->admin)
+            ->post(route('admin.pesanan.progres.update', $pesanan->id), [
+                'tahapan_ke' => 4,
+                'jumlah_pcs' => 50,
+                'catatan' => '',
+                'tandai_selesai' => 1,
+            ]);
+
+        $response->assertRedirect(route('admin.pesanan.progres', $pesanan->id));
+
+        // Assert automatic note was set
+        $progress4 = ProgresProduksi::where('pesanan_id', $pesanan->id)->where('tahapan_ke', 4)->first();
+        $this->assertNotNull($progress4);
+        $this->assertEquals('Pesanan sudah selesai, silahkan lakukan pelunasan agar pesanan dapat diambil', $progress4->catatan);
+
+        // Assert customer dashboard shows Finishing & Settlement notification banner
+        $responseDashboard = $this
+            ->actingAs($this->customer)
+            ->get(route('pelanggan.dashboard'));
+
+        $responseDashboard->assertOk();
+        $responseDashboard->assertSee('Notifikasi Penyelesaian');
+        $responseDashboard->assertSee('Pesanan sudah selesai, silahkan lakukan pelunasan agar pesanan dapat diambil');
+        $responseDashboard->assertSee('Sisa Tagihan Pelunasan');
     }
 }

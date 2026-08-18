@@ -356,8 +356,14 @@
 
                             <div style="margin-top: 8px;">
                                 <label class="form-label" style="font-size:0.75rem; font-weight:600; color:#5a7090;">Catatan Pengerjaan</label>
-                                <input type="text" name="catatan" class="form-input" placeholder="Tulis catatan tahapan ini..." 
-                                    value="{{ old('catatan', $slot->catatan ?? '') }}" {{ $isLocked ? 'disabled' : '' }} style="padding: 6px 10px; font-size: 0.8rem;">
+                                @php
+                                    $defaultCatatan = $slot->catatan ?? '';
+                                    if ($ke === 4 && empty($defaultCatatan)) {
+                                        $defaultCatatan = 'Pesanan sudah selesai, silahkan lakukan pelunasan agar pesanan dapat diambil';
+                                    }
+                                @endphp
+                                <input type="text" name="catatan" class="form-input" placeholder="{{ $ke === 4 ? 'Pesanan sudah selesai, silahkan lakukan pelunasan agar pesanan dapat diambil' : 'Tulis catatan tahapan ini...' }}" 
+                                    value="{{ old('catatan', $defaultCatatan) }}" {{ $isLocked ? 'disabled' : '' }} style="padding: 6px 10px; font-size: 0.8rem;">
                             </div>
 
                             @if($slot && $slot->dokumentasi)
