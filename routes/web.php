@@ -55,7 +55,6 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/pesanan', [Admin\PesananController::class, 'store'])->name('pesanan.store');
         Route::get('/pesanan/{id}/nota', [Admin\PesananController::class, 'nota'])->name('pesanan.nota');
         Route::patch('/pesanan/{id}/status', [Admin\PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
-        Route::delete('/pesanan/{id}', [Admin\PesananController::class, 'destroy'])->name('pesanan.destroy');
 
         // Progres Produksi Pesanan
         Route::get('/pesanan/{id}/progres', [Admin\ProgresProduksiController::class, 'show'])->name('pesanan.progres');

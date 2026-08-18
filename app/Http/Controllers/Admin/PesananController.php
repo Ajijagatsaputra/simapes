@@ -34,6 +34,7 @@ class PesananController extends Controller
         $totalDiproses = (clone $query)->where('status', 'diproses')->count();
         $totalDikerjakan = (clone $query)->where('status', 'dikerjakan')->count();
         $totalSelesai = (clone $query)->where('status', 'selesai')->count();
+        $totalBatal = (clone $query)->where('status', 'batal')->count();
 
         if ($request->filled('status') && $request->status !== 'semua') {
             $query->where('status', $request->status);
@@ -50,6 +51,7 @@ class PesananController extends Controller
             'totalDiproses',
             'totalDikerjakan',
             'totalSelesai',
+            'totalBatal',
             'pelanggan',
             'produks'
         ));
@@ -60,7 +62,7 @@ class PesananController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'tanggal_pesanan' => 'required|date',
-            'status' => 'required|in:pending,diproses,dikerjakan,selesai',
+            'status' => 'required|in:pending,diproses,dikerjakan,selesai,batal',
             'items' => 'required|array|min:1',
             'items.*.produk_id' => 'required|exists:produks,id',
             'items.*.ukuran' => 'required|in:S,M,L,XL,XXL,3XL,4XL,5XL',
@@ -107,10 +109,29 @@ class PesananController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $request->validate(['status' => 'required|in:pending,diproses,dikerjakan,selesai']);
+        $request->validate(['status' => 'required|in:pending,diproses,dikerjakan,selesai,batal']);
         $pesanan = Pesanan::findOrFail($id);
+
+        // Validasi: Pembayaran DP & Akses Pengerjaan (diproses, dikerjakan, selesai)
+        if (in_array($request->status, ['diproses', 'dikerjakan', 'selesai']) && ($pesanan->status_pembayaran ?? 'belum_bayar') === 'belum_bayar') {
+            $msg = 'Status pengerjaan tidak dapat diubah ke ' . ucfirst($request->status) . ' karena pelanggan belum membayar DP.';
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $msg,
+                    'current_status' => $pesanan->status,
+                ], 422);
+            }
+            return redirect()->back()->with('error', $msg);
+        }
+
         $pesanan->update(['status' => $request->status]);
-        ActivityLog::log('Mengubah status pesanan ' . $pesanan->no_pesanan . ' menjadi ' . $request->status, 'Pesanan', $pesanan->id);
+
+        if ($request->status === 'batal') {
+            ActivityLog::log('Membatalkan/menolak pesanan: ' . $pesanan->no_pesanan, 'Pesanan', $pesanan->id);
+        } else {
+            ActivityLog::log('Mengubah status pesanan ' . $pesanan->no_pesanan . ' menjadi ' . $request->status, 'Pesanan', $pesanan->id);
+        }
 
         if ($request->status === 'dikerjakan') {
             if (!$pesanan->progresProduksis()->exists()) {
@@ -134,16 +155,6 @@ class PesananController extends Controller
         }
 
         return redirect()->route('admin.pesanan.index')->with('success', 'Status pesanan berhasil diperbarui.');
-    }
-
-    public function destroy($id)
-    {
-        $pesanan = Pesanan::findOrFail($id);
-        $no = $pesanan->no_pesanan;
-        $pesanan->delete();
-        ActivityLog::log('Menghapus pesanan: ' . $no, 'Pesanan', $id);
-
-        return redirect()->route('admin.pesanan.index')->with('success', "Pesanan {$no} berhasil dihapus.");
     }
 
     public function nota($id)

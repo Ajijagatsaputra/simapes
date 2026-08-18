@@ -67,6 +67,9 @@ class AdminApprovalTest extends TestCase
             'no_pesanan' => 'ORD-999',
             'user_id' => $customer->id,
             'total_harga' => 50000,
+            'total_terbayar' => 25000,
+            'sisa_tagihan' => 25000,
+            'status_pembayaran' => 'dp',
             'tanggal_pesanan' => now(),
             'status' => 'pending',
         ]);
@@ -80,7 +83,7 @@ class AdminApprovalTest extends TestCase
         $response->assertSee('ORD-999');
         $response->assertSee('Menunggu Persetujuan');
 
-        // 2. Verify admin can update status to diproses
+        // 2. Verify admin can update status to diproses (DP sudah dibayar)
         $response = $this
             ->actingAs($admin)
             ->patch(route('admin.pesanan.updateStatus', $pesanan->id), [

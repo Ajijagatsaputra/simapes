@@ -68,6 +68,7 @@
     .status-select.status-diproses { background: #fff3e6; color: #f5a54a; }
     .status-select.status-dikerjakan { background: #e8f0fd; color: #4A90D9; }
     .status-select.status-selesai { background: #e8f8ee; color: #34c472; }
+    .status-select.status-batal { background: #fee2e2; color: #dc2626; }
     .status-select.loading { opacity: .5; cursor: wait; }
 
     /* ── Product List Item (Table) ── */
@@ -77,15 +78,15 @@
 
     /* ── Aksi ── */
     .aksi-wrap { display: flex; gap: 6px; justify-content: center; }
-    .btn-edit, .btn-hapus, .btn-status, .btn-print, .btn-bayar, .btn-progres { width: 30px; height: 30px; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .15s, transform .15s; text-decoration: none; }
+    .btn-edit, .btn-batal-aksi, .btn-status, .btn-print, .btn-bayar, .btn-progres { width: 30px; height: 30px; border: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity .15s, transform .15s; text-decoration: none; }
     .btn-status { background: #e8f0fd; color: #4A90D9; }
     .btn-edit  { background: #4A90D9; color: #fff; }
-    .btn-hapus { background: #e05a5a; color: #fff; }
+    .btn-batal-aksi { background: #ef4444; color: #fff; }
     .btn-print { background: #8a63d2; color: #fff; text-decoration: none; }
     .btn-bayar { background: #10b981; color: #fff; text-decoration: none; }
     .btn-progres { background: #eab308; color: #fff; }
     .btn-progres.disabled { background: #e2e8f4; color: #a0aec0; cursor: not-allowed; pointer-events: none; }
-    .btn-edit:hover, .btn-hapus:hover, .btn-status:hover, .btn-print:hover, .btn-bayar:hover, .btn-progres:hover { opacity: .85; transform: scale(1.08); }
+    .btn-edit:hover, .btn-batal-aksi:hover, .btn-status:hover, .btn-print:hover, .btn-bayar:hover, .btn-progres:hover { opacity: .85; transform: scale(1.08); }
 
     /* Payment Status */
     .pay-status { display:inline-flex; padding:3px 7px; border-radius:12px; font-size:.65rem; font-weight:700; }
@@ -285,6 +286,7 @@
                             <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>Diproses</option>
                             <option value="dikerjakan" {{ request('status') == 'dikerjakan' ? 'selected' : '' }}>Dikerjakan</option>
                             <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                            <option value="batal" {{ request('status') == 'batal' ? 'selected' : '' }}>Batal / Ditolak</option>
                         </select>
 
                         <input type="date" name="tanggal" class="filter-select" value="{{ request('tanggal') }}" onchange="this.form.submit()">
@@ -364,12 +366,14 @@
                             <select
                                 class="status-select status-{{ $p->status }}"
                                 data-id="{{ $p->id }}"
+                                data-current="{{ $p->status }}"
                                 data-url="{{ route('admin.pesanan.updateStatus', $p->id) }}"
                                 onchange="updateStatusAjax(this)">
-                                <option value="pending"   {{ $p->status === 'pending'    ? 'selected' : '' }}>Pending</option>
-                                <option value="diproses"  {{ $p->status === 'diproses'   ? 'selected' : '' }}>Diproses</option>
+                                <option value="pending"    {{ $p->status === 'pending'    ? 'selected' : '' }}>Pending</option>
+                                <option value="diproses"   {{ $p->status === 'diproses'   ? 'selected' : '' }}>Diproses</option>
                                 <option value="dikerjakan" {{ $p->status === 'dikerjakan' ? 'selected' : '' }}>Dikerjakan</option>
-                                <option value="selesai"   {{ $p->status === 'selesai'    ? 'selected' : '' }}>Selesai</option>
+                                <option value="selesai"    {{ $p->status === 'selesai'    ? 'selected' : '' }}>Selesai</option>
+                                <option value="batal"      {{ $p->status === 'batal'      ? 'selected' : '' }}>Batal</option>
                             </select>
                         </td>
                         <td class="center">
@@ -387,19 +391,17 @@
                                     </svg>
                                 </a>
 
-                                <form method="POST" action="{{ route('admin.pesanan.destroy', $p->id) }}" class="form-hapus" style="display:inline">
-                                    @csrf @method('DELETE')
-                                    <button type="button" class="btn-hapus" title="Hapus"
+                                @if($p->status !== 'batal')
+                                    <button type="button" class="btn-batal-aksi" title="Batal / Tolak Pesanan"
                                         data-nama="{{ $p->no_pesanan }}"
-                                        onclick="confirmHapus(this.closest('form'), this.dataset.nama)">
+                                        data-url="{{ route('admin.pesanan.updateStatus', $p->id) }}"
+                                        onclick="confirmBatalPesanan(this)">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="3 6 5 6 21 6"/>
-                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                            <path d="M10 11v6M14 11v6"/>
-                                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
                                         </svg>
                                     </button>
-                                </form>
+                                @endif
 
                                 <a href="{{ route('admin.pesanan.pembayaran', $p->id) }}" class="btn-bayar" title="Kelola Pembayaran">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -538,6 +540,7 @@
                             <option value="diproses" selected>Diproses</option>
                             <option value="dikerjakan">Dikerjakan</option>
                             <option value="selesai">Selesai</option>
+                            <option value="batal">Batal / Ditolak</option>
                         </select>
                     </div>
                 </div>
@@ -571,6 +574,7 @@
 
     function updateStatusAjax(selectEl) {
         const newStatus = selectEl.value;
+        const previousStatus = selectEl.dataset.current || 'pending';
         const url = selectEl.dataset.url;
 
         // Update visual class immediately
@@ -586,19 +590,52 @@
             },
             body: JSON.stringify({ status: newStatus, _method: 'PATCH' }),
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
+        .then(async res => {
+            const data = await res.json();
+            if (res.ok && data.success) {
                 selectEl.className = 'status-select status-' + newStatus;
+                selectEl.dataset.current = newStatus;
                 showToast(data.message, 'success');
             } else {
-                showToast('Gagal mengubah status.', 'error');
-                selectEl.className = 'status-select status-' + (selectEl.dataset.current || 'pending');
+                showToast(data.message || 'Gagal mengubah status pesanan.', 'error');
+                selectEl.value = previousStatus;
+                selectEl.className = 'status-select status-' + previousStatus;
             }
         })
         .catch(() => {
             showToast('Terjadi kesalahan saat menghubungi server.', 'error');
-            selectEl.className = 'status-select status-' + (selectEl.dataset.current || 'pending');
+            selectEl.value = previousStatus;
+            selectEl.className = 'status-select status-' + previousStatus;
+        });
+    }
+
+    function confirmBatalPesanan(btn) {
+        const noPesanan = btn.dataset.nama;
+        const url = btn.dataset.url;
+
+        confirmBatalAksi(noPesanan, function () {
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-HTTP-Method-Override': 'PATCH',
+                },
+                body: JSON.stringify({ status: 'batal', _method: 'PATCH' }),
+            })
+            .then(async res => {
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast(data.message, 'success');
+                    setTimeout(() => window.location.reload(), 1200);
+                } else {
+                    showToast(data.message || 'Gagal membatalkan pesanan.', 'error');
+                }
+            })
+            .catch(() => {
+                showToast('Terjadi kesalahan saat menghubungi server.', 'error');
+            });
         });
     }
 

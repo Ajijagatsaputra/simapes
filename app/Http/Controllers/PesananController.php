@@ -170,24 +170,22 @@ class PesananController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $request->validate(['status' => 'required|in:diproses,dikerjakan,selesai']);
+        $request->validate(['status' => 'required|in:pending,diproses,dikerjakan,selesai,batal']);
         $pesanan = Pesanan::findOrFail($id);
+
+        if (in_array($request->status, ['diproses', 'dikerjakan', 'selesai']) && ($pesanan->status_pembayaran ?? 'belum_bayar') === 'belum_bayar') {
+            return redirect()->back()->with('error', 'Status pengerjaan tidak dapat diubah ke ' . ucfirst($request->status) . ' karena pelanggan belum membayar DP.');
+        }
+
         $pesanan->update(['status' => $request->status]);
 
-        ActivityLog::log('Mengubah status pesanan ' . $pesanan->no_pesanan . ' menjadi ' . $request->status, 'Pesanan', $pesanan->id);
+        if ($request->status === 'batal') {
+            ActivityLog::log('Membatalkan/menolak pesanan: ' . $pesanan->no_pesanan, 'Pesanan', $pesanan->id);
+        } else {
+            ActivityLog::log('Mengubah status pesanan ' . $pesanan->no_pesanan . ' menjadi ' . $request->status, 'Pesanan', $pesanan->id);
+        }
 
-        return redirect()->route('pesanan.index')->with('success', 'Status pesanan berhasil diperbarui.');
-    }
-
-    public function destroy($id)
-    {
-        $pesanan = Pesanan::findOrFail($id);
-        $no = $pesanan->no_pesanan;
-        $pesanan->delete();
-
-        ActivityLog::log('Menghapus pesanan: ' . $no, 'Pesanan', $id);
-
-        return redirect()->route('pesanan.index')->with('success', "Pesanan {$no} berhasil dihapus.");
+        return redirect()->back()->with('success', 'Status pesanan berhasil diperbarui.');
     }
 
     public function nota($id)

@@ -329,6 +329,25 @@
             transform: translateY(-1px);
         }
 
+        .confirm-btn-batal-aksi {
+            flex: 1;
+            padding: 11px;
+            background: #f97316;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: .85rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background .2s, transform .15s;
+        }
+
+        .confirm-btn-batal-aksi:hover {
+            background: #ea6c0a;
+            transform: translateY(-1px);
+        }
+
         /* ── Mobile Top Bar ── */
         .mobile-header {
             display: none;
@@ -692,6 +711,55 @@
         function closeConfirm() {
             document.getElementById('confirmOverlay').classList.remove('show');
             _pendingForm = null;
+            // Restore modal ke gaya default (Hapus) setelah ditutup
+            if (typeof _restoreConfirmModal === 'function') {
+                setTimeout(_restoreConfirmModal, 250);
+            }
+        }
+
+        /**
+         * confirmBatalAksi(namaItem, onConfirm)
+         * Confirm modal premium untuk aksi Batal/Tolak — menggunakan overlay yang sama
+         * tapi dengan tema oranye dan ikon berbeda. onConfirm = callback setelah OK.
+         */
+        const _iconHapus = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+        const _iconBatal = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>`;
+
+        function _restoreConfirmModal() {
+            const iconWrap = document.querySelector('.confirm-icon-wrap');
+            const titleEl = document.querySelector('.confirm-title');
+            const okBtn = document.getElementById('confirmOkBtn');
+            iconWrap.style.background = '';
+            iconWrap.style.color = '';
+            iconWrap.innerHTML = _iconHapus;
+            titleEl.textContent = 'Hapus Data?';
+            okBtn.textContent = 'Ya, Hapus';
+            okBtn.className = 'confirm-btn-hapus';
+        }
+
+        function confirmBatalAksi(namaItem, onConfirm) {
+            const iconWrap = document.querySelector('.confirm-icon-wrap');
+            const titleEl = document.querySelector('.confirm-title');
+            const okBtn = document.getElementById('confirmOkBtn');
+
+            // Set orange / batal theme
+            iconWrap.style.background = '#fff7ed';
+            iconWrap.style.color = '#f97316';
+            iconWrap.innerHTML = _iconBatal;
+            titleEl.textContent = 'Batal / Tolak Pesanan?';
+            document.getElementById('confirmDesc').innerHTML = namaItem
+                ? `Pesanan <strong>"${namaItem}"</strong> akan ditandai sebagai <strong>Batal/Ditolak</strong>. Status dapat diubah kembali kapan saja.`
+                : 'Pesanan ini akan ditandai sebagai Batal/Ditolak.';
+            okBtn.textContent = 'Ya, Batalkan';
+            okBtn.className = 'confirm-btn-batal-aksi';
+
+            document.getElementById('confirmOverlay').classList.add('show');
+
+            okBtn.onclick = function () {
+                _restoreConfirmModal();
+                closeConfirm();
+                if (typeof onConfirm === 'function') onConfirm();
+            };
         }
 
         // Tutup modal jika klik overlay

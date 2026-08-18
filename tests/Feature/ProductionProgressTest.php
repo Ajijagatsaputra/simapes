@@ -48,6 +48,9 @@ class ProductionProgressTest extends TestCase
             'no_pesanan' => 'ORD-TEST-001',
             'user_id' => $this->customer->id,
             'total_harga' => $totalQty * 85000,
+            'total_terbayar' => ($totalQty * 85000) * 0.5,
+            'sisa_tagihan' => ($totalQty * 85000) * 0.5,
+            'status_pembayaran' => 'dp',
             'tanggal_pesanan' => now(),
             'status' => $status,
         ]);
