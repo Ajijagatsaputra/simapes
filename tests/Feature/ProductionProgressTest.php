@@ -229,6 +229,7 @@ class ProductionProgressTest extends TestCase
         $responseDashboard->assertOk();
         $responseDashboard->assertSee('Notifikasi Penyelesaian');
         $responseDashboard->assertSee('Pesanan sudah selesai, silahkan lakukan pelunasan agar pesanan dapat diambil');
-        $responseDashboard->assertSee('Sisa Tagihan Pelunasan');
+        $responseDashboard->assertSee('Sisa Tagihan');
     }
 }
+

@@ -26,6 +26,7 @@ class DashboardController extends Controller
             ->with('details.produk')
             ->get();
 
+        $pcsTotalSeluruhItem = 0;
         $pcsBelumDikerjakan = 0;
         $pcsSedangDiproses = 0;
         $pcsSelesai = 0;
@@ -49,6 +50,8 @@ class DashboardController extends Controller
 
                 $totalItem = $detail->total_item;
                 $jumlahTerbayar = $detail->jumlah_terbayar ?? 0;
+
+                $pcsTotalSeluruhItem += $totalItem;
 
                 if ($pesanan->status === 'selesai') {
                     $pcsSelesai += $totalItem;
@@ -106,6 +109,7 @@ class DashboardController extends Controller
             'pesananSelesai',
             'pesananTerbaru',
             'totalProduk',
+            'pcsTotalSeluruhItem',
             'pcsBelumDikerjakan',
             'pcsSedangDiproses',
             'pcsSelesai',

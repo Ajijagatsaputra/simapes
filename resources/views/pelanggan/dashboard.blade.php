@@ -508,15 +508,20 @@
 
         {{-- Finishing & Settlement Notification Banner --}}
         @if(isset($pesananSiapPelunasan) && $pesananSiapPelunasan->isNotEmpty())
-            <div style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1.5px solid #6ee7b7; border-radius: 16px; padding: 20px 24px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.12); margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+            <div
+                style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1.5px solid #6ee7b7; border-radius: 16px; padding: 20px 24px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.12); margin-bottom: 20px;">
+                <div
+                    style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <div style="width: 36px; height: 36px; border-radius: 10px; background: #10b981; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 800;">
+                        <div
+                            style="width: 36px; height: 36px; border-radius: 10px; background: #10b981; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 800;">
                             ✨
                         </div>
                         <div>
-                            <h3 style="font-size: 1rem; font-weight: 800; color: #065f46; margin: 0;">Notifikasi Penyelesaian & Tagihan Pelunasan</h3>
-                            <p style="font-size: 0.78rem; color: #047857; margin: 2px 0 0 0;">Pesanan Anda telah mencapai tahap akhir (Packing/Finishing). Silakan lakukan pelunasan agar pesanan dapat diambil.</p>
+                            <h3 style="font-size: 1rem; font-weight: 800; color: #065f46; margin: 0;">Notifikasi Penyelesaian &
+                                Tagihan Pelunasan</h3>
+                            <p style="font-size: 0.78rem; color: #047857; margin: 2px 0 0 0;">Pesanan Anda telah mencapai tahap
+                                akhir (Packing/Finishing). Silakan lakukan pelunasan agar pesanan dapat diambil.</p>
                         </div>
                     </div>
                 </div>
@@ -524,30 +529,36 @@
                 <div style="display: flex; flex-direction: column; gap: 14px;">
                     @foreach($pesananSiapPelunasan as $pFinishing)
                         @php
-                            $finishingStage = $pFinishing->progresProduksis->where('tahapan_ke', 4)->first() 
-                                            ?? $pFinishing->progresProduksis->where('tahapan_ke', 5)->first();
+                            $finishingStage = $pFinishing->progresProduksis->where('tahapan_ke', 4)->first()
+                                ?? $pFinishing->progresProduksis->where('tahapan_ke', 5)->first();
                         @endphp
                         <div style="background: #fff; border: 1px solid #a7f3d0; border-radius: 12px; padding: 16px;">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
                                 <div>
-                                    <span style="font-weight: 800; font-size: 0.92rem; color: #1a2b4a;">{{ $pFinishing->no_pesanan }}</span>
-                                    <span style="font-size: 0.75rem; color: #059669; font-weight: 700; margin-left: 8px; background: #e6fffa; padding: 2px 8px; border-radius: 6px;">
+                                    <span
+                                        style="font-weight: 800; font-size: 0.92rem; color: #1a2b4a;">{{ $pFinishing->no_pesanan }}</span>
+                                    <span
+                                        style="font-size: 0.75rem; color: #059669; font-weight: 700; margin-left: 8px; background: #e6fffa; padding: 2px 8px; border-radius: 6px;">
                                         Stage: {{ $finishingStage->tahapan ?? 'Packing / Finishing' }}
                                     </span>
                                 </div>
-                                <a href="{{ route('pelanggan.pesanan.show', $pFinishing->id) }}" style="background: #10b981; color: #fff; text-decoration: none; padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(16,185,129,0.2);">
+                                <a href="{{ route('pelanggan.pesanan.show', $pFinishing->id) }}"
+                                    style="background: #10b981; color: #fff; text-decoration: none; padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(16,185,129,0.2);">
                                     💳 Lakukan Pelunasan Sekarang
                                 </a>
                             </div>
 
                             @if($finishingStage && $finishingStage->catatan)
-                                <div style="font-size: 0.78rem; color: #064e3b; background: #f0fdf4; border-left: 3px solid #10b981; padding: 8px 12px; border-radius: 4px; margin-bottom: 10px;">
+                                <div
+                                    style="font-size: 0.78rem; color: #064e3b; background: #f0fdf4; border-left: 3px solid #10b981; padding: 8px 12px; border-radius: 4px; margin-bottom: 10px;">
                                     📢 <strong>Catatan Admin:</strong> "{{ $finishingStage->catatan }}"
                                 </div>
                             @endif
 
                             {{-- Riwayat Foto Progres & Billing Info --}}
-                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #d1fae5;">
+                            <div
+                                style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #d1fae5;">
                                 {{-- Foto Progres --}}
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <span style="font-size: 0.72rem; color: #4b5563; font-weight: 600;">Foto Dokumentasi:</span>
@@ -555,7 +566,9 @@
                                         @forelse($pFinishing->progresProduksis as $pImg)
                                             @if($pImg->dokumentasi && !Str::endsWith($pImg->dokumentasi, '.pdf'))
                                                 <a href="{{ asset('storage/' . $pImg->dokumentasi) }}" target="_blank">
-                                                    <img src="{{ asset('storage/' . $pImg->dokumentasi) }}" title="{{ $pImg->tahapan }}" style="width: 38px; height: 38px; border-radius: 6px; object-fit: cover; border: 1.5px solid #a7f3d0;" alt="Foto Progres">
+                                                    <img src="{{ asset('storage/' . $pImg->dokumentasi) }}" title="{{ $pImg->tahapan }}"
+                                                        style="width: 38px; height: 38px; border-radius: 6px; object-fit: cover; border: 1.5px solid #a7f3d0;"
+                                                        alt="Foto Progres">
                                                 </a>
                                             @endif
                                         @empty
@@ -568,15 +581,23 @@
                                 <div style="display: flex; align-items: center; gap: 16px; font-size: 0.78rem;">
                                     <div>
                                         <span style="color: #6b7280; font-size: 0.7rem;">Total Harga:</span>
-                                        <div style="font-weight: 700; color: #1f2937;">Rp {{ number_format($pFinishing->total_harga, 0, ',', '.') }}</div>
+                                        <div style="font-weight: 700; color: #1f2937;">Rp
+                                            {{ number_format($pFinishing->total_harga, 0, ',', '.') }}
+                                        </div>
                                     </div>
                                     <div>
                                         <span style="color: #6b7280; font-size: 0.7rem;">Sudah Dibayar:</span>
-                                        <div style="font-weight: 700; color: #059669;">Rp {{ number_format($pFinishing->total_terbayar, 0, ',', '.') }}</div>
+                                        <div style="font-weight: 700; color: #059669;">Rp
+                                            {{ number_format($pFinishing->total_terbayar, 0, ',', '.') }}
+                                        </div>
                                     </div>
-                                    <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 4px 10px; border-radius: 8px;">
-                                        <span style="color: #dc2626; font-size: 0.7rem; font-weight: 700;">Sisa Tagihan Pelunasan:</span>
-                                        <div style="font-weight: 800; color: #dc2626; font-size: 0.85rem;">Rp {{ number_format($pFinishing->sisa_tagihan, 0, ',', '.') }}</div>
+                                    <div
+                                        style="background: #fef2f2; border: 1px solid #fecaca; padding: 4px 10px; border-radius: 8px;">
+                                        <span style="color: #dc2626; font-size: 0.7rem; font-weight: 700;">Sisa Tagihan
+                                            Pelunasan:</span>
+                                        <div style="font-weight: 800; color: #dc2626; font-size: 0.85rem;">Rp
+                                            {{ number_format($pFinishing->sisa_tagihan, 0, ',', '.') }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -664,13 +685,13 @@
                 Transparansi Status Pengerjaan (Pcs)
             </span>
             <div class="progress-pcs-grid">
-                {{-- Belum Dikerjakan --}}
-                <div class="progress-pcs-card belum">
-                    <div class="pcs-icon">⏳</div>
+                {{-- Jumlah Seluruh Item Pesanan --}}
+                <div class="progress-pcs-card belum" style="background: #f0f4ff; border-color: #d0e1fd;">
+                    <div class="pcs-icon" style="background: #dbeafe; color: #2563eb;">📦</div>
                     <div class="pcs-info">
-                        <span class="pcs-value">{{ $pcsBelumDikerjakan }} Pcs</span>
-                        <span class="pcs-label">Belum Dikerjakan</span>
-                        <span class="pcs-desc">Belum dibayar / belum masuk antrean</span>
+                        <span class="pcs-value">{{ $pcsTotalSeluruhItem }} Pcs</span>
+                        <span class="pcs-label">Jumlah Seluruh Item Pesanan</span>
+                        <span class="pcs-desc">Total akumulasi seluruh item seragam yang dipesan</span>
                     </div>
                 </div>
 

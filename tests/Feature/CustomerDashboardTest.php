@@ -80,9 +80,11 @@ class CustomerDashboardTest extends TestCase
 
         // 6. Assertions
         $response->assertOk();
-        $response->assertViewHas('pcsBelumDikerjakan', 30);
+        $response->assertViewHas('pcsTotalSeluruhItem', 60);
         $response->assertViewHas('pcsSedangDiproses', 20);
         $response->assertViewHas('pcsSelesai', 10);
+        $response->assertSee('Jumlah Seluruh Item Pesanan');
+        $response->assertSee('Total akumulasi seluruh item seragam yang dipesan');
 
         $breakdown = $response->viewData('breakdown');
         $this->assertCount(2, $breakdown);

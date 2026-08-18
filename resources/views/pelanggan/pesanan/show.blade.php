@@ -1260,14 +1260,14 @@
 
                             <div
                                 style="background:#f0f4fb;border-radius:10px;padding:16px;margin-bottom:14px;font-size:.82rem;color:#1a2b4a;line-height:1.5;border:1px solid #dde8f8;">
-                                💳 <strong>Pembayaran Instan via Xendit</strong><br>
+                                💳 <strong>Lakukan Segera Pembayaran</strong><br>
                                 <span style="color:#5a7090;margin-top:6px;display:block;">
-                                    Anda akan dialihkan ke halaman pembayaran aman Xendit untuk menyelesaikan transaksi
+                                    Anda akan dialihkan ke halaman pembayaran aman payment gateway Xendit untuk
+                                    menyelesaikan transaksi
                                     menggunakan Virtual Account (Transfer Bank), QRIS, E-Wallet, atau metode pembayaran
                                     lainnya.
                                 </span>
                             </div>
-
                             <div>
                                 <label class="form-lbl" for="catatanPelanggan">Catatan (opsional)</label>
                                 <textarea class="form-ctrl" id="catatanPelanggan" name="catatan_pelanggan" rows="2"
@@ -1277,7 +1277,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn-cancel-modal" onclick="closeModal()">Batal</button>
                             <button type="submit" class="btn-submit-bayar"
-                                style="background:#2563eb;color:white;border:none;">Bayar Sekarang via Xendit</button>
+                                style="background:#2563eb;color:white;border:none;">Bayar Sekarang</button>
                         </div>
                     </form>
                 </div>
