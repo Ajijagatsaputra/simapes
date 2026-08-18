@@ -23,6 +23,8 @@
             background: #f0f4fb;
             color: #1a2b4a;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         /* ── Navbar ── */
@@ -236,8 +238,10 @@
         /* ── Content ── */
         .page-wrapper {
             max-width: 1200px;
+            width: 100%;
             margin: 0 auto;
             padding: 32px 24px 60px;
+            flex: 1 0 auto;
         }
 
         /* ── Footer ── */

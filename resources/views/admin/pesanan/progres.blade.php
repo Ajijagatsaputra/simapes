@@ -383,12 +383,12 @@
                                 </div>
                             @endif
 
-                            <div style="display:flex; align-items:center; justify-between; margin-top: 12px; padding-top: 8px; border-top: 1px dashed #edf2f7;">
+                            <div style="display:flex; align-items:center; justify-content: space-between; gap: 16px; margin-top: 16px; padding-top: 12px; border-top: 1px dashed #edf2f7;">
                                 <label style="display:flex; align-items:center; gap:6px; font-size:0.78rem; font-weight:600; color:#2d3748; cursor:pointer;">
                                     <input type="checkbox" name="tandai_selesai" value="1" {{ $isCompleted ? 'checked' : '' }} {{ $isLocked ? 'disabled' : '' }}>
                                     Tandai Tahap Ini Selesai
                                 </label>
-                                <button type="submit" class="btn-submit" {{ $isLocked ? 'disabled' : '' }} style="padding: 6px 14px; font-size: 0.78rem; background: #4A90D9; color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer;">
+                                <button type="submit" class="btn-submit" {{ $isLocked ? 'disabled' : '' }} style="padding: 7px 16px; font-size: 0.78rem; background: #4A90D9; color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer; margin-left: auto;">
                                     Simpan Tahap {{ $ke }}
                                 </button>
                             </div>
