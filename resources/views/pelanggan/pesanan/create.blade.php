@@ -510,10 +510,313 @@
         .btn-submit-order:hover {
             background: #1648c4;
         }
+
+        /* ===== PREMIUM TOAST NOTIFICATION (sp-prefixed to avoid layout conflict) ===== */
+        #spt-container {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 12px;
+            pointer-events: none;
+            align-items: flex-end;
+        }
+
+        .spt {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-radius: 18px;
+            padding: 0;
+            min-width: 340px;
+            max-width: 420px;
+            pointer-events: all;
+            position: relative;
+            overflow: hidden;
+            animation: sptBounceIn 0.5s cubic-bezier(.34, 1.56, .64, 1) both;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.18),
+                0 8px 24px rgba(0, 0, 0, 0.10),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .spt.spt-warning {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a22 100%);
+            border: 1.5px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .spt.spt-success {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d022 100%);
+            border: 1.5px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .spt.spt-error {
+            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 50%, #fecdd322 100%);
+            border: 1.5px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .spt.spt-info {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe22 100%);
+            border: 1.5px solid rgba(26, 86, 219, 0.25);
+        }
+
+        /* Left accent stripe */
+        .spt::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            border-radius: 18px 0 0 18px;
+        }
+
+        .spt-warning::before {
+            background: linear-gradient(180deg, #fbbf24, #f59e0b);
+        }
+
+        .spt-success::before {
+            background: linear-gradient(180deg, #34d399, #10b981);
+        }
+
+        .spt-error::before {
+            background: linear-gradient(180deg, #f87171, #ef4444);
+        }
+
+        .spt-info::before {
+            background: linear-gradient(180deg, #60a5fa, #1A56DB);
+        }
+
+        /* Shimmer sweep */
+        .spt::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: sptShimmer 2.5s ease-in-out 0.4s 1;
+            pointer-events: none;
+        }
+
+        .spt-inner {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            padding: 16px 18px 16px 20px;
+        }
+
+        .spt-icon {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spt-warning .spt-icon {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
+        }
+
+        .spt-success .spt-icon {
+            background: linear-gradient(135deg, #34d399, #059669);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+        }
+
+        .spt-error .spt-icon {
+            background: linear-gradient(135deg, #f87171, #dc2626);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45);
+        }
+
+        .spt-info .spt-icon {
+            background: linear-gradient(135deg, #60a5fa, #1A56DB);
+            box-shadow: 0 6px 20px rgba(26, 86, 219, 0.40);
+        }
+
+        .spt-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke: #fff;
+            fill: none;
+        }
+
+        .spt-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .spt-title {
+            font-size: 0.87rem;
+            font-weight: 800;
+            margin-bottom: 3px;
+            letter-spacing: 0.01em;
+            line-height: 1.2;
+        }
+
+        .spt-warning .spt-title {
+            color: #78350f;
+        }
+
+        .spt-success .spt-title {
+            color: #064e3b;
+        }
+
+        .spt-error .spt-title {
+            color: #7f1d1d;
+        }
+
+        .spt-info .spt-title {
+            color: #1e3a8a;
+        }
+
+        .spt-msg {
+            font-size: 0.82rem;
+            line-height: 1.5;
+        }
+
+        .spt-warning .spt-msg {
+            color: #92400e;
+        }
+
+        .spt-success .spt-msg {
+            color: #065f46;
+        }
+
+        .spt-error .spt-msg {
+            color: #991b1b;
+        }
+
+        .spt-info .spt-msg {
+            color: #1e40af;
+        }
+
+        .spt-close {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.07);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(0, 0, 0, 0.4);
+            transition: background 0.2s, color 0.2s, transform 0.15s;
+            margin-right: 4px;
+        }
+
+        .spt-close:hover {
+            background: rgba(0, 0, 0, 0.14);
+            color: rgba(0, 0, 0, 0.7);
+            transform: rotate(90deg);
+        }
+
+        .spt-close svg {
+            pointer-events: none;
+        }
+
+        .spt-bar {
+            position: absolute;
+            bottom: 0;
+            left: 5px;
+            height: 3px;
+            animation: sptProgress 4.5s linear forwards;
+        }
+
+        .spt-warning .spt-bar {
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+        }
+
+        .spt-success .spt-bar {
+            background: linear-gradient(90deg, #34d399, #10b981);
+        }
+
+        .spt-error .spt-bar {
+            background: linear-gradient(90deg, #f87171, #ef4444);
+        }
+
+        .spt-info .spt-bar {
+            background: linear-gradient(90deg, #60a5fa, #1A56DB);
+        }
+
+        .spt.spt-hide {
+            animation: sptSlideOut 0.4s cubic-bezier(.55, 0, .1, 1) forwards;
+        }
+
+        @keyframes sptBounceIn {
+            0% {
+                opacity: 0;
+                transform: translateX(100px) scale(0.7);
+            }
+
+            60% {
+                opacity: 1;
+                transform: translateX(-8px) scale(1.02);
+            }
+
+            80% {
+                transform: translateX(4px) scale(0.99);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes sptSlideOut {
+            0% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+                max-height: 100px;
+                margin-bottom: 0;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(80px) scale(0.9);
+                max-height: 0;
+                margin-bottom: -14px;
+                padding: 0;
+            }
+        }
+
+        @keyframes sptProgress {
+            from {
+                width: calc(100% - 5px);
+            }
+
+            to {
+                width: 0%;
+            }
+        }
+
+        @keyframes sptShimmer {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 150%;
+            }
+        }
     </style>
 @endpush
 
 @section('content')
+    {{-- PREMIUM TOAST CONTAINER --}}
+    <div id="spt-container"></div>
+
     <form action="{{ route('pelanggan.pesanan.store') }}" method="POST" enctype="multipart/form-data" id="orderForm">
         @csrf
         <div class="order-container">
@@ -761,7 +1064,7 @@
             // Check if already added
             const existingIndex = selectedProductBlocks.findIndex(b => b.id === id);
             if (existingIndex !== -1) {
-                alert(`Produk "${nama}" sudah ada di dalam daftar pesanan Anda.`);
+                showSptToast('warning', 'Produk Sudah Ada', `Produk "${nama}" sudah ada di dalam daftar pesanan Anda.`);
                 return;
             }
 
@@ -806,76 +1109,76 @@
                     // FR-ORD-03: All Size Single Input
                     const qtyVal = block.sizes['All Size'] || '';
                     sizesHtml = `
-                                        <div class="all-size-box">
-                                            <div class="all-size-info">
-                                                🏷️ Kategori Atribut (All Size)
-                                            </div>
-                                            <div style="display: flex; align-items: center; gap: 8px;">
-                                                <label style="font-size: 0.8rem; font-weight: 700; color: #1e40af;">Jumlah (pcs):</label>
-                                                <input type="number" min="0" class="all-size-qty-input"
-                                                    name="items[${idx}][sizes][All Size]"
-                                                    value="${qtyVal}"
-                                                    placeholder="0"
-                                                    oninput="updateBlockSizeQty(${idx}, 'All Size', this.value)">
-                                            </div>
-                                        </div>`;
+                                                    <div class="all-size-box">
+                                                        <div class="all-size-info">
+                                                            🏷️ Kategori Atribut (All Size)
+                                                        </div>
+                                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                                            <label style="font-size: 0.8rem; font-weight: 700; color: #1e40af;">Jumlah (pcs):</label>
+                                                            <input type="number" min="0" class="all-size-qty-input"
+                                                                name="items[${idx}][sizes][All Size]"
+                                                                value="${qtyVal}"
+                                                                placeholder="0"
+                                                                oninput="updateBlockSizeQty(${idx}, 'All Size', this.value)">
+                                                        </div>
+                                                    </div>`;
                 } else {
                     // FR-ORD-02: Multi-Size Grid (S, M, L, XL, XXL, 3XL, 4XL, 5XL)
                     let gridItems = '';
                     standardSizes.forEach(sz => {
                         const qtyVal = block.sizes[sz] || '';
                         gridItems += `
-                                            <div class="size-item-box">
-                                                <div class="size-name">${sz}</div>
-                                                <input type="number" min="0" class="size-qty-input"
-                                                    name="items[${idx}][sizes][${sz}]"
-                                                    value="${qtyVal}"
-                                                    placeholder="0"
-                                                    oninput="updateBlockSizeQty(${idx}, '${sz}', this.value)">
-                                            </div>`;
+                                                        <div class="size-item-box">
+                                                            <div class="size-name">${sz}</div>
+                                                            <input type="number" min="0" class="size-qty-input"
+                                                                name="items[${idx}][sizes][${sz}]"
+                                                                value="${qtyVal}"
+                                                                placeholder="0"
+                                                                oninput="updateBlockSizeQty(${idx}, '${sz}', this.value)">
+                                                        </div>`;
                     });
 
                     sizesHtml = `
-                                        <div class="size-grid-label">Pilih Ukuran & Jumlah (Multi-Ukuran):</div>
-                                        <div class="size-grid">${gridItems}</div>`;
+                                                    <div class="size-grid-label">Pilih Ukuran & Jumlah (Multi-Ukuran):</div>
+                                                    <div class="size-grid">${gridItems}</div>`;
                 }
 
                 const blockHtml = `
-                                    <div class="product-block" id="pBlock-${idx}">
-                                        <input type="hidden" name="items[${idx}][produk_id]" value="${block.id}">
+                                                <div class="product-block" id="pBlock-${idx}">
+                                                    <input type="hidden" name="items[${idx}][produk_id]" value="${block.id}">
 
-                                        <div class="product-block-header">
-                                            <div class="product-block-info">
-                                                <div class="product-block-thumb">
-                                                    ${block.gambar ? `<img src="${block.gambar}" alt="${block.nama}">` : `
-                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8ca0bf" stroke-width="1.5">
-                                                            <path d="M20.38 3.46L16 6.5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3.5L3.62 3.46a1 1 0 0 0-1.46.9l1.5 14.5a2 2 0 0 0 2 1.8h12.68a2 2 0 0 0 2-1.8l1.5-14.5a1 1 0 0 0-1.46-.9z"/>
-                                                        </svg>`}
-                                                </div>
-                                                <div class="product-block-title">
-                                                    <h4>${block.nama}</h4>
-                                                    <span class="badge-cat">${badgeLabel}</span>
-                                                    <span class="price-tag" style="margin-left: 8px;">Rp ${formattedPrice} / pcs</span>
-                                                </div>
-                                            </div>
-                                            <button type="button" class="btn-remove-block" onclick="removeProductBlock(${idx})" title="Hapus Produk Ini">
-                                                ✕
-                                            </button>
-                                        </div>
+                                                    <div class="product-block-header">
+                                                        <div class="product-block-info">
+                                                            <div class="product-block-thumb">
+                                                                ${block.gambar ? `<img src="${block.gambar}" alt="${block.nama}">` : `
+                                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8ca0bf" stroke-width="1.5">
+                                                                        <path d="M20.38 3.46L16 6.5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3.5L3.62 3.46a1 1 0 0 0-1.46.9l1.5 14.5a2 2 0 0 0 2 1.8h12.68a2 2 0 0 0 2-1.8l1.5-14.5a1 1 0 0 0-1.46-.9z"/>
+                                                                    </svg>`}
+                                                            </div>
+                                                            <div class="product-block-title">
+                                                                <h4>${block.nama}</h4>
+                                                                <span class="badge-cat">${badgeLabel}</span>
+                                                                <span class="price-tag" style="margin-left: 8px;">Rp ${formattedPrice} / pcs</span>
+                                                            </div>
+                                                        </div>
+                                                        <button type="button" class="btn-remove-block" onclick="removeProductBlock(${idx})" title="Hapus Produk Ini">
+                                                            ✕
+                                                        </button>
+                                                    </div>
 
-                                        ${sizesHtml}
+                                                    ${sizesHtml}
 
-                                        <div class="block-extra-row">
-                                            <div>
-                                                <label class="form-label">Catatan Khusus Produk (Opsional)</label>
-                                                <input type="text" class="form-input" name="items[${idx}][catatan]" placeholder="Cth: Bordir logo OSIS di lengan kanan...">
-                                            </div>
-                                            <div>
-                                                <label class="form-label">Gambar Acuan / Model (Opsional)</label>
-                                                <input type="file" class="form-input" name="items[${idx}][gambar]" accept="image/*">
-                                            </div>
-                                        </div>
-                                    </div>`;
+                                                    <div class="block-extra-row">
+                                                        <div>
+                                                            <label class="form-label">Catatan Khusus Produk (Opsional)</label>
+                                                            <input type="text" class="form-input" name="items[${idx}][catatan]" placeholder="Cth: Bordir logo OSIS di lengan kanan...">
+                                                        </div>
+                                                        <div>
+                                                            <label class="form-label">Gambar Acuan / Model (Opsional)</label>
+                                                            <input type="file" class="form-input" name="items[${idx}][gambar]" accept="image/*">
+                                                        </div>
+                                                    </div>
+                                                </div>`;
 
                 container.innerHTML += blockHtml;
             });
@@ -937,7 +1240,7 @@
         function processCsvUpload() {
             const fileInput = document.getElementById('csvFileInput');
             if (!fileInput.files || fileInput.files.length === 0) {
-                alert('Silakan pilih file CSV terlebih dahulu.');
+                showSptToast('warning', 'File Belum Dipilih', 'Silakan pilih file CSV terlebih dahulu.');
                 return;
             }
 
@@ -966,14 +1269,84 @@
                         });
                         renderSelectedBlocks();
                         closeCsvModal();
-                        alert(data.message);
+                        showSptToast('success', 'Import Berhasil', data.message);
                     } else {
-                        alert('Gagal mengunggah file CSV: ' + (data.message || 'Format tidak valid.'));
+                        showSptToast('error', 'Upload Gagal', 'Gagal mengunggah file CSV: ' + (data.message || 'Format tidak valid.'));
                     }
                 })
                 .catch(err => {
-                    alert('Terjadi kesalahan saat mengunggah file CSV.');
+                    showSptToast('error', 'Terjadi Kesalahan', 'Terjadi kesalahan saat mengunggah file CSV.');
                 });
+        }
+        function showSptToast(type, title, message, duration = 4500) {
+            const container = document.getElementById('spt-container');
+
+            const svgIcons = {
+                warning: `<svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                <line x1="12" y1="9" x2="12" y2="13"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>`,
+                success: `<svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>`,
+                error: `<svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="15" y1="9" x2="9" y2="15"/>
+                                <line x1="9" y1="9" x2="15" y2="15"/>
+                            </svg>`,
+                info: `<svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="16" x2="12" y2="12"/>
+                                <line x1="12" y1="8" x2="12.01" y2="8"/>
+                            </svg>`
+            };
+
+            // Limit stacked toasts to 5
+            const existing = container.querySelectorAll('.spt');
+            if (existing.length >= 5) dismissSptToast(existing[existing.length - 1]);
+
+            const spt = document.createElement('div');
+            spt.className = `spt spt-${type}`;
+            spt.innerHTML = `
+                            <div class="spt-inner">
+                                <div class="spt-icon">${svgIcons[type] || svgIcons.info}</div>
+                                <div class="spt-body">
+                                    <div class="spt-title">${title}</div>
+                                    <div class="spt-msg">${message}</div>
+                                </div>
+                                <button class="spt-close" onclick="dismissSptToast(this.closest('.spt'))">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="spt-bar"></div>
+                        `;
+
+            container.appendChild(spt);
+            void spt.offsetWidth; // force reflow for animation
+
+            const timer = setTimeout(() => dismissSptToast(spt), duration);
+            spt._timer = timer;
+
+            // Pause progress on hover
+            spt.addEventListener('mouseenter', () => {
+                clearTimeout(spt._timer);
+                spt.querySelectorAll('.spt-bar').forEach(p => p.style.animationPlayState = 'paused');
+            });
+            spt.addEventListener('mouseleave', () => {
+                spt.querySelectorAll('.spt-bar').forEach(p => p.style.animationPlayState = 'running');
+                spt._timer = setTimeout(() => dismissSptToast(spt), 1500);
+            });
+        }
+
+        function dismissSptToast(spt) {
+            if (!spt || spt.classList.contains('spt-hide')) return;
+            clearTimeout(spt._timer);
+            spt.classList.add('spt-hide');
+            setTimeout(() => spt.remove(), 420);
         }
     </script>
 @endsection
