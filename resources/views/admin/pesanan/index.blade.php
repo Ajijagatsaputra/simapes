@@ -28,10 +28,6 @@
     @media (max-width: 992px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 576px) { .stats-grid { grid-template-columns: 1fr; } }
 
-    /* ── Layout ── */
-    .pesanan-layout { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
-    @media (max-width: 1200px) { .pesanan-layout { grid-template-columns: 1fr; } }
-
     /* ── Card ── */
     .card { background: #fff; border-radius: 16px; border: 1px solid #e8eef8; padding: 22px 24px; box-shadow: 0 2px 8px rgba(74,144,217,.06); }
 
@@ -46,9 +42,6 @@
     .search-wrap svg { color: #8ca0bf; flex-shrink: 0; }
 
     .filter-select { border: 1px solid #dde8f8; background: #f5f8ff; border-radius: 10px; padding: 6px 10px; font-size: .8rem; color: #5a7090; outline: none; font-family: inherit; cursor: pointer; }
-
-    .btn-tambah { display: inline-flex; align-items: center; gap: 6px; background: #4A90D9; color: #fff; border: none; border-radius: 10px; padding: 8px 16px; font-size: .82rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .2s, transform .15s; }
-    .btn-tambah:hover { background: #3a7bc8; transform: translateY(-1px); }
 
     /* ── Table ── */
     .data-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
@@ -86,35 +79,13 @@
     .btn-bayar { background: #10b981; color: #fff; text-decoration: none; }
     .btn-progres { background: #eab308; color: #fff; }
     .btn-progres.disabled { background: #e2e8f4; color: #a0aec0; cursor: not-allowed; pointer-events: none; }
-    .btn-edit:hover, .btn-batal-aksi:hover, .btn-status:hover, .btn-print:hover, .btn-bayar:hover, .btn-progres:hover { opacity: .85; transform: scale(1.08); }
+    .btn-batal-aksi:hover, .btn-status:hover, .btn-print:hover, .btn-bayar:hover, .btn-progres:hover { opacity: .85; transform: scale(1.08); }
 
     /* Payment Status */
     .pay-status { display:inline-flex; padding:3px 7px; border-radius:12px; font-size:.65rem; font-weight:700; }
     .ps-belum_bayar { background:#fef2f2; color:#dc2626; }
     .ps-dp { background:#fff3e6; color:#d97706; }
     .ps-lunas { background:#ecfdf5; color:#059669; }
-
-    /* ── Form Panel ── */
-    .form-panel .panel-title { font-size: .95rem; font-weight: 700; color: #1a2b4a; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid #f0f4fb; }
-    .form-group { margin-bottom: 14px; }
-    .form-label { display: block; font-size: .75rem; font-weight: 600; color: #5a7090; margin-bottom: 5px; }
-    .form-input, .form-textarea, .form-select { width: 100%; border: 1.5px solid #dde8f8; border-radius: 9px; padding: 8px 11px; font-size: .82rem; font-family: inherit; color: #1a2b4a; background: #fafdff; outline: none; transition: border-color .15s, box-shadow .15s; }
-    .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: #4A90D9; box-shadow: 0 0 0 3px rgba(74,144,217,.12); background: #fff; }
-    
-    /* ── Dynamic Product Items in Form ── */
-    .items-container { border: 1.5px solid #e8f0fc; border-radius: 12px; padding: 12px; background: #fafdff; margin-bottom: 16px; }
-    .item-form-row { display: grid; grid-template-columns: 1.2fr 0.6fr 0.6fr auto; gap: 8px; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eef3fb; }
-    .item-form-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .btn-remove-item { background: #fee2e2; color: #ef4444; border: none; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s; }
-    .btn-remove-item:hover { background: #fca5a5; }
-    .btn-add-item { background: #eaf3fc; color: #4A90D9; border: 1px dashed #4A90D9; border-radius: 8px; width: 100%; padding: 8px; font-size: 0.78rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background .15s; margin-top: 8px; }
-    .btn-add-item:hover { background: #ddeefc; }
-
-    .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; padding-top: 14px; border-top: 1px solid #f0f4fb; }
-    .btn-batal { padding: 8px 18px; background: #f0f4fb; border: 1px solid #dde8f8; border-radius: 9px; color: #5a7090; font-size: .82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s; }
-    .btn-batal:hover { background: #e2e8f4; }
-    .btn-simpan { padding: 8px 20px; background: #4A90D9; border: none; border-radius: 9px; color: #fff; font-size: .82rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .2s; }
-    .btn-simpan:hover { background: #3a7bc8; }
 
     /* ── Empty State ── */
     .empty-state { text-align: center; padding: 40px 20px; color: #a0aec0; }
@@ -128,26 +99,6 @@
     .page-btn.active { background: #4A90D9; color: #fff; border-color: #4A90D9; }
     .page-btn:disabled { opacity: .4; cursor: not-allowed; }
     .page-dots { color: #8ca0bf; font-size: .8rem; font-weight: 600; padding: 0 4px; }
-
-    @media (max-width: 576px) {
-        .item-form-row {
-            grid-template-columns: 1fr !important;
-            gap: 10px !important;
-            position: relative;
-            padding-bottom: 16px !important;
-            border-bottom: 1.5px dashed #dde8f8 !important;
-        }
-        .item-form-row:last-child {
-            border-bottom: none !important;
-            padding-bottom: 0 !important;
-        }
-        .btn-remove-item {
-            position: absolute;
-            top: 0;
-            right: 0;
-            z-index: 5;
-        }
-    }
 </style>
 @endpush
 
@@ -263,8 +214,8 @@
         </a>
     </div>
 
-    {{-- ── Main Layout ── --}}
-    <div class="pesanan-layout">
+    {{-- ── Main Layout (full-width) ── --}}
+    <div>
 
         {{-- ── Tabel Pesanan ── --}}
         <div class="card">
@@ -296,13 +247,6 @@
                         @endif
                     </form>
 
-                    <button class="btn-tambah" onclick="openForm()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"/>
-                            <line x1="5"  y1="12" x2="19" y2="12"/>
-                        </svg>
-                        Tambah Pesanan
-                    </button>
                 </div>
             </div>
 
@@ -493,65 +437,6 @@
             @endif
         </div>
 
-        {{-- ── Form Panel ── --}}
-        <div class="card form-panel" id="formPanel">
-            <div class="panel-title" id="formTitle">Tambah Pesanan</div>
-
-            <form method="POST" id="formPesanan" action="{{ route('admin.pesanan.store') }}">
-                @csrf
-                <input type="hidden" name="_method" id="formMethod" value="POST">
-
-                <div class="form-group">
-                    <label class="form-label" for="userId">Pelanggan</label>
-                    <select class="form-select" id="userId" name="user_id" required>
-                        <option value="">Pilih Pelanggan</option>
-                        @foreach($pelanggan as $pl)
-                            <option value="{{ $pl->id }}">{{ $pl->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="form-group" style="margin-bottom:8px">
-                    <label class="form-label">Daftar Item Produk Seragam</label>
-                </div>
-
-                {{-- Container item-item dinamis --}}
-                <div class="items-container" id="itemsContainer">
-                    <!-- Baris produk akan disisipkan via JS -->
-                </div>
-                
-                <button type="button" class="btn-add-item" onclick="addItemRow()">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"/>
-                        <line x1="5"  y1="12" x2="19" y2="12"/>
-                    </svg>
-                    Tambah Item Produk
-                </button>
-
-                <div class="form-row" style="margin-top:16px">
-                    <div class="form-group" style="margin-bottom:0">
-                        <label class="form-label" for="tanggalPesanan">Tanggal</label>
-                        <input class="form-input" type="date" id="tanggalPesanan" name="tanggal_pesanan" value="{{ date('Y-m-d') }}" required>
-                    </div>
-                    <div class="form-group" style="margin-bottom:0">
-                        <label class="form-label" for="status">Status</label>
-                        <select class="form-select" id="status" name="status" required>
-                            <option value="pending">Pending (Menunggu Persetujuan)</option>
-                            <option value="diproses" selected>Diproses</option>
-                            <option value="dikerjakan">Dikerjakan</option>
-                            <option value="selesai">Selesai</option>
-                            <option value="batal">Batal / Ditolak</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn-batal" onclick="resetForm()">Batal</button>
-                    <button type="submit" class="btn-simpan" id="btnSimpan">Simpan</button>
-                </div>
-            </form>
-        </div>
-
     </div>
 
     {{-- Lightbox Modal --}}
@@ -566,9 +451,6 @@
 
 @push('scripts')
 <script>
-    const produksData = @json($produks);
-    let itemIndex = 0;
-
     // ── Inline Status Dropdown AJAX ──────────────────────────────────
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -638,79 +520,6 @@
             });
         });
     }
-
-    // ── Helper untuk merender 1 baris item produk ─────────────────────
-    function addItemRow(produkId = '', ukuran = 'M', totalItem = 1) {
-        const container = document.getElementById('itemsContainer');
-        const row = document.createElement('div');
-        row.className = 'item-form-row';
-        row.id = `item-row-${itemIndex}`;
-
-        let options = '<option value="">Pilih Produk</option>';
-        produksData.forEach(p => {
-            const selected = p.id == produkId ? 'selected' : '';
-            options += `<option value="${p.id}" ${selected}>${p.nama_produk} (Rp ${new Intl.NumberFormat('id-ID').format(p.harga)})</option>`;
-        });
-
-        row.innerHTML = `
-            <div>
-                <select class="form-select" name="items[${itemIndex}][produk_id]" required style="padding:6px 8px; font-size:0.75rem">
-                    ${options}
-                </select>
-            </div>
-            <div>
-                <select class="form-select" name="items[${itemIndex}][ukuran]" required style="padding:6px 8px; font-size:0.75rem">
-                    <option value="S" ${ukuran === 'S' ? 'selected' : ''}>S</option>
-                    <option value="M" ${ukuran === 'M' ? 'selected' : ''}>M</option>
-                    <option value="L" ${ukuran === 'L' ? 'selected' : ''}>L</option>
-                    <option value="XL" ${ukuran === 'XL' ? 'selected' : ''}>XL</option>
-                    <option value="XXL" ${ukuran === 'XXL' ? 'selected' : ''}>XXL</option>
-                    <option value="3XL" ${ukuran === '3XL' ? 'selected' : ''}>3XL</option>
-                    <option value="4XL" ${ukuran === '4XL' ? 'selected' : ''}>4XL</option>
-                    <option value="5XL" ${ukuran === '5XL' ? 'selected' : ''}>5XL</option>
-                </select>
-            </div>
-            <div>
-                <input class="form-input" type="number" name="items[${itemIndex}][total_item]" value="${totalItem}" min="1" required style="padding:6px 8px; font-size:0.75rem">
-            </div>
-            <div>
-                <button type="button" class="btn-remove-item" onclick="removeItemRow('${row.id}')" title="Hapus Item">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
-            </div>
-        `;
-
-        container.appendChild(row);
-        itemIndex++;
-    }
-
-    function removeItemRow(rowId) {
-        const row = document.getElementById(rowId);
-        if (row) row.remove();
-    }
-
-    function openForm() {
-        document.getElementById('formTitle').textContent = 'Tambah Pesanan';
-        document.getElementById('formMethod').value = 'POST';
-        document.getElementById('formPesanan').action = '{{ route("admin.pesanan.store") }}';
-        document.getElementById('formPesanan').reset();
-        document.getElementById('tanggalPesanan').value = '{{ date("Y-m-d") }}';
-        document.getElementById('status').value = 'diproses';
-        document.getElementById('btnSimpan').textContent = 'Simpan';
-        document.getElementById('itemsContainer').innerHTML = '';
-        itemIndex = 0;
-        addItemRow();
-        document.getElementById('userId').focus();
-    }
-
-    function resetForm() { openForm(); }
-
-    document.addEventListener('DOMContentLoaded', function() { openForm(); });
-
-    // ── Lightbox Functions ──
     function openLightbox(src) {
         const modal = document.getElementById('lightboxModal');
         const img = document.getElementById('lightboxImage');

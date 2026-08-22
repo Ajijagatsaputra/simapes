@@ -829,7 +829,7 @@
                     </div>
                     <div class="footer-contact-text">
                         <strong>Alamat Toko</strong>
-                        Jl. Raya Seragam No. 1,<br>Kota Anda, Jawa Tengah
+                        Desa Tanjung Harja<br>Kecamatan Kramat, Kabupaten Tegal, Jawa Tengah
                     </div>
                 </div>
 
@@ -843,7 +843,7 @@
                     </div>
                     <div class="footer-contact-text">
                         <strong>WhatsApp</strong>
-                        +62 812-3456-7890
+                        +62 852-1215-0297
                     </div>
                 </div>
 

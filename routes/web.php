@@ -50,9 +50,8 @@ Route::middleware(['auth', 'role:admin'])
         Route::put('/supplier/{id}', [Admin\SupplierController::class, 'update'])->name('supplier.update');
         Route::delete('/supplier/{id}', [Admin\SupplierController::class, 'destroy'])->name('supplier.destroy');
 
-        // Manajemen Pesanan
+        // Manajemen Pesanan (hanya lihat & kelola status — pesanan dibuat oleh pelanggan)
         Route::get('/pesanan', [Admin\PesananController::class, 'index'])->name('pesanan.index');
-        Route::post('/pesanan', [Admin\PesananController::class, 'store'])->name('pesanan.store');
         Route::get('/pesanan/{id}/nota', [Admin\PesananController::class, 'nota'])->name('pesanan.nota');
         Route::patch('/pesanan/{id}/status', [Admin\PesananController::class, 'updateStatus'])->name('pesanan.updateStatus');
 

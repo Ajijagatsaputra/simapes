@@ -503,12 +503,25 @@
             font-size: .95rem;
             font-weight: 800;
             cursor: pointer;
-            transition: background 0.15s;
+            transition: background 0.2s, opacity 0.2s, transform 0.15s;
             margin-top: 16px;
         }
 
         .btn-submit-order:hover {
             background: #1648c4;
+            transform: translateY(-1px);
+        }
+
+        /* State tidak aktif — visual saja, tetap bisa diklik untuk feedback */
+        .btn-submit-order.not-ready {
+            background: #94a3b8;
+            cursor: pointer;
+            opacity: 0.85;
+        }
+
+        .btn-submit-order.not-ready:hover {
+            background: #7e8fa4;
+            transform: none;
         }
 
         /* ===== PREMIUM TOAST NOTIFICATION (sp-prefixed to avoid layout conflict) ===== */
@@ -905,8 +918,9 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-submit-order" id="btnSubmitOrder" disabled>
-                        Ajukan Pesanan Sekarang
+                    <button type="button" class="btn-submit-order not-ready" id="btnSubmitOrder"
+                        onclick="validateAndSubmit()">
+                        <span id="btnSubmitText">Ajukan Pesanan Sekarang</span>
                     </button>
                 </div>
             </div>
@@ -1109,76 +1123,76 @@
                     // FR-ORD-03: All Size Single Input
                     const qtyVal = block.sizes['All Size'] || '';
                     sizesHtml = `
-                                                    <div class="all-size-box">
-                                                        <div class="all-size-info">
-                                                            🏷️ Kategori Atribut (All Size)
-                                                        </div>
-                                                        <div style="display: flex; align-items: center; gap: 8px;">
-                                                            <label style="font-size: 0.8rem; font-weight: 700; color: #1e40af;">Jumlah (pcs):</label>
-                                                            <input type="number" min="0" class="all-size-qty-input"
-                                                                name="items[${idx}][sizes][All Size]"
-                                                                value="${qtyVal}"
-                                                                placeholder="0"
-                                                                oninput="updateBlockSizeQty(${idx}, 'All Size', this.value)">
-                                                        </div>
-                                                    </div>`;
+                                                        <div class="all-size-box">
+                                                            <div class="all-size-info">
+                                                                🏷️ Kategori Atribut (All Size)
+                                                            </div>
+                                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                                <label style="font-size: 0.8rem; font-weight: 700; color: #1e40af;">Jumlah (pcs):</label>
+                                                                <input type="number" min="0" class="all-size-qty-input"
+                                                                    name="items[${idx}][sizes][All Size]"
+                                                                    value="${qtyVal}"
+                                                                    placeholder="0"
+                                                                    oninput="updateBlockSizeQty(${idx}, 'All Size', this.value)">
+                                                            </div>
+                                                        </div>`;
                 } else {
                     // FR-ORD-02: Multi-Size Grid (S, M, L, XL, XXL, 3XL, 4XL, 5XL)
                     let gridItems = '';
                     standardSizes.forEach(sz => {
                         const qtyVal = block.sizes[sz] || '';
                         gridItems += `
-                                                        <div class="size-item-box">
-                                                            <div class="size-name">${sz}</div>
-                                                            <input type="number" min="0" class="size-qty-input"
-                                                                name="items[${idx}][sizes][${sz}]"
-                                                                value="${qtyVal}"
-                                                                placeholder="0"
-                                                                oninput="updateBlockSizeQty(${idx}, '${sz}', this.value)">
-                                                        </div>`;
+                                                            <div class="size-item-box">
+                                                                <div class="size-name">${sz}</div>
+                                                                <input type="number" min="0" class="size-qty-input"
+                                                                    name="items[${idx}][sizes][${sz}]"
+                                                                    value="${qtyVal}"
+                                                                    placeholder="0"
+                                                                    oninput="updateBlockSizeQty(${idx}, '${sz}', this.value)">
+                                                            </div>`;
                     });
 
                     sizesHtml = `
-                                                    <div class="size-grid-label">Pilih Ukuran & Jumlah (Multi-Ukuran):</div>
-                                                    <div class="size-grid">${gridItems}</div>`;
+                                                        <div class="size-grid-label">Pilih Ukuran & Jumlah (Multi-Ukuran):</div>
+                                                        <div class="size-grid">${gridItems}</div>`;
                 }
 
                 const blockHtml = `
-                                                <div class="product-block" id="pBlock-${idx}">
-                                                    <input type="hidden" name="items[${idx}][produk_id]" value="${block.id}">
+                                                    <div class="product-block" id="pBlock-${idx}">
+                                                        <input type="hidden" name="items[${idx}][produk_id]" value="${block.id}">
 
-                                                    <div class="product-block-header">
-                                                        <div class="product-block-info">
-                                                            <div class="product-block-thumb">
-                                                                ${block.gambar ? `<img src="${block.gambar}" alt="${block.nama}">` : `
-                                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8ca0bf" stroke-width="1.5">
-                                                                        <path d="M20.38 3.46L16 6.5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3.5L3.62 3.46a1 1 0 0 0-1.46.9l1.5 14.5a2 2 0 0 0 2 1.8h12.68a2 2 0 0 0 2-1.8l1.5-14.5a1 1 0 0 0-1.46-.9z"/>
-                                                                    </svg>`}
+                                                        <div class="product-block-header">
+                                                            <div class="product-block-info">
+                                                                <div class="product-block-thumb">
+                                                                    ${block.gambar ? `<img src="${block.gambar}" alt="${block.nama}">` : `
+                                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8ca0bf" stroke-width="1.5">
+                                                                            <path d="M20.38 3.46L16 6.5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3.5L3.62 3.46a1 1 0 0 0-1.46.9l1.5 14.5a2 2 0 0 0 2 1.8h12.68a2 2 0 0 0 2-1.8l1.5-14.5a1 1 0 0 0-1.46-.9z"/>
+                                                                        </svg>`}
+                                                                </div>
+                                                                <div class="product-block-title">
+                                                                    <h4>${block.nama}</h4>
+                                                                    <span class="badge-cat">${badgeLabel}</span>
+                                                                    <span class="price-tag" style="margin-left: 8px;">Rp ${formattedPrice} / pcs</span>
+                                                                </div>
                                                             </div>
-                                                            <div class="product-block-title">
-                                                                <h4>${block.nama}</h4>
-                                                                <span class="badge-cat">${badgeLabel}</span>
-                                                                <span class="price-tag" style="margin-left: 8px;">Rp ${formattedPrice} / pcs</span>
+                                                            <button type="button" class="btn-remove-block" onclick="removeProductBlock(${idx})" title="Hapus Produk Ini">
+                                                                ✕
+                                                            </button>
+                                                        </div>
+
+                                                        ${sizesHtml}
+
+                                                        <div class="block-extra-row">
+                                                            <div>
+                                                                <label class="form-label">Catatan Khusus Produk (Opsional)</label>
+                                                                <input type="text" class="form-input" name="items[${idx}][catatan]" placeholder="Cth: Bordir logo OSIS di lengan kanan...">
+                                                            </div>
+                                                            <div>
+                                                                <label class="form-label">Gambar Acuan / Model (Opsional)</label>
+                                                                <input type="file" class="form-input" name="items[${idx}][gambar]" accept="image/*">
                                                             </div>
                                                         </div>
-                                                        <button type="button" class="btn-remove-block" onclick="removeProductBlock(${idx})" title="Hapus Produk Ini">
-                                                            ✕
-                                                        </button>
-                                                    </div>
-
-                                                    ${sizesHtml}
-
-                                                    <div class="block-extra-row">
-                                                        <div>
-                                                            <label class="form-label">Catatan Khusus Produk (Opsional)</label>
-                                                            <input type="text" class="form-input" name="items[${idx}][catatan]" placeholder="Cth: Bordir logo OSIS di lengan kanan...">
-                                                        </div>
-                                                        <div>
-                                                            <label class="form-label">Gambar Acuan / Model (Opsional)</label>
-                                                            <input type="file" class="form-input" name="items[${idx}][gambar]" accept="image/*">
-                                                        </div>
-                                                    </div>
-                                                </div>`;
+                                                    </div>`;
 
                 container.innerHTML += blockHtml;
             });
@@ -1219,9 +1233,80 @@
 
             const targetDateInput = document.getElementById('targetTanggalPengambilan');
             const hasValidDate = targetDateInput && targetDateInput.value.trim() !== '';
+            const isReady = totalPcs > 0 && hasValidDate;
 
             const btnSubmit = document.getElementById('btnSubmitOrder');
-            btnSubmit.disabled = !(totalPcs > 0 && hasValidDate);
+            const btnText = document.getElementById('btnSubmitText');
+
+            if (isReady) {
+                btnSubmit.classList.remove('not-ready');
+                btnSubmit.dataset.ready = '1';
+                btnText.textContent = '✓ Ajukan Pesanan Sekarang';
+            } else {
+                btnSubmit.classList.add('not-ready');
+                btnSubmit.dataset.ready = '0';
+                // Teks hint berdasarkan kondisi yang kurang
+                if (totalPcs === 0 && !hasValidDate) {
+                    btnText.textContent = 'Lengkapi Produk & Tanggal';
+                } else if (totalPcs === 0) {
+                    btnText.textContent = 'Tambahkan Produk Terlebih Dahulu';
+                } else {
+                    btnText.textContent = 'Isi Tanggal Pengambilan';
+                }
+            }
+        }
+
+        // Validasi sebelum submit — memberi feedback spesifik ke user
+        function validateAndSubmit() {
+            const totalPcs = selectedProductBlocks.reduce((sum, block) => {
+                return sum + Object.values(block.sizes).reduce((s, q) => s + (parseInt(q) || 0), 0);
+            }, 0);
+
+            const targetDateInput = document.getElementById('targetTanggalPengambilan');
+            const hasValidDate = targetDateInput && targetDateInput.value.trim() !== '';
+
+            // ── Cek produk ──
+            if (totalPcs === 0) {
+                // Highlight area produk
+                const leftCol = document.querySelector('.left-col');
+                if (leftCol) {
+                    leftCol.style.outline = '2px solid #ef4444';
+                    leftCol.style.borderRadius = '16px';
+                    setTimeout(() => {
+                        leftCol.style.outline = '';
+                        leftCol.style.borderRadius = '';
+                    }, 2500);
+                }
+                showSptToast('warning', 'Produk Belum Dipilih',
+                    'Silakan tambahkan minimal 1 produk dengan jumlah pcs lebih dari 0 sebelum mengajukan pesanan.');
+                return;
+            }
+
+            // ── Cek tanggal ──
+            if (!hasValidDate) {
+                // Scroll ke field tanggal & highlight
+                targetDateInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetDateInput.style.outline = '2.5px solid #ef4444';
+                targetDateInput.style.boxShadow = '0 0 0 4px rgba(239,68,68,0.15)';
+                targetDateInput.focus();
+                setTimeout(() => {
+                    targetDateInput.style.outline = '';
+                    targetDateInput.style.boxShadow = '';
+                }, 2500);
+                showSptToast('warning', 'Tanggal Pengambilan Belum Diisi',
+                    'Wajib menentukan target tanggal pengambilan pesanan sebelum mengajukan.');
+                return;
+            }
+
+            // ── Semua valid → submit form ──
+            const btnSubmit = document.getElementById('btnSubmitOrder');
+            const btnText = document.getElementById('btnSubmitText');
+            btnText.textContent = '⏳ Mengajukan Pesanan...';
+            btnSubmit.disabled = true;
+            btnSubmit.style.opacity = '0.7';
+
+            // Submit form parent
+            btnSubmit.closest('form').submit();
         }
 
         // Modal CSV Upload Functions
@@ -1283,23 +1368,23 @@
 
             const svgIcons = {
                 warning: `<svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                                <line x1="12" y1="9" x2="12" y2="13"/>
-                                <line x1="12" y1="17" x2="12.01" y2="17"/>
-                            </svg>`,
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                    <line x1="12" y1="9" x2="12" y2="13"/>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>`,
                 success: `<svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="20 6 9 17 4 12"/>
-                            </svg>`,
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>`,
                 error: `<svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"/>
-                                <line x1="15" y1="9" x2="9" y2="15"/>
-                                <line x1="9" y1="9" x2="15" y2="15"/>
-                            </svg>`,
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="15" y1="9" x2="9" y2="15"/>
+                                    <line x1="9" y1="9" x2="15" y2="15"/>
+                                </svg>`,
                 info: `<svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"/>
-                                <line x1="12" y1="16" x2="12" y2="12"/>
-                                <line x1="12" y1="8" x2="12.01" y2="8"/>
-                            </svg>`
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="16" x2="12" y2="12"/>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                </svg>`
             };
 
             // Limit stacked toasts to 5
@@ -1309,21 +1394,21 @@
             const spt = document.createElement('div');
             spt.className = `spt spt-${type}`;
             spt.innerHTML = `
-                            <div class="spt-inner">
-                                <div class="spt-icon">${svgIcons[type] || svgIcons.info}</div>
-                                <div class="spt-body">
-                                    <div class="spt-title">${title}</div>
-                                    <div class="spt-msg">${message}</div>
+                                <div class="spt-inner">
+                                    <div class="spt-icon">${svgIcons[type] || svgIcons.info}</div>
+                                    <div class="spt-body">
+                                        <div class="spt-title">${title}</div>
+                                        <div class="spt-msg">${message}</div>
+                                    </div>
+                                    <button class="spt-close" onclick="dismissSptToast(this.closest('.spt'))">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"/>
+                                            <line x1="6" y1="6" x2="18" y2="18"/>
+                                        </svg>
+                                    </button>
                                 </div>
-                                <button class="spt-close" onclick="dismissSptToast(this.closest('.spt'))">
-                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round">
-                                        <line x1="18" y1="6" x2="6" y2="18"/>
-                                        <line x1="6" y1="6" x2="18" y2="18"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="spt-bar"></div>
-                        `;
+                                <div class="spt-bar"></div>
+                            `;
 
             container.appendChild(spt);
             void spt.offsetWidth; // force reflow for animation

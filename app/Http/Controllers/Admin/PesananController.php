@@ -4,9 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pesanan;
-use App\Models\DetailPesanan;
-use App\Models\Produk;
-use App\Models\User;
 use App\Models\ActivityLog;
 use App\Models\StatusLog;
 use Illuminate\Http\Request;
@@ -42,8 +39,6 @@ class PesananController extends Controller
         }
 
         $pesanan = $query->with(['user', 'details.produk'])->orderBy('id', 'desc')->paginate(10)->withQueryString();
-        $pelanggan = User::where('role', 'pelanggan')->orderBy('name')->get();
-        $produks = Produk::orderBy('nama_produk')->get();
 
         return view('admin.pesanan.index', compact(
             'pesanan',
@@ -52,60 +47,10 @@ class PesananController extends Controller
             'totalDiproses',
             'totalDikerjakan',
             'totalSelesai',
-            'totalBatal',
-            'pelanggan',
-            'produks'
+            'totalBatal'
         ));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'tanggal_pesanan' => 'required|date',
-            'status' => 'required|in:pending,diproses,dikerjakan,selesai,batal',
-            'items' => 'required|array|min:1',
-            'items.*.produk_id' => 'required|exists:produks,id',
-            'items.*.ukuran' => 'required|in:S,M,L,XL,XXL,3XL,4XL,5XL',
-            'items.*.total_item' => 'required|integer|min:1',
-        ]);
-
-        DB::beginTransaction();
-        try {
-            $pesanan = Pesanan::create([
-                'no_pesanan' => Pesanan::generateNoPesanan(),
-                'user_id' => $request->user_id,
-                'tanggal_pesanan' => $request->tanggal_pesanan,
-                'status' => $request->status,
-                'total_harga' => 0,
-            ]);
-
-            $totalHarga = 0;
-            foreach ($request->items as $item) {
-                $produk = Produk::findOrFail($item['produk_id']);
-                $subtotal = $produk->harga * $item['total_item'];
-                $totalHarga += $subtotal;
-
-                DetailPesanan::create([
-                    'pesanan_id' => $pesanan->id,
-                    'produk_id' => $item['produk_id'],
-                    'ukuran' => $item['ukuran'],
-                    'harga_satuan' => $produk->harga,
-                    'total_item' => $item['total_item'],
-                    'subtotal' => $subtotal,
-                ]);
-            }
-
-            $pesanan->update(['total_harga' => $totalHarga, 'sisa_tagihan' => max(0, $totalHarga - $pesanan->total_terbayar)]);
-            ActivityLog::log('Membuat pesanan baru: ' . $pesanan->no_pesanan, 'Pesanan', $pesanan->id);
-
-            DB::commit();
-            return redirect()->route('admin.pesanan.index')->with('success', 'Pesanan berhasil ditambahkan.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal menyimpan pesanan: ' . $e->getMessage());
-        }
-    }
 
 
     public function updateStatus(Request $request, $id)
