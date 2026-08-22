@@ -283,12 +283,56 @@
             cursor: pointer;
             letter-spacing: .3px;
             transition: background var(--ease), transform var(--ease), box-shadow var(--ease);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn-register:hover {
             background: var(--primary-hover);
             box-shadow: 0 4px 16px rgba(26, 79, 171, .28);
             transform: translateY(-1px);
+        }
+
+        .btn-register:disabled {
+            background: #adb5bd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ── OTP Info Note ── */
+        .otp-info-note {
+            background: #eef4ff;
+            border: 1px solid var(--border-card);
+            border-left: 4px solid var(--primary-btn);
+            border-radius: var(--r-input);
+            padding: 10px 14px;
+            font-size: .78rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 14px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .otp-info-note svg {
+            flex-shrink: 0;
+            margin-top: 1px;
+            color: var(--primary-btn);
+        }
+
+        /* ── Spinner ── */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .btn-spinner {
+            animation: spin 0.8s linear infinite;
         }
 
         /* ── Responsive ── */
@@ -489,8 +533,20 @@
                             </div>
                         </div>
 
+                        {{-- Info OTP --}}
+                        <div class="otp-info-note">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="12" />
+                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                            </svg>
+                            <span>Setelah mendaftar, kode <strong>OTP</strong> akan dikirimkan ke email yang Anda
+                                masukkan untuk verifikasi akun.</span>
+                        </div>
+
                         {{-- Tombol Register --}}
-                        <button type="submit" class="btn-register">Daftar Akun</button>
+                        <button type="submit" class="btn-register" id="btnRegister">Daftar Akun</button>
                     </form>
 
                     {{-- Link Login --}}
@@ -530,6 +586,21 @@
                     }
                 });
             });
+
+            // Loading state on form submit
+            const registerForm = document.querySelector('form[action="{{ route('register') }}"]');
+            const btnRegister = document.getElementById('btnRegister');
+            if (registerForm && btnRegister) {
+                registerForm.addEventListener('submit', () => {
+                    btnRegister.disabled = true;
+                    btnRegister.innerHTML = `
+                        <svg class="btn-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                        </svg>
+                        Mengirim OTP...
+                    `;
+                });
+            }
         });
     </script>
 </body>

@@ -34,11 +34,34 @@ class OtpVerificationController extends Controller
 
         if ($user->email_verified_at !== null) {
             session()->forget('otp_user_id');
-            return redirect()->route('pelanggan.dashboard');
+            // Jika user sudah auth, arahkan ke dashboard
+            if (Auth::check()) {
+                return Auth::user()->role === 'admin'
+                    ? redirect()->route('admin.dashboard')
+                    : redirect()->route('pelanggan.katalog');
+            }
+            return redirect()->route('login');
+        }
+
+        // Ambil info OTP terakhir untuk menampilkan sisa waktu cooldown
+        $latestOtp = OtpCode::where('user_id', $user->id)
+            ->where('purpose', 'email_verification')
+            ->whereNull('verified_at')
+            ->latest()
+            ->first();
+
+        // Hitung sisa cooldown resend (60 detik sejak OTP terakhir dibuat)
+        $resendCooldown = 0;
+        if ($latestOtp) {
+            $secondsSinceCreated = now()->diffInSeconds($latestOtp->created_at, false);
+            // diffInSeconds dengan false: negatif = masih dalam cooldown
+            $remaining = 60 + $secondsSinceCreated; // 60 detik cooldown
+            $resendCooldown = max(0, (int) $remaining);
         }
 
         return view('auth.verify-otp', [
             'user' => $user,
+            'resendCooldown' => $resendCooldown,
         ]);
     }
 
@@ -69,7 +92,7 @@ class OtpVerificationController extends Controller
         if ($user->email_verified_at !== null) {
             Auth::login($user);
             session()->forget('otp_user_id');
-            return redirect()->route('pelanggan.dashboard');
+            return redirect()->route('pelanggan.katalog');
         }
 
         $otp = OtpCode::where('user_id', $user->id)
@@ -79,7 +102,7 @@ class OtpVerificationController extends Controller
             ->first();
 
         if (!$otp) {
-            return back()->withErrors(['code' => 'Kode OTP tidak ditemukan. Silakan minta kode baru.']);
+            return back()->withErrors(['code' => 'Kode OTP tidak ditemukan. Silakan klik "Kirim Ulang OTP".']);
         }
 
         if ($otp->attempts >= 5) {
@@ -96,14 +119,15 @@ class OtpVerificationController extends Controller
             return back()->withErrors(['code' => "Kode OTP salah. Sisa percobaan: {$remaining}x."]);
         }
 
-        // OTP Valid! Mark OTP as verified & update user email_verified_at
+        // ── OTP Valid! ──────────────────────────────────────────────────────
         $otp->update(['verified_at' => now()]);
         $user->forceFill(['email_verified_at' => now()])->save();
 
         Auth::login($user);
         session()->forget('otp_user_id');
 
-        return redirect()->route('pelanggan.dashboard')->with('success', 'Email berhasil diverifikasi! Selamat datang di SIMAPES.');
+        return redirect()->route('pelanggan.katalog')
+            ->with('success', 'Email berhasil diverifikasi! Selamat datang di SIMAPES.');
     }
 
     /**
@@ -124,16 +148,30 @@ class OtpVerificationController extends Controller
         }
 
         if ($user->email_verified_at !== null) {
-            return redirect()->route('pelanggan.dashboard');
+            return redirect()->route('pelanggan.katalog');
         }
 
-        // Invalidate previous unverified OTPs
+        // ── Server-side cooldown check (60 detik) ──────────────────────────
+        $recentOtp = OtpCode::where('user_id', $user->id)
+            ->where('purpose', 'email_verification')
+            ->whereNull('verified_at')
+            ->where('created_at', '>', now()->subSeconds(60))
+            ->latest()
+            ->first();
+
+        if ($recentOtp) {
+            $waitSeconds = 60 - now()->diffInSeconds($recentOtp->created_at);
+            return back()->withErrors([
+                'code' => "Harap tunggu {$waitSeconds} detik sebelum meminta kode OTP baru.",
+            ]);
+        }
+
+        // ── Hapus OTP lama & buat yang baru ───────────────────────────────
         OtpCode::where('user_id', $user->id)
             ->where('purpose', 'email_verification')
             ->whereNull('verified_at')
             ->delete();
 
-        // Generate new 6-digit OTP
         $newCode = sprintf('%06d', mt_rand(0, 999999));
 
         OtpCode::create([

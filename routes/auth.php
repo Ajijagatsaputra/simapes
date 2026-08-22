@@ -12,13 +12,16 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
+// ── OTP Verification Routes (tidak perlu auth, session-based) ──────────────
 Route::get('verify-otp', [OtpVerificationController::class, 'show'])
     ->name('otp.verify');
 
 Route::post('verify-otp', [OtpVerificationController::class, 'verify'])
+    ->middleware(['throttle:10,1'])           // Maks 10 percobaan per menit (anti brute-force)
     ->name('otp.verify.submit');
 
 Route::post('resend-otp', [OtpVerificationController::class, 'resend'])
+    ->middleware(['throttle:3,5'])            // Maks 3 resend per 5 menit
     ->name('otp.resend');
 
 Route::middleware('guest')->group(function () {
