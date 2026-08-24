@@ -35,12 +35,12 @@
             'match'  => 'admin.produk.*',
             'icon'   => 'produk',
         ],
-        [
-            'label'  => 'Data Supplier',
-            'route'  => 'admin.supplier.index',
-            'match'  => 'admin.supplier.*',
-            'icon'   => 'supplier',
-        ],
+        // [
+        //     'label'  => 'Data Supplier',
+        //     'route'  => 'admin.supplier.index',
+        //     'match'  => 'admin.supplier.*',
+        //     'icon'   => 'supplier',
+        // ],
         [
             'label'  => 'Data Pesanan',
             'route'  => 'admin.pesanan.index',

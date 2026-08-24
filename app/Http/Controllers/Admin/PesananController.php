@@ -38,7 +38,7 @@ class PesananController extends Controller
             $query->where('status', $request->status);
         }
 
-        $pesanan = $query->with(['user', 'details.produk'])->orderBy('id', 'desc')->paginate(10)->withQueryString();
+        $pesanan = $query->with(['user', 'details.produk', 'progresProduksis'])->orderBy('id', 'desc')->paginate(10)->withQueryString();
 
         return view('admin.pesanan.index', compact(
             'pesanan',

@@ -15,7 +15,7 @@
     .page-date { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: #6b7e9f; background: #fff; border: 1px solid #e2e8f4; border-radius: 10px; padding: 8px 14px; }
 
     /* ── Stat Bar & Grid ── */
-    .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 22px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 22px; }
     .stat-bar { background: #fff; border: 1px solid #e8eef8; border-radius: 16px; padding: 18px 22px; display: flex; align-items: center; gap: 16px; margin-bottom: 0; box-shadow: 0 2px 8px rgba(74,144,217,.06); }
     .stat-bar-icon { width: 50px; height: 50px; background: #eaf3fc; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #4A90D9; flex-shrink: 0; }
     .stat-bar-label { font-size: .75rem; color: #8ca0bf; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
@@ -63,6 +63,10 @@
     .status-select.status-selesai { background: #e8f8ee; color: #34c472; }
     .status-select.status-batal { background: #fee2e2; color: #dc2626; }
     .status-select.loading { opacity: .5; cursor: wait; }
+    /* Disabled / Terkunci */
+    .status-select:disabled { opacity: 1; cursor: not-allowed; pointer-events: none; }
+    .status-locked-wrap { display: inline-flex; align-items: center; gap: 6px; flex-direction: column; }
+    .badge-locked { display: inline-flex; align-items: center; gap: 3px; font-size: .6rem; font-weight: 700; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 6px; padding: 2px 6px; margin-top: 3px; }
 
     /* ── Product List Item (Table) ── */
     .item-produk-row { font-size: 0.76rem; margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px dashed #e8eef8; }
@@ -212,6 +216,24 @@
                 </div>
             </div>
         </a>
+
+        {{-- Card 6: Batal / Ditolak ── --}}
+        <a href="{{ route('admin.pesanan.index', ['status' => 'batal']) }}" class="stat-bar-link">
+            <div class="stat-bar">
+                <div class="stat-bar-icon" style="background: #fee2e2; color: #dc2626;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="stat-bar-label">Batal</div>
+                    <div class="stat-bar-value">{{ $totalBatal }}</div>
+                    <div class="stat-bar-desc">Dibatalkan / ditolak</div>
+                </div>
+            </div>
+        </a>
     </div>
 
     {{-- ── Main Layout (full-width) ── --}}
@@ -266,6 +288,14 @@
                 </thead>
                 <tbody>
                     @forelse($pesanan as $index => $p)
+                    @php
+                        // Cek apakah tahapan ke-5 (Selesai) sudah dikonfirmasi
+                        $tahap5 = $p->progresProduksis->firstWhere('tahapan_ke', 5);
+                        $progresSelesai = $tahap5 && !is_null($tahap5->selesai_pada);
+                        // Pesanan dianggap TERKUNCI apabila:
+                        // status = selesai DAN tahapan ke-5 progres sudah selesai
+                        $isLocked = $p->status === 'selesai' && $progresSelesai;
+                    @endphp
                     <tr>
                         <td class="row-number">{{ $pesanan->firstItem() + $index }}</td>
                         <td style="font-weight: 700; color: #4A90D9;">{{ $p->no_pesanan }}</td>
@@ -307,18 +337,27 @@
                             Rp {{ number_format($p->total_harga, 0, ',', '.') }}
                         </td>
                         <td class="center">
-                            <select
-                                class="status-select status-{{ $p->status }}"
-                                data-id="{{ $p->id }}"
-                                data-current="{{ $p->status }}"
-                                data-url="{{ route('admin.pesanan.updateStatus', $p->id) }}"
-                                onchange="updateStatusAjax(this)">
-                                <option value="pending"    {{ $p->status === 'pending'    ? 'selected' : '' }}>Pending</option>
-                                <option value="diproses"   {{ $p->status === 'diproses'   ? 'selected' : '' }}>Diproses</option>
-                                <option value="dikerjakan" {{ $p->status === 'dikerjakan' ? 'selected' : '' }}>Dikerjakan</option>
-                                <option value="selesai"    {{ $p->status === 'selesai'    ? 'selected' : '' }}>Selesai</option>
-                                <option value="batal"      {{ $p->status === 'batal'      ? 'selected' : '' }}>Batal</option>
-                            </select>
+                            <div class="status-locked-wrap">
+                                <select
+                                    class="status-select status-{{ $p->status }}"
+                                    data-id="{{ $p->id }}"
+                                    data-current="{{ $p->status }}"
+                                    data-url="{{ route('admin.pesanan.updateStatus', $p->id) }}"
+                                    onchange="updateStatusAjax(this)"
+                                    {{ $isLocked ? 'disabled title=Pesanan sudah selesai dan dikunci' : '' }}>
+                                    <option value="pending"    {{ $p->status === 'pending'    ? 'selected' : '' }}>Pending</option>
+                                    <option value="diproses"   {{ $p->status === 'diproses'   ? 'selected' : '' }}>Diproses</option>
+                                    <option value="dikerjakan" {{ $p->status === 'dikerjakan' ? 'selected' : '' }}>Dikerjakan</option>
+                                    <option value="selesai"    {{ $p->status === 'selesai'    ? 'selected' : '' }}>Selesai</option>
+                                    <option value="batal"      {{ $p->status === 'batal'      ? 'selected' : '' }}>Batal</option>
+                                </select>
+                                @if($isLocked)
+                                    <span class="badge-locked">
+                                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                        Terkunci
+                                    </span>
+                                @endif
+                            </div>
                         </td>
                         <td class="center">
                             <span class="pay-status ps-{{ $p->status_pembayaran ?? 'belum_bayar' }}">
@@ -335,7 +374,7 @@
                                     </svg>
                                 </a>
 
-                                @if($p->status !== 'batal')
+                                @if($p->status !== 'batal' && !$isLocked)
                                     <button type="button" class="btn-batal-aksi" title="Batal / Tolak Pesanan"
                                         data-nama="{{ $p->no_pesanan }}"
                                         data-url="{{ route('admin.pesanan.updateStatus', $p->id) }}"
