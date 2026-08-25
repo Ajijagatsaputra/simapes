@@ -420,15 +420,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($pesanan->details as $detail)
+                            @php
+                                $groupedDetails = $pesanan->details->groupBy('produk_id');
+                            @endphp
+                            @foreach($groupedDetails as $produkId => $details)
+                                @php
+                                    $firstItem = $details->first();
+                                    $totalQty = $details->sum('total_item');
+                                @endphp
                                 <tr>
-                                    <td style="font-weight: 600;">{{ $detail->produk->nama_produk ?? '-' }}</td>
+                                    <td style="font-weight: 600;">{{ $firstItem->produk->nama_produk ?? '-' }}</td>
                                     <td>
-                                        <span style="background: #e8f0fd; color: #4A90D9; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: .72rem;">
-                                            {{ $detail->ukuran }}
-                                        </span>
+                                        <div style="display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
+                                            @foreach($details as $d)
+                                                <span style="display:inline-flex; align-items:center; gap:3px; background:#eef3fc; border:1px solid #c5d8f5; border-radius:20px; padding:2px 7px; font-size:0.7rem; white-space:nowrap;">
+                                                    <span style="background:#4A90D9; color:#fff; border-radius:10px; padding:1px 5px; font-weight:700; font-size:0.65rem;">{{ $d->ukuran }}</span>
+                                                    <span style="color:#2d4060; font-weight:600;">×{{ $d->total_item }}</span>
+                                                </span>
+                                            @endforeach
+                                        </div>
                                     </td>
-                                    <td style="text-align: right; font-weight: 600;">{{ $detail->total_item }} pcs</td>
+                                    <td style="text-align: right; font-weight: 600;">{{ $totalQty }} pcs</td>
                                 </tr>
                             @endforeach
                         </tbody>
