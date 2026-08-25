@@ -1229,17 +1229,35 @@
                         <div
                             style="font-size:.72rem;font-weight:700;color:#8ca0bf;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">
                             Simulasi Alokasi DP per Item</div>
-                        <div style="display:flex;flex-direction:column;gap:6px;">
-                            @foreach($pesanan->details as $d)
+                        <div style="display:flex;flex-direction:column;gap:10px;">
+                            @php
+                                $groupedDetails = $pesanan->details->groupBy('produk_id');
+                            @endphp
+                            @foreach($groupedDetails as $produkId => $details)
                                 @php
-                                    $proporsi = $pesanan->total_harga > 0 ? $d->subtotal / $pesanan->total_harga : 0;
-                                    $dpItem = $d->harga_satuan > 0 ? (int) floor($dp50 * $proporsi / $d->harga_satuan) : 0;
+                                    $firstDetail = $details->first();
                                 @endphp
-                                <div style="display:flex;justify-content:space-between;align-items:center;font-size:.75rem;">
-                                    <span style="color:#1a2b4a;font-weight:600;">{{ $d->produk->nama_produk ?? '-' }} <span
-                                            style="background:#e8f0fd;color:#4A90D9;padding:1px 5px;border-radius:4px;font-size:.65rem;font-weight:700;">{{ $d->ukuran }}</span></span>
-                                    <span style="color:#6b7e9f;">DP → <strong style="color:#d97706;">{{ $dpItem }} pcs</strong>
-                                        / {{ $d->total_item }} pcs terjamin produksi</span>
+                                <div style="background:#fafbfc; border:1px solid #f1f5f9; border-radius:8px; padding:10px 12px;">
+                                    <div style="font-weight:700; color:#1a2b4a; font-size:.78rem; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+                                        📦 {{ $firstDetail->produk->nama_produk ?? '-' }}
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; gap:4px; border-top:1px dashed #e2e8f4; padding-top:6px; margin-top:2px;">
+                                        @foreach($details as $d)
+                                            @php
+                                                $proporsi = $pesanan->total_harga > 0 ? $d->subtotal / $pesanan->total_harga : 0;
+                                                $dpItem = $d->harga_satuan > 0 ? (int) floor($dp50 * $proporsi / $d->harga_satuan) : 0;
+                                            @endphp
+                                            <div style="display:flex; justify-content:space-between; align-items:center; font-size:.72rem;">
+                                                <span style="color:#4b5563; display:inline-flex; align-items:center; gap:5px;">
+                                                    <span style="background:#e8f0fd; color:#4A90D9; padding:1px 5px; border-radius:4px; font-weight:700; font-size:.62rem;">{{ $d->ukuran }}</span>
+                                                    Target: {{ $d->total_item }} pcs
+                                                </span>
+                                                <span style="color:#6b7e9f;">
+                                                    Terjamin DP → <strong style="color:#d97706; font-weight:700;">{{ $dpItem }} pcs</strong>
+                                                </span>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
