@@ -35,16 +35,16 @@ class DashboardController extends Controller
 
         foreach ($pesanans as $pesanan) {
             foreach ($pesanan->details as $detail) {
-                $key = ($detail->produk_id) . '-' . ($detail->ukuran);
+                $key = $detail->produk_id;
                 if (!isset($breakdownRaw[$key])) {
                     $breakdownRaw[$key] = [
                         'produk' => $detail->produk->nama_produk ?? 'Seragam',
-                        'ukuran' => $detail->ukuran,
                         'total_pesanan' => 0,
                         'belum_dikerjakan' => 0,
                         'sedang_diproses' => 0,
                         'selesai' => 0,
                         'total_terbayar_pcs' => 0,
+                        'sizes' => []
                     ];
                 }
 
@@ -54,6 +54,12 @@ class DashboardController extends Controller
                 $pcsTotalSeluruhItem += $totalItem;
                 $breakdownRaw[$key]['total_pesanan'] += $totalItem;
                 $breakdownRaw[$key]['total_terbayar_pcs'] += $jumlahTerbayar;
+
+                // Catat/akumulasi sizes
+                if (!isset($breakdownRaw[$key]['sizes'][$detail->ukuran])) {
+                    $breakdownRaw[$key]['sizes'][$detail->ukuran] = 0;
+                }
+                $breakdownRaw[$key]['sizes'][$detail->ukuran] += $totalItem;
 
                 if ($pesanan->status === 'selesai') {
                     // Pesanan selesai → semua pcs dianggap selesai

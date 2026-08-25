@@ -885,10 +885,16 @@
                                     <tr>
                                         <td style="font-weight: 700; color: #1a2b4a;">{{ $item['produk'] }}</td>
                                         <td style="text-align: center;">
-                                            <span class="status-badge"
-                                                style="background:#e8f0fd; color:#4a90d9; border:none; padding: 2px 8px; font-weight:700;">
-                                                {{ $item['ukuran'] }}
-                                            </span>
+                                            <div style="display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;">
+                                                @foreach($item['sizes'] as $sz => $qty)
+                                                    <span
+                                                        style="display:inline-flex; align-items:center; gap:3px; background:#eef3fc; border:1px solid #c5d8f5; border-radius:20px; padding:2px 7px; font-size:0.7rem; white-space:nowrap;">
+                                                        <span
+                                                            style="background:#4A90D9; color:#fff; border-radius:10px; padding:1px 5px; font-weight:700; font-size:0.65rem;">{{ $sz }}</span>
+                                                        <span style="color:#2d4060; font-weight:600;">×{{ $qty }}</span>
+                                                    </span>
+                                                @endforeach
+                                            </div>
                                         </td>
                                         <td style="text-align: center; font-weight: 700; color: #1a2b4a;">
                                             {{ $item['total_pesanan'] }} Pcs
