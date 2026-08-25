@@ -1232,6 +1232,36 @@
                         <div style="display:flex;flex-direction:column;gap:10px;">
                             @php
                                 $groupedDetails = $pesanan->details->groupBy('produk_id');
+                                $totalSubtotal = $pesanan->details->sum('subtotal');
+                                $alokasiSim = [];
+                                foreach ($pesanan->details as $d) {
+                                    if ($totalSubtotal <= 0 || $d->total_item <= 0) {
+                                        $alokasiSim[$d->id] = 0;
+                                        continue;
+                                    }
+                                    $proporsi = $d->subtotal / $totalSubtotal;
+                                    $nominalItem = $dp50 * $proporsi;
+                                    $jumlahCover = (int) floor($nominalItem / $d->harga_satuan);
+                                    $alokasiSim[$d->id] = min($jumlahCover, $d->total_item);
+                                }
+
+                                // Apply rounding correction
+                                $totalNominalAlokasi = 0;
+                                foreach ($pesanan->details as $d) {
+                                    $totalNominalAlokasi += $alokasiSim[$d->id] * $d->harga_satuan;
+                                }
+                                $selisih = $dp50 - $totalNominalAlokasi;
+                                if ($selisih > 0) {
+                                    foreach ($pesanan->details as $d) {
+                                        $sisaItem = $d->total_item - $alokasiSim[$d->id];
+                                        if ($sisaItem > 0 && $selisih >= $d->harga_satuan) {
+                                            $tambah = (int) floor($selisih / $d->harga_satuan);
+                                            $tambah = min($tambah, $sisaItem);
+                                            $alokasiSim[$d->id] += $tambah;
+                                            $selisih -= $tambah * $d->harga_satuan;
+                                        }
+                                    }
+                                }
                             @endphp
                             @foreach($groupedDetails as $produkId => $details)
                                 @php
@@ -1244,8 +1274,7 @@
                                     <div style="display:flex; flex-direction:column; gap:4px; border-top:1px dashed #e2e8f4; padding-top:6px; margin-top:2px;">
                                         @foreach($details as $d)
                                             @php
-                                                $proporsi = $pesanan->total_harga > 0 ? $d->subtotal / $pesanan->total_harga : 0;
-                                                $dpItem = $d->harga_satuan > 0 ? (int) floor($dp50 * $proporsi / $d->harga_satuan) : 0;
+                                                $dpItem = $alokasiSim[$d->id] ?? 0;
                                             @endphp
                                             <div style="display:flex; justify-content:space-between; align-items:center; font-size:.72rem;">
                                                 <span style="color:#4b5563; display:inline-flex; align-items:center; gap:5px;">
@@ -1333,10 +1362,24 @@
                                 {{ ucfirst($p->metode_pembayaran) }}@if($p->catatan) · {{ $p->catatan }}@endif
                             </div>
                             <div style="font-size:.72rem; color:#5a7090; margin-top:6px;">
-                                @foreach($p->details as $pd)
-                                    <strong>{{ $pd->detailPesanan->produk->nama_produk ?? '-' }}
-                                        ({{ $pd->detailPesanan->ukuran }})</strong>: {{ $pd->jumlah_cover }} pcs
-                                    @if(!$loop->last), @endif
+                                @php
+                                    $groupedPd = $p->details->groupBy(function($pd) {
+                                        return $pd->detailPesanan->produk_id ?? 0;
+                                    });
+                                @endphp
+                                @foreach($groupedPd as $prodId => $pdItems)
+                                    @php
+                                        $firstPd = $pdItems->first();
+                                    @endphp
+                                    <div style="display:flex; flex-wrap:wrap; gap:5px; align-items:center; margin-bottom:4px;">
+                                        <strong>{{ $firstPd->detailPesanan->produk->nama_produk ?? '-' }}</strong>:
+                                        @foreach($pdItems as $pd)
+                                            <span style="display:inline-flex; align-items:center; gap:2px; background:#f0f4f8; border:1px solid #d1dbed; border-radius:12px; padding:1px 6px; font-size:0.68rem;">
+                                                <span style="background:#4A90D9; color:#fff; border-radius:10px; padding:0px 4px; font-weight:700; font-size:0.62rem;">{{ $pd->detailPesanan->ukuran }}</span>
+                                                <span style="color:#2d4060; font-weight:600;">×{{ $pd->jumlah_cover }}</span>
+                                            </span>
+                                        @endforeach
+                                    </div>
                                 @endforeach
                             </div>
                         </div>
