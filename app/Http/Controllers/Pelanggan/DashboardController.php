@@ -52,21 +52,23 @@ class DashboardController extends Controller
                 $jumlahTerbayar = $detail->jumlah_terbayar ?? 0;
 
                 $pcsTotalSeluruhItem += $totalItem;
+                $breakdownRaw[$key]['total_pesanan'] += $totalItem;
+                $breakdownRaw[$key]['total_terbayar_pcs'] += $jumlahTerbayar;
 
                 if ($pesanan->status === 'selesai') {
+                    // Pesanan selesai → semua pcs dianggap selesai
                     $pcsSelesai += $totalItem;
-                    $breakdownRaw[$key]['total_pesanan'] += $totalItem;
                     $breakdownRaw[$key]['selesai'] += $totalItem;
-                    $breakdownRaw[$key]['total_terbayar_pcs'] += $totalItem;
-                } else {
-                    $belum = max(0, $totalItem - $jumlahTerbayar);
-                    $pcsBelumDikerjakan += $belum;
-                    $pcsSedangDiproses += $jumlahTerbayar;
 
-                    $breakdownRaw[$key]['total_pesanan'] += $totalItem;
-                    $breakdownRaw[$key]['belum_dikerjakan'] += $belum;
-                    $breakdownRaw[$key]['sedang_diproses'] += $jumlahTerbayar;
-                    $breakdownRaw[$key]['total_terbayar_pcs'] += $jumlahTerbayar;
+                } elseif (in_array($pesanan->status, ['dikerjakan', 'diproses'])) {
+                    // Pesanan sedang produksi → semua pcs "sedang dikerjakan"
+                    $pcsSedangDiproses += $totalItem;
+                    $breakdownRaw[$key]['sedang_diproses'] += $totalItem;
+
+                } else {
+                    // Pesanan pending / belum dikerjakan
+                    $pcsBelumDikerjakan += $totalItem;
+                    $breakdownRaw[$key]['belum_dikerjakan'] += $totalItem;
                 }
             }
         }

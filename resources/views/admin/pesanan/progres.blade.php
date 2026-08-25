@@ -343,14 +343,14 @@
                                     <label class="form-label" style="font-size:0.75rem; font-weight:600; color:#5a7090;">Jumlah Selesai (Pcs)</label>
                                     <input type="number" name="jumlah_pcs" class="form-input" min="0" max="{{ $totalPcs }}" 
                                         value="{{ old('jumlah_pcs', $slot->jumlah_pcs ?? $totalPcs) }}" 
-                                        {{ $isLocked ? 'disabled' : '' }} required style="padding: 6px 10px; font-size: 0.8rem;">
+                                        {{ $isCompleted || $isLocked ? 'disabled' : '' }} required style="padding: 6px 10px; font-size: 0.8rem;">
                                 </div>
                                 <div>
                                     <label class="form-label" style="font-size:0.75rem; font-weight:600; color:#5a7090;">
                                         {{ $ke === 5 ? 'Upload Nota / Dokumen (PDF/Foto)' : 'Upload Foto Dokumentasi' }}
                                     </label>
                                     <input type="file" name="dokumentasi" class="form-input" accept="{{ $ke === 5 ? 'image/*,.pdf' : 'image/*' }}" 
-                                        {{ $isLocked ? 'disabled' : '' }} style="padding: 4px 6px; font-size: 0.72rem;">
+                                        {{ $isCompleted || $isLocked ? 'disabled' : '' }} style="padding: 4px 6px; font-size: 0.72rem;">
                                 </div>
                             </div>
 
@@ -363,7 +363,7 @@
                                     }
                                 @endphp
                                 <input type="text" name="catatan" class="form-input" placeholder="{{ $ke === 4 ? 'Pesanan sudah selesai, silahkan lakukan pelunasan agar pesanan dapat diambil' : 'Tulis catatan tahapan ini...' }}" 
-                                    value="{{ old('catatan', $defaultCatatan) }}" {{ $isLocked ? 'disabled' : '' }} style="padding: 6px 10px; font-size: 0.8rem;">
+                                    value="{{ old('catatan', $defaultCatatan) }}" {{ $isCompleted || $isLocked ? 'disabled' : '' }} style="padding: 6px 10px; font-size: 0.8rem;">
                             </div>
 
                             @if($slot && $slot->dokumentasi)
@@ -385,10 +385,10 @@
 
                             <div style="display:flex; align-items:center; justify-content: space-between; gap: 16px; margin-top: 16px; padding-top: 12px; border-top: 1px dashed #edf2f7;">
                                 <label style="display:flex; align-items:center; gap:6px; font-size:0.78rem; font-weight:600; color:#2d3748; cursor:pointer;">
-                                    <input type="checkbox" name="tandai_selesai" value="1" {{ $isCompleted ? 'checked' : '' }} {{ $isLocked ? 'disabled' : '' }}>
+                                    <input type="checkbox" name="tandai_selesai" value="1" {{ $isCompleted ? 'checked' : '' }} {{ $isCompleted || $isLocked ? 'disabled' : '' }}>
                                     Tandai Tahap Ini Selesai
                                 </label>
-                                <button type="submit" class="btn-submit" {{ $isLocked ? 'disabled' : '' }} style="padding: 7px 16px; font-size: 0.78rem; background: #4A90D9; color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer; margin-left: auto;">
+                                <button type="submit" class="btn-submit" {{ $isCompleted || $isLocked ? 'disabled' : '' }} style="padding: 7px 16px; font-size: 0.78rem; background: {{ $isCompleted || $isLocked ? '#cbd5e1' : '#4A90D9' }}; color:#fff; border:none; border-radius:8px; font-weight:700; cursor:{{ $isCompleted || $isLocked ? 'not-allowed' : 'pointer' }}; margin-left: auto;">
                                     Simpan Tahap {{ $ke }}
                                 </button>
                             </div>

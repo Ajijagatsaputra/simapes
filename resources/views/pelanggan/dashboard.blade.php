@@ -701,7 +701,7 @@
                     <div class="pcs-info">
                         <span class="pcs-value">{{ $pcsSedangDiproses }} Pcs</span>
                         <span class="pcs-label">Sedang Dikerjakan</span>
-                        <span class="pcs-desc">Sudah divalidasi DP & sedang dijahit</span>
+                        <span class="pcs-desc">Pesanan sedang dalam proses produksi</span>
                     </div>
                 </div>
 

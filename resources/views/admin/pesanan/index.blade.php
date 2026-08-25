@@ -364,7 +364,7 @@
                                     <option value="pending"    {{ $p->status === 'pending'    ? 'selected' : '' }}>Pending</option>
                                     <option value="diproses"   {{ $p->status === 'diproses'   ? 'selected' : '' }}>Diproses</option>
                                     <option value="dikerjakan" {{ $p->status === 'dikerjakan' ? 'selected' : '' }}>Dikerjakan</option>
-                                    <option value="selesai"    {{ $p->status === 'selesai'    ? 'selected' : '' }}>Selesai</option>
+                                    <option value="selesai"    {{ $p->status === 'selesai'    ? 'selected' : '' }} {{ !$progresSelesai ? 'disabled' : '' }}>Selesai</option>
                                     <option value="batal"      {{ $p->status === 'batal'      ? 'selected' : '' }}>Batal</option>
                                 </select>
                                 @if($isLocked)

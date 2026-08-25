@@ -652,110 +652,178 @@
             </div>
         </div>
 
-        {{-- Right: Form Pembayaran --}}
+        {{-- Right: Status Info Panel --}}
         <div>
-            @if($pesanan->sisa_tagihan > 0)
-                <div class="card">
-                    <div class="card-title">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-                            <line x1="1" y1="10" x2="23" y2="10" />
-                        </svg>
-                        Catat Pembayaran Baru
+            @php
+                $dpNominal = $pesanan->total_harga / 2;
+                $t1 = $pesanan->pembayarans->where('termin_ke', 1)->first();
+                $t2 = $pesanan->pembayarans->where('termin_ke', 2)->first();
+                $sp = $pesanan->status_pembayaran ?? 'belum_bayar';
+            @endphp
+
+            {{-- Status Badge Card --}}
+            <div class="card" style="text-align:center; padding:28px 24px;">
+                <div style="font-size:.72rem; font-weight:600; color:#8ca0bf; text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px;">Status Pembayaran</div>
+                @if($sp === 'lunas')
+                    <div style="width:60px; height:60px; border-radius:50%; background:#ecfdf5; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                     </div>
+                    <div style="font-size:1.1rem; font-weight:800; color:#059669;">Lunas</div>
+                    <div style="font-size:.75rem; color:#6b7e9f; margin-top:4px;">Seluruh tagihan telah terbayar</div>
+                @elseif($sp === 'dp')
+                    <div style="width:60px; height:60px; border-radius:50%; background:#fff3e6; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
+                    <div style="font-size:1.1rem; font-weight:800; color:#d97706;">DP Terbayar</div>
+                    <div style="font-size:.75rem; color:#6b7e9f; margin-top:4px;">Menunggu pelunasan dari pelanggan</div>
+                @else
+                    <div style="width:60px; height:60px; border-radius:50%; background:#fef2f2; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+                    </div>
+                    <div style="font-size:1.1rem; font-weight:800; color:#dc2626;">Belum Bayar</div>
+                    <div style="font-size:.75rem; color:#6b7e9f; margin-top:4px;">Pelanggan belum melakukan pembayaran</div>
+                @endif
+            </div>
 
-                    <form method="POST" action="{{ route('admin.pesanan.pembayaran.store', $pesanan->id) }}" id="payForm">
-                        @csrf
-                        <div class="form-group">
-                            <label class="form-label">Tanggal Bayar</label>
-                            <input type="date" name="tanggal_bayar" class="form-input" value="{{ date('Y-m-d') }}" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Metode Pembayaran</label>
-                            <select name="metode_pembayaran" class="form-select" required>
-                                <option value="transfer">Transfer Bank</option>
-                                <option value="tunai">Tunai</option>
-                                <option value="qris">QRIS</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Alokasi Per Item (berapa pcs yang dibayar)</label>
-                            <table class="alloc-tbl">
-                                <thead>
-                                    <tr>
-                                        <th>Item</th>
-                                        <th>Sisa</th>
-                                        <th>Bayar (pcs)</th>
-                                        <th style="text-align:right;">Nominal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($pesanan->details as $d)
-                                        <tr>
-                                            <td style="font-weight:600; font-size:.75rem;">{{ $d->produk->nama_produk ?? '-' }}
-                                                <span style="color:#4A90D9;">({{ $d->ukuran }})</span></td>
-                                            <td style="font-size:.75rem;">{{ $d->jumlah_belum_bayar }} pcs</td>
-                                            <td>
-                                                <input type="number" name="alokasi[{{ $d->id }}]" class="alloc-input" value="0"
-                                                    min="0" max="{{ $d->jumlah_belum_bayar }}" data-harga="{{ $d->harga_satuan }}"
-                                                    data-max="{{ $d->jumlah_belum_bayar }}" oninput="calcAlloc()">
-                                            </td>
-                                            <td style="text-align:right; font-weight:600;" id="nom-{{ $d->id }}">Rp 0</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div style="background:#f5f8ff; border-radius:10px; padding:12px; margin-bottom:14px;">
-                            <div class="calc-row"><span>Total Alokasi</span><span id="calcTotal"
-                                    style="font-weight:700; color:#4A90D9;">Rp 0</span></div>
-                            <div class="calc-row"><span>Sisa Tagihan</span><span style="font-weight:600; color:#b91c1c;">Rp
-                                    {{ number_format($pesanan->sisa_tagihan, 0, ',', '.') }}</span></div>
-                        </div>
-
-                        <input type="hidden" name="jumlah_bayar" id="jumlahBayarHidden" value="0">
-
-                        <div class="form-group">
-                            <label class="form-label">Catatan (opsional)</label>
-                            <textarea name="catatan" class="form-textarea" placeholder="Catatan pembayaran..."></textarea>
-                        </div>
-
-                        <button type="submit" class="btn-submit" id="btnSubmitPay" disabled>Catat Pembayaran</button>
-                    </form>
+            {{-- Termin 1: DP --}}
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid #f0f4fb;">
+                    <div style="font-size:.88rem; font-weight:700; color:#1a2b4a; display:flex; align-items:center; gap:8px;">
+                        <span style="width:28px; height:28px; border-radius:50%; background:{{ $t1 && $t1->status === 'verified' ? '#ecfdf5' : '#f5f8ff' }}; color:{{ $t1 && $t1->status === 'verified' ? '#059669' : '#8ca0bf' }}; display:inline-flex; align-items:center; justify-content:center; font-weight:800; font-size:.78rem;">1</span>
+                        Termin 1 &mdash; DP
+                    </div>
+                    @if($t1)
+                        @if($t1->status === 'verified')
+                            <span style="background:#ecfdf5; color:#059669; font-size:.65rem; font-weight:700; padding:3px 8px; border-radius:10px;">✓ Verified</span>
+                        @else
+                            <span style="background:#fff3e6; color:#d97706; font-size:.65rem; font-weight:700; padding:3px 8px; border-radius:10px;">⏳ Pending</span>
+                        @endif
+                    @else
+                        <span style="background:#f3f4f6; color:#6b7280; font-size:.65rem; font-weight:700; padding:3px 8px; border-radius:10px;">Belum Dibayar</span>
+                    @endif
                 </div>
-            @else
-                <div class="card" style="text-align:center; padding:40px;">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.5"
-                        style="margin-bottom:12px;">
-                        <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                    <h3 style="color:#059669; font-weight:800; margin-bottom:4px;">Pembayaran Lunas</h3>
-                    <p style="font-size:.82rem; color:#6b7e9f;">Seluruh tagihan untuk pesanan ini telah terbayar.</p>
+
+                @if($t1)
+                    <div style="display:flex; flex-direction:column; gap:8px; font-size:.8rem;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#8ca0bf;">Nominal</span>
+                            <span style="font-weight:700; color:#1a2b4a;">Rp {{ number_format($t1->jumlah_bayar, 0, ',', '.') }}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#8ca0bf;">Tanggal</span>
+                            <span style="font-weight:600;">{{ $t1->tanggal_bayar?->isoFormat('DD MMM YYYY') ?? '-' }}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#8ca0bf;">Metode</span>
+                            <span style="font-weight:600;">{{ ucfirst($t1->metode_pembayaran ?? '-') }}</span>
+                        </div>
+                        @if($t1->catatan_pelanggan)
+                            <div style="background:#fff3e6; border:1px solid #fde68a; border-radius:8px; padding:8px 10px; font-size:.72rem; color:#92400e;">
+                                💬 <em>"{{ $t1->catatan_pelanggan }}"</em>
+                            </div>
+                        @endif
+                        @if($t1->bukti_bayar)
+                            <a href="{{ asset('storage/' . $t1->bukti_bayar) }}" target="_blank"
+                                style="display:inline-flex; align-items:center; gap:6px; font-size:.72rem; color:#4A90D9; text-decoration:none; font-weight:700; background:#e8f0fd; padding:6px 10px; border-radius:6px; width:fit-content;">
+                                📎 Lihat Bukti Pembayaran
+                            </a>
+                        @endif
+                        @if($t1->status === 'pending')
+                            <form method="POST" action="{{ route('admin.pesanan.pembayaran.verifikasi', [$pesanan->id, $t1->id]) }}">
+                                @csrf
+                                <button type="submit"
+                                    style="width:100%; background:#10b981; color:#fff; border:none; border-radius:8px; padding:9px; font-size:.8rem; font-weight:700; cursor:pointer; transition:background .15s;"
+                                    onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                                    ✓ Verifikasi Pembayaran DP
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                @else
+                    <div style="text-align:center; padding:16px 0; color:#a0aec0; font-size:.8rem;">
+                        Pelanggan belum melakukan pembayaran DP.
+                    </div>
+                @endif
+            </div>
+
+            {{-- Termin 2: Pelunasan --}}
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid #f0f4fb;">
+                    <div style="font-size:.88rem; font-weight:700; color:#1a2b4a; display:flex; align-items:center; gap:8px;">
+                        <span style="width:28px; height:28px; border-radius:50%; background:{{ $t2 && $t2->status === 'verified' ? '#ecfdf5' : '#f5f8ff' }}; color:{{ $t2 && $t2->status === 'verified' ? '#059669' : '#8ca0bf' }}; display:inline-flex; align-items:center; justify-content:center; font-weight:800; font-size:.78rem;">2</span>
+                        Termin 2 &mdash; Pelunasan
+                    </div>
+                    @if($t2)
+                        @if($t2->status === 'verified')
+                            <span style="background:#ecfdf5; color:#059669; font-size:.65rem; font-weight:700; padding:3px 8px; border-radius:10px;">✓ Verified</span>
+                        @else
+                            <span style="background:#fff3e6; color:#d97706; font-size:.65rem; font-weight:700; padding:3px 8px; border-radius:10px;">⏳ Pending</span>
+                        @endif
+                    @elseif($t1 && $t1->status === 'verified')
+                        <span style="background:#eff6ff; color:#3b82f6; font-size:.65rem; font-weight:700; padding:3px 8px; border-radius:10px;">Siap Dibayar</span>
+                    @else
+                        <span style="background:#f3f4f6; color:#6b7280; font-size:.65rem; font-weight:700; padding:3px 8px; border-radius:10px;">Terkunci</span>
+                    @endif
                 </div>
-            @endif
+
+                @if($t2)
+                    <div style="display:flex; flex-direction:column; gap:8px; font-size:.8rem;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#8ca0bf;">Nominal</span>
+                            <span style="font-weight:700; color:#1a2b4a;">Rp {{ number_format($t2->jumlah_bayar, 0, ',', '.') }}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#8ca0bf;">Tanggal</span>
+                            <span style="font-weight:600;">{{ $t2->tanggal_bayar?->isoFormat('DD MMM YYYY') ?? '-' }}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:#8ca0bf;">Metode</span>
+                            <span style="font-weight:600;">{{ ucfirst($t2->metode_pembayaran ?? '-') }}</span>
+                        </div>
+                        @if($t2->catatan_pelanggan)
+                            <div style="background:#fff3e6; border:1px solid #fde68a; border-radius:8px; padding:8px 10px; font-size:.72rem; color:#92400e;">
+                                💬 <em>"{{ $t2->catatan_pelanggan }}"</em>
+                            </div>
+                        @endif
+                        @if($t2->bukti_bayar)
+                            <a href="{{ asset('storage/' . $t2->bukti_bayar) }}" target="_blank"
+                                style="display:inline-flex; align-items:center; gap:6px; font-size:.72rem; color:#4A90D9; text-decoration:none; font-weight:700; background:#e8f0fd; padding:6px 10px; border-radius:6px; width:fit-content;">
+                                📎 Lihat Bukti Pembayaran
+                            </a>
+                        @endif
+                        @if($t2->status === 'pending')
+                            <form method="POST" action="{{ route('admin.pesanan.pembayaran.verifikasi', [$pesanan->id, $t2->id]) }}">
+                                @csrf
+                                <button type="submit"
+                                    style="width:100%; background:#10b981; color:#fff; border:none; border-radius:8px; padding:9px; font-size:.8rem; font-weight:700; cursor:pointer; transition:background .15s;"
+                                    onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                                    ✓ Verifikasi Pelunasan
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                @elseif($t1 && $t1->status === 'verified')
+                    <div style="text-align:center; padding:16px 0; color:#3b82f6; font-size:.8rem;">
+                        DP sudah lunas. Menunggu pelanggan membayar pelunasan.
+                    </div>
+                @else
+                    <div style="text-align:center; padding:16px 0; color:#a0aec0; font-size:.8rem;">
+                        🔒 Terkunci — selesaikan Termin 1 terlebih dahulu.
+                    </div>
+                @endif
+            </div>
+
+            {{-- Info Note --}}
+            <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:12px; padding:14px 16px; font-size:.75rem; color:#0369a1; display:flex; gap:10px; align-items:flex-start;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <div>
+                    <strong>Pembayaran dilakukan oleh pelanggan</strong> melalui gateway Xendit secara online.
+                    Admin hanya melakukan <strong>verifikasi & monitoring</strong>.
+                </div>
+            </div>
         </div>
     </div>
 @endsection
 
 @push('scripts')
-    <script>
-        function calcAlloc() {
-            let total = 0;
-            document.querySelectorAll('.alloc-input').forEach(input => {
-                const qty = parseInt(input.value) || 0;
-                const harga = parseFloat(input.dataset.harga) || 0;
-                const max = parseInt(input.dataset.max) || 0;
-                if (qty > max) input.value = max;
-                const nom = Math.min(qty, max) * harga;
-                total += nom;
-                const detailId = input.name.match(/\[(\d+)\]/)[1];
-                document.getElementById('nom-' + detailId).textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(nom);
-            });
-            document.getElementById('calcTotal').textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(total);
-            document.getElementById('jumlahBayarHidden').value = total;
-            document.getElementById('btnSubmitPay').disabled = total <= 0;
-        }
-    </script>
 @endpush

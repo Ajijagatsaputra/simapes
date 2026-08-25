@@ -111,6 +111,29 @@ class ProgresProduksiController extends Controller
 
             $progres->save();
 
+            // ── Auto-update status pesanan saat Tahap 5 (Selesai) diisi ──
+            if ($ke === 5) {
+                if ($tandaiSelesai && $pesanan->status !== 'selesai') {
+                    $pesanan->update(['status' => 'selesai']);
+                    StatusLog::create([
+                        'pesanan_id' => $pesanan->id,
+                        'status' => 'selesai',
+                        'label' => StatusLog::LABELS['selesai'] ?? 'Selesai',
+                        'catatan' => 'Otomatis: Tahap 5 (Selesai) telah ditandai selesai.',
+                        'created_at' => now(),
+                    ]);
+                } elseif (!$tandaiSelesai && $pesanan->status === 'selesai') {
+                    $pesanan->update(['status' => 'dikerjakan']);
+                    StatusLog::create([
+                        'pesanan_id' => $pesanan->id,
+                        'status' => 'dikerjakan',
+                        'label' => StatusLog::LABELS['dikerjakan'] ?? 'Sedang Dikerjakan',
+                        'catatan' => 'Otomatis: Tahap 5 (Selesai) dibatalkan/belum selesai.',
+                        'created_at' => now(),
+                    ]);
+                }
+            }
+
             if ($ke === 4) {
                 StatusLog::create([
                     'pesanan_id' => $pesanan->id,

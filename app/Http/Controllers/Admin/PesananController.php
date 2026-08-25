@@ -71,6 +71,22 @@ class PesananController extends Controller
             return redirect()->back()->with('error', $msg);
         }
 
+        // Validasi: Status selesai hanya boleh jika Tahap 5 (Selesai) di Progres sudah selesai
+        if ($request->status === 'selesai') {
+            $tahap5 = $pesanan->progresProduksis->where('tahapan_ke', 5)->first();
+            if (!$tahap5 || is_null($tahap5->selesai_pada)) {
+                $msg = 'Status pesanan tidak dapat diubah ke Selesai sebelum Tahap 5 (Selesai) di progres produksi selesai.';
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $msg,
+                        'current_status' => $pesanan->status,
+                    ], 422);
+                }
+                return redirect()->back()->with('error', $msg);
+            }
+        }
+
         $pesanan->update(['status' => $request->status]);
 
         // ── Simpan log status dengan timestamp ──
