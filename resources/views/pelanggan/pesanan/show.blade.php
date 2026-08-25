@@ -1066,15 +1066,17 @@
 
             {{-- Invoice Section — Interaktif dengan Tombol Bayar --}}
             @php
-                $dp50 = $pesanan->total_harga / 2;
-                $lunas50 = $pesanan->total_harga / 2;
+                $dp50            = $pesanan->total_harga / 2;          
+                $nominalPelunasan = $pesanan->sisa_tagihan > 0          
+                    ? $pesanan->sisa_tagihan
+                    : ($pesanan->total_harga / 2);
                 $sp = $pesanan->status_pembayaran ?? 'belum_bayar';
                 $termin1 = $pesanan->pembayarans->where('termin_ke', 1)->first();
                 $termin2 = $pesanan->pembayarans->where('termin_ke', 2)->first();
                 $t1Verified = $termin1 && $termin1->status === 'verified';
-                $t1Pending = $termin1 && $termin1->status === 'pending';
+                $t1Pending  = $termin1 && $termin1->status === 'pending';
                 $t2Verified = $termin2 && $termin2->status === 'verified';
-                $t2Pending = $termin2 && $termin2->status === 'pending';
+                $t2Pending  = $termin2 && $termin2->status === 'pending';
                 $bisaBayarT1 = !$termin1;
                 $bisaBayarT2 = $t1Verified && !$termin2;
             @endphp
@@ -1172,8 +1174,7 @@
                             style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #e2e8f4;gap:12px;flex-wrap:wrap;">
                             <div style="flex:1;min-width:180px;">
                                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                                    <span style="font-weight:700;color:#1a2b4a;font-size:.85rem;">Termin 2 — Pelunasan
-                                        (50%)</span>
+                                    <span style="font-weight:700;color:#1a2b4a;font-size:.85rem;">Termin 2 — Pelunasan (Sisa Tagihan)</span>
                                     @if($t2Verified)
                                         <span
                                             style="background:#ecfdf5;color:#059669;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;">✓
@@ -1200,12 +1201,11 @@
                                 </div>
                             </div>
                             <div style="display:flex;align-items:center;gap:12px;">
-                                <div
-                                    style="font-weight:800;font-size:.95rem;color:{{ $t2Verified ? '#059669' : '#94a3b8' }};">
-                                    Rp {{ number_format($lunas50, 0, ',', '.') }}</div>
+                                <div style="font-weight:800;font-size:.95rem;color:{{ $t2Verified ? '#059669' : '#94a3b8' }};">
+                                    Rp {{ number_format($t2Verified ? $termin2->jumlah_bayar : $nominalPelunasan, 0, ',', '.') }}
+                                </div>
                                 @if($bisaBayarT2)
-                                    <button onclick="openModalBayar(2, {{ $lunas50 }})"
-                                        class="btn-bayar-termin btn-bayar-lunas">💳 Bayar Lunas</button>
+                                    <button onclick="openModalBayar(2, {{ $nominalPelunasan }})" class="btn-bayar-termin btn-bayar-lunas">💳 Bayar Lunas</button>
                                 @elseif($t2Pending && $termin2->xendit_invoice_url)
                                     <a href="{{ $termin2->xendit_invoice_url }}" target="_blank"
                                         class="btn-bayar-termin btn-bayar-lunas"

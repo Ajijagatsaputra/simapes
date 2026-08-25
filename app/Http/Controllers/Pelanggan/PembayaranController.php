@@ -83,7 +83,17 @@ class PembayaranController extends Controller
         }
 
         // --- Hitung nominal termin ---
-        $nominalTermin = $pesanan->total_harga / 2; // 50%
+        if ($terminKe === 1) {
+            // Termin 1 (DP): 50% dari total harga
+            $nominalTermin = $pesanan->total_harga / 2;
+        } else {
+            // Termin 2 (Pelunasan): sisa tagihan yang masih belum terbayar
+            $pesanan->refresh(); // pastikan sisa_tagihan up-to-date
+            $nominalTermin = $pesanan->sisa_tagihan;
+            if ($nominalTermin <= 0) {
+                return back()->with('error', 'Pesanan sudah lunas, tidak perlu bayar lagi.');
+            }
+        }
 
         // --- Alokasi proporsional per item ---
         $details = $pesanan->details;

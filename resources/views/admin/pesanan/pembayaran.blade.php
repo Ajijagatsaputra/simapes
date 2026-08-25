@@ -530,6 +530,11 @@
             </div>
 
             {{-- Riwayat Pembayaran --}}
+            @php
+                $t1Admin = $pesanan->pembayarans->where('termin_ke', 1)->first();
+                $t2Admin = $pesanan->pembayarans->where('termin_ke', 2)->first();
+                $dpNominal = $pesanan->total_harga / 2;
+            @endphp
             <div class="card">
                 <div class="card-title">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -538,6 +543,43 @@
                     </svg>
                     Riwayat Pembayaran ({{ $pesanan->pembayarans->count() }} Termin)
                 </div>
+
+                {{-- Progress Steps Termin --}}
+                <div style="display:flex; gap:0; margin-bottom:20px; position:relative;">
+                    {{-- Connector line --}}
+                    <div style="position:absolute; top:20px; left:50%; transform:translateX(-50%); width:calc(100% - 80px); height:2px; background:#e2e8f4; z-index:0;"></div>
+
+                    @php
+                        $steps = [
+                            1 => ['label' => 'DP (50%)', 'nominal' => $dpNominal],
+                            2 => ['label' => 'Pelunasan', 'nominal' => $pesanan->total_harga - $dpNominal],
+                        ];
+                    @endphp
+                    @foreach($steps as $stepNum => $step)
+                        @php
+                            $tAdmin = $pesanan->pembayarans->where('termin_ke', $stepNum)->first();
+                            $isDone    = $tAdmin && $tAdmin->status === 'verified';
+                            $isPending = $tAdmin && $tAdmin->status === 'pending';
+                            $dotBg  = $isDone ? '#10b981' : ($isPending ? '#f59e0b' : '#e2e8f4');
+                            $dotClr = $isDone || $isPending ? '#fff' : '#8ca0bf';
+                            $txtClr = $isDone ? '#059669' : ($isPending ? '#d97706' : '#94a3b8');
+                        @endphp
+                        <div style="flex:1; display:flex; flex-direction:column; align-items:center; position:relative; z-index:1;">
+                            <div style="width:40px; height:40px; border-radius:50%; background:{{ $dotBg }}; color:{{ $dotClr }}; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.85rem; box-shadow:0 2px 6px rgba(0,0,0,.1);">
+                                @if($isDone) ✓ @elseif($isPending) ⏳ @else {{ $stepNum }} @endif
+                            </div>
+                            <div style="font-size:.72rem; font-weight:700; color:#1a2b4a; margin-top:6px;">Termin {{ $stepNum }}</div>
+                            <div style="font-size:.68rem; color:{{ $txtClr }}; font-weight:600;">{{ $step['label'] }}</div>
+                            <div style="font-size:.65rem; color:#8ca0bf; margin-top:2px;">
+                                @if($isDone) ✓ Verified
+                                @elseif($isPending) Menunggu Verifikasi
+                                @else Belum Dibayar
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                {{-- END Progress Steps --}}
                 @if($pesanan->pembayarans->isEmpty())
                     <p style="text-align:center; color:#a0aec0; font-size:.85rem; padding:20px 0;">Belum ada pembayaran
                         tercatat.</p>
@@ -550,6 +592,7 @@
                                     <div class="tl-header">
                                         <span class="tl-termin">
                                             Termin {{ $p->termin_ke }}
+                                            — {{ $p->termin_ke === 1 ? 'DP' : 'Pelunasan' }}
                                             @if($p->status === 'pending')
                                                 <span style="background:#fff3e6;color:#d97706;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;">⏳ Menunggu Verifikasi</span>
                                             @else
