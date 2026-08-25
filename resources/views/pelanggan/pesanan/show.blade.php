@@ -972,63 +972,75 @@
                 <h3>Daftar Item Seragam & Progress Pembayaran</h3>
                 <div style="overflow-x:auto; width:100%;">
                     <table class="detail-table">
+                        @php
+                            // Group detail items by produk_id so same product (different sizes) → one row
+                            $groupedDetails = $pesanan->details->groupBy('produk_id');
+                        @endphp
                         <thead>
                             <tr>
-                                <th style="width:50px;">No.</th>
+                                <th style="width:40px;">No.</th>
                                 <th>Nama Seragam</th>
-                                <th style="width:80px; text-align:center;">Ukuran</th>
-                                <th style="width:120px; text-align:right;">Harga Satuan</th>
-                                <th style="width:80px; text-align:center;">Jumlah</th>
+                                <th>Ukuran &amp; Qty</th>
+                                <th style="width:80px; text-align:center;">Total Qty</th>
                                 <th style="width:80px; text-align:center;">Terbayar</th>
-                                <th style="width:100px;">Progress</th>
+                                <th style="width:110px;">Progress</th>
                                 <th style="width:140px; text-align:right;">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($pesanan->details as $index => $d)
+                            @foreach($groupedDetails as $produkId => $items)
                                 @php
-                                    $pct = $d->total_item > 0 ? round(($d->jumlah_terbayar / $d->total_item) * 100) : 0;
-                                    $st = $d->status_item;
-                                    $clr = $st === 'lunas' ? '#10b981' : ($st === 'sebagian' ? '#f59e0b' : '#ef4444');
+                                    $firstItem   = $items->first();
+                                    $totalQty    = $items->sum('total_item');
+                                    $totalBayar  = $items->sum('jumlah_terbayar');
+                                    $totalSub    = $items->sum('subtotal');
+                                    $pct         = $totalQty > 0 ? round(($totalBayar / $totalQty) * 100) : 0;
+                                    // Aggregate status: lunas if all lunas, sebagian if any paid, else belum
+                                    $allLunas    = $items->every(fn($i) => $i->status_item === 'lunas');
+                                    $anyBayar    = $items->contains(fn($i) => $i->jumlah_terbayar > 0);
+                                    $st          = $allLunas ? 'lunas' : ($anyBayar ? 'sebagian' : 'belum_bayar');
+                                    $clr         = $st === 'lunas' ? '#10b981' : ($st === 'sebagian' ? '#f59e0b' : '#ef4444');
+                                    $rowIndex    = $loop->index + 1;
                                 @endphp
                                 <tr>
-                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $rowIndex }}</td>
                                     <td>
-                                        <div style="font-weight:700; color:#1a2b4a;">{{ $d->produk->nama_produk ?? 'Seragam' }}
-                                        </div>
-                                        @if($d->catatan)
+                                        <div style="font-weight:700; color:#1a2b4a;">{{ $firstItem->produk->nama_produk ?? 'Seragam' }}</div>
+                                        @if($firstItem->catatan)
                                             <div style="font-size:0.75rem; color:#5a7090; font-style:italic; margin-top:2px;">
-                                                📌 <strong>Catatan:</strong> {{ $d->catatan }}
+                                                📌 <strong>Catatan:</strong> {{ $firstItem->catatan }}
                                             </div>
                                         @endif
-                                        @if($d->path_gambar)
+                                        @if($firstItem->path_gambar)
                                             <div style="margin-top:4px;">
-                                                <a href="{{ asset('storage/' . $d->path_gambar) }}" target="_blank"
+                                                <a href="{{ asset('storage/' . $firstItem->path_gambar) }}" target="_blank"
                                                     style="font-size:0.72rem; color:#1A56DB; text-decoration:none; font-weight:600; display:inline-flex; align-items:center; gap:4px;">
                                                     🖼️ Lihat Gambar Referensi Model
                                                 </a>
                                             </div>
                                         @endif
                                     </td>
-                                    <td style="text-align:center;"><span
-                                            style="background:#e8f0fd;color:#4A90D9;padding:3px 8px;border-radius:6px;font-weight:600;">{{ $d->ukuran }}</span>
+                                    <td>
+                                        {{-- Inline size + qty badges --}}
+                                        <div style="display:flex; flex-wrap:wrap; gap:5px; align-items:center;">
+                                            @foreach($items as $d)
+                                                <span style="display:inline-flex; align-items:center; gap:3px; background:#eef3fc; border:1px solid #c5d8f5; border-radius:20px; padding:3px 9px; font-size:0.75rem; white-space:nowrap;">
+                                                    <span style="background:#4A90D9; color:#fff; border-radius:10px; padding:1px 6px; font-weight:700; font-size:0.72rem;">{{ $d->ukuran }}</span>
+                                                    <span style="color:#2d4060; font-weight:600;">×{{ $d->total_item }}</span>
+                                                </span>
+                                            @endforeach
+                                        </div>
                                     </td>
-                                    <td style="text-align:right;">Rp {{ number_format($d->harga_satuan, 0, ',', '.') }}</td>
-                                    <td style="text-align:center; font-weight:600;">{{ $d->total_item }}</td>
-                                    <td style="text-align:center; font-weight:700; color:#047857;">{{ $d->jumlah_terbayar }}
-                                    </td>
+                                    <td style="text-align:center; font-weight:700; color:#1a2b4a;">{{ $totalQty }}</td>
+                                    <td style="text-align:center; font-weight:700; color:#047857;">{{ $totalBayar }}</td>
                                     <td>
                                         <div class="progress-bar-bg">
-                                            <div class="progress-bar-fg" style="width:{{ $pct }}%; background:{{ $clr }};">
-                                            </div>
+                                            <div class="progress-bar-fg" style="width:{{ $pct }}%; background:{{ $clr }};"></div>
                                         </div>
                                         <span style="font-size:.62rem; color:#8ca0bf;">{{ $pct }}%</span>
-                                        <span
-                                            class="cover-badge cb-{{ $st }}">{{ $st === 'lunas' ? 'Lunas' : ($st === 'sebagian' ? 'Sebagian' : 'Belum') }}</span>
+                                        <span class="cover-badge cb-{{ $st }}">{{ $st === 'lunas' ? 'Lunas' : ($st === 'sebagian' ? 'Sebagian' : 'Belum') }}</span>
                                     </td>
-                                    <td style="text-align:right; font-weight:700; color:#2d4060;">Rp
-                                        {{ number_format($d->subtotal, 0, ',', '.') }}
-                                    </td>
+                                    <td style="text-align:right; font-weight:700; color:#2d4060;">Rp {{ number_format($totalSub, 0, ',', '.') }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

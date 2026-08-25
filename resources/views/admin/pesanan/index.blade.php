@@ -307,26 +307,42 @@
                             </div>
                         </td>
                         <td>
-                            @foreach($p->details as $d)
+                            @php
+                                // Group items by produk_id → same product different sizes = 1 row
+                                $groupedItems = $p->details->groupBy('produk_id');
+                            @endphp
+                            @foreach($groupedItems as $grpProdukId => $grpItems)
+                                @php
+                                    $grpFirst    = $grpItems->first();
+                                    $grpTotalQty = $grpItems->sum('total_item');
+                                    $grpTotalSub = $grpItems->sum('subtotal');
+                                @endphp
                                 <div class="item-produk-row" style="display: flex; gap: 8px; align-items: start; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #e8eef8;">
-                                    @if($d->path_gambar)
-                                        <div style="flex-shrink: 0; cursor: pointer;" onclick="openLightbox('{{ asset('storage/' . $d->path_gambar) }}')">
-                                            <img src="{{ asset('storage/' . $d->path_gambar) }}" alt="Preview" style="width: 42px; height: 42px; object-fit: cover; border-radius: 6px; border: 1px solid #c5d8f5; box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                    @if($grpFirst->path_gambar)
+                                        <div style="flex-shrink: 0; cursor: pointer;" onclick="openLightbox('{{ asset('storage/' . $grpFirst->path_gambar) }}')">
+                                            <img src="{{ asset('storage/' . $grpFirst->path_gambar) }}" alt="Preview" style="width: 42px; height: 42px; object-fit: cover; border-radius: 6px; border: 1px solid #c5d8f5; box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                                         </div>
                                     @endif
                                     <div style="flex-grow: 1;">
-                                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                                        <div style="display: flex; justify-content: space-between; align-items: start; gap: 8px;">
                                             <div>
-                                                <strong>{{ $d->produk->nama_produk ?? 'Produk Terhapus' }}</strong>
-                                                <span class="item-badge-ukuran" style="margin-left: 4px;">{{ $d->ukuran }}</span>
-                                                <span style="color: #6b7e9f; margin-left: 4px;">x{{ $d->total_item }}</span>
+                                                <strong style="font-size:0.78rem;">{{ $grpFirst->produk->nama_produk ?? 'Produk Terhapus' }}</strong>
+                                                {{-- Inline size×qty chips --}}
+                                                <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px;">
+                                                    @foreach($grpItems as $gd)
+                                                        <span style="display:inline-flex; align-items:center; gap:3px; background:#eef3fc; border:1px solid #c5d8f5; border-radius:20px; padding:2px 7px; font-size:0.7rem; white-space:nowrap;">
+                                                            <span style="background:#4A90D9; color:#fff; border-radius:10px; padding:1px 5px; font-weight:700; font-size:0.65rem;">{{ $gd->ukuran }}</span>
+                                                            <span style="color:#2d4060; font-weight:600;">×{{ $gd->total_item }}</span>
+                                                        </span>
+                                                    @endforeach
+                                                </div>
                                             </div>
-                                            <span style="color:#8ca0bf; font-weight: 600; margin-left: 10px;">Rp {{ number_format($d->subtotal, 0, ',', '.') }}</span>
+                                            <span style="color:#8ca0bf; font-weight: 600; white-space:nowrap; flex-shrink:0;">Rp {{ number_format($grpTotalSub, 0, ',', '.') }}</span>
                                         </div>
-                                        @if($d->catatan)
+                                        @if($grpFirst->catatan)
                                             <div style="font-size: 0.72rem; color: #d97706; background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 2px 6px; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; max-width: 100%; word-break: break-word;">
                                                 <span>📝</span>
-                                                <span>{{ $d->catatan }}</span>
+                                                <span>{{ $grpFirst->catatan }}</span>
                                             </div>
                                         @endif
                                     </div>

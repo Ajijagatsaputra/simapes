@@ -1169,8 +1169,7 @@
             {{-- Footer --}}
             <div class="modal-footer">
                 <button type="button" class="btn-modal-batal" onclick="closeModal()">Batal</button>
-                <button type="button" class="btn-modal-simpan" id="btnSimpan"
-                    onclick="document.getElementById('formProduk').submit()">
+                <button type="submit" form="formProduk" class="btn-modal-simpan" id="btnSimpan">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                         stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 6 9 17 4 12" />
@@ -1275,7 +1274,8 @@
             document.getElementById('modalTitle').textContent = 'Edit Produk';
             document.getElementById('modalSubtitle').textContent = 'Perbarui informasi produk seragam';
             document.getElementById('formMethod').value = 'PUT';
-            document.getElementById('formProduk').action = '/admin/produk/' + id;
+            const url = "{{ route('admin.produk.update', '__ID__') }}".replace('__ID__', id);
+            document.getElementById('formProduk').action = url;
             document.getElementById('namaProduk').value = nama;
             document.getElementById('jenisSeragam').value = jenis;
             document.getElementById('harga').value = formatRibuan(harga);
