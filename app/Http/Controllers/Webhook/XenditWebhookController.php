@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Webhook;
 use App\Http\Controllers\Controller;
 use App\Models\Pembayaran;
 use App\Models\Pesanan;
+use App\Models\StatusLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -45,6 +46,19 @@ class XenditWebhookController extends Controller
                             if ($pesanan) {
                                 $pesanan->recalculatePembayaran();
                                 $pesanan->recalculateItemCoverage();
+
+                                // ── Auto-advance status ke 'diproses' saat DP (Termin 1) verified ──
+                                if ($pembayaran->termin_ke === 1 && $pesanan->status === 'pending') {
+                                    $pesanan->update(['status' => 'diproses']);
+                                    StatusLog::create([
+                                        'pesanan_id' => $pesanan->id,
+                                        'status' => 'diproses',
+                                        'label' => StatusLog::LABELS['diproses'] ?? 'Diproses',
+                                        'catatan' => 'Otomatis: DP pelanggan telah terverifikasi via Xendit.',
+                                        'created_at' => now(),
+                                    ]);
+                                    Log::info("Pesanan #{$pesanan->id} auto-advanced ke 'diproses' setelah DP verified.");
+                                }
                             }
 
                             DB::commit();

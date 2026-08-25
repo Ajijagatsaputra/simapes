@@ -7,6 +7,7 @@ use App\Models\Pesanan;
 use App\Models\Pembayaran;
 use App\Models\PembayaranDetail;
 use App\Models\ActivityLog;
+use App\Models\StatusLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -99,6 +100,18 @@ class PembayaranController extends Controller
             $pesanan->recalculatePembayaran();
             $pesanan->recalculateItemCoverage();
 
+            // ── Auto-advance ke 'diproses' saat admin catat DP (Termin 1) ──
+            if ($terminKe === 1 && $pesanan->status === 'pending') {
+                $pesanan->update(['status' => 'diproses']);
+                StatusLog::create([
+                    'pesanan_id' => $pesanan->id,
+                    'status' => 'diproses',
+                    'label' => StatusLog::LABELS['diproses'] ?? 'Diproses',
+                    'catatan' => 'Otomatis: DP pelanggan telah dicatat oleh admin.',
+                    'created_at' => now(),
+                ]);
+            }
+
             ActivityLog::log(
                 'Mencatat pembayaran termin ' . $terminKe . ' sebesar Rp ' . number_format($request->jumlah_bayar, 0, ',', '.') . ' untuk pesanan ' . $pesanan->no_pesanan,
                 'Pembayaran',
@@ -169,6 +182,18 @@ class PembayaranController extends Controller
             // Recalculate pembayaran & item coverage
             $pesanan->recalculatePembayaran();
             $pesanan->recalculateItemCoverage();
+
+            // ── Auto-advance ke 'diproses' saat DP (Termin 1) diverifikasi admin ──
+            if ($pembayaran->termin_ke === 1 && $pesanan->status === 'pending') {
+                $pesanan->update(['status' => 'diproses']);
+                StatusLog::create([
+                    'pesanan_id' => $pesanan->id,
+                    'status' => 'diproses',
+                    'label' => StatusLog::LABELS['diproses'] ?? 'Diproses',
+                    'catatan' => 'Otomatis: DP pelanggan telah diverifikasi oleh admin.',
+                    'created_at' => now(),
+                ]);
+            }
 
             ActivityLog::log(
                 'Memverifikasi pembayaran termin ' . $pembayaran->termin_ke . ' sebesar Rp ' . number_format($pembayaran->jumlah_bayar, 0, ',', '.') . ' untuk pesanan ' . $pesanan->no_pesanan,
