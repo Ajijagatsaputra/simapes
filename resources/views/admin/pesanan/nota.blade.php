@@ -191,6 +191,12 @@
                 <div style="margin-top: 12px;" class="info-title">Tanggal Pesanan</div>
                 <div class="info-val">{{ \Carbon\Carbon::parse($pesanan->tanggal_pesanan)->isoFormat('DD MMMM YYYY') }}
                 </div>
+                @if($pesanan->target_tanggal_pengambilan)
+                    <div style="margin-top: 12px;" class="info-title">Target Pengambilan</div>
+                    <div class="info-val" style="font-weight: 700; color: #1e40af;">
+                        {{ $pesanan->target_tanggal_pengambilan->isoFormat('DD MMMM YYYY') }}
+                    </div>
+                @endif
             </div>
             <div class="info-col">
                 <div class="info-title">Detail Pelanggan</div>
@@ -198,7 +204,8 @@
                 <div class="info-val">{{ $pesanan->user->nama_sekolah ?? '-' }}</div>
                 <div class="info-val">{{ $pesanan->user->no_whatsapp ?? '-' }}</div>
                 <div class="info-val" style="font-size: 12px; color: #555; margin-top: 4px;">
-                    {{ $pesanan->user->alamat ?? '-' }}</div>
+                    {{ $pesanan->user->alamat ?? '-' }}
+                </div>
             </div>
         </div>
 
@@ -222,7 +229,8 @@
                         <td>Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
                         <td>{{ $detail->total_item }} pcs</td>
                         <td style="text-align: right; font-weight: 600;">Rp
-                            {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+                            {{ number_format($detail->subtotal, 0, ',', '.') }}
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

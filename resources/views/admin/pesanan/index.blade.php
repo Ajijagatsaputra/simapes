@@ -299,7 +299,16 @@
                     <tr>
                         <td class="row-number">{{ $pesanan->firstItem() + $index }}</td>
                         <td style="font-weight: 700; color: #4A90D9;">{{ $p->no_pesanan }}</td>
-                        <td>{{ $p->tanggal_pesanan ? $p->tanggal_pesanan->isoFormat('DD MMM YYYY') : '-' }}</td>
+                        <td>
+                            <div>
+                                <div>{{ $p->tanggal_pesanan ? $p->tanggal_pesanan->isoFormat('DD MMM YYYY') : '-' }}</div>
+                                @if($p->target_tanggal_pengambilan)
+                                    <div style="font-size:0.7rem; color:#1e40af; font-weight:700; margin-top:4px; display:inline-flex; align-items:center; gap:3px; background:#eff6ff; border:1px solid #bfdbfe; padding:2px 6px; border-radius:4px;" title="Target Pengambilan">
+                                        📅 {{ $p->target_tanggal_pengambilan->isoFormat('DD MMM YYYY') }}
+                                    </div>
+                                @endif
+                            </div>
+                        </td>
                         <td>
                             <div>
                                 <div style="font-weight:600;">{{ $p->user->name ?? 'Pelanggan Terhapus' }}</div>

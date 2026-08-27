@@ -266,7 +266,14 @@
     </a>
 
     <h1 style="font-size:1.5rem; font-weight:800; color:#1a2b4a; margin-bottom:6px;">Kelola Progres Produksi — {{ $pesanan->no_pesanan }}</h1>
-    <p style="font-size:.82rem; color:#6b7e9f; margin-bottom:20px;">{{ $pesanan->user->name }} · {{ $pesanan->user->nama_sekolah ?? '-' }}</p>
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+        <span style="font-size:.82rem; color:#6b7e9f;">{{ $pesanan->user->name }} · {{ $pesanan->user->nama_sekolah ?? '-' }}</span>
+        @if($pesanan->target_tanggal_pengambilan)
+            <span style="font-size: .75rem; font-weight: 700; color: #1e40af; background: #eff6ff; padding: 4px 10px; border-radius: 6px; border: 1px solid #bfdbfe; display: inline-flex; align-items: center; gap: 4px;">
+                📅 Target Pengambilan: {{ $pesanan->target_tanggal_pengambilan->isoFormat('DD MMMM YYYY') }}
+            </span>
+        @endif
+    </div>
 
     {{-- Error Banner --}}
     @if($errors->any() || session('error'))
