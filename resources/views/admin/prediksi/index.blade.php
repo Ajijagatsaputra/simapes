@@ -88,14 +88,14 @@
         {{-- ── Stat Cards Grid (Tampil jika ada data) ── --}}
         @include('admin.prediksi.partials.stats')
 
-        {{-- ── Main Layout: Chart + Tabel + MRP ── --}}
+        {{-- ── Main Layout: Chart + Tabel ── --}}
         <div class="prediksi-layout">
             @include('admin.prediksi.partials.chart_table')
-            @include('admin.prediksi.partials.mrp')
+            {{-- @include('admin.prediksi.partials.mrp') --}}
         </div>
 
         {{-- ── Rekomendasi Supplier ── --}}
-        @include('admin.prediksi.partials.supplier')
+        {{-- @include('admin.prediksi.partials.supplier') --}}
 
         {{-- ── Analisis & Rekomendasi AI ── --}}
         <div class="ai-card" id="aiCardSection">
