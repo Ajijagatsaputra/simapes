@@ -35,10 +35,11 @@ class DashboardController extends Controller
 
         foreach ($pesanans as $pesanan) {
             foreach ($pesanan->details as $detail) {
-                $key = $detail->produk_id;
+                $key = $detail->produk_id . '-' . $detail->ukuran;
                 if (!isset($breakdownRaw[$key])) {
                     $breakdownRaw[$key] = [
                         'produk' => $detail->produk->nama_produk ?? 'Seragam',
+                        'ukuran' => $detail->ukuran,
                         'total_pesanan' => 0,
                         'belum_dikerjakan' => 0,
                         'sedang_diproses' => 0,
@@ -67,9 +68,15 @@ class DashboardController extends Controller
                     $breakdownRaw[$key]['selesai'] += $totalItem;
 
                 } elseif (in_array($pesanan->status, ['dikerjakan', 'diproses'])) {
-                    // Pesanan sedang produksi → semua pcs "sedang dikerjakan"
-                    $pcsSedangDiproses += $totalItem;
-                    $breakdownRaw[$key]['sedang_diproses'] += $totalItem;
+                    // Pesanan sedang produksi → jumlah terbayar dianggap sedang diproses, sisanya belum dikerjakan
+                    $diproses = min($totalItem, $jumlahTerbayar);
+                    $belum = max(0, $totalItem - $diproses);
+
+                    $pcsSedangDiproses += $diproses;
+                    $breakdownRaw[$key]['sedang_diproses'] += $diproses;
+
+                    $pcsBelumDikerjakan += $belum;
+                    $breakdownRaw[$key]['belum_dikerjakan'] += $belum;
 
                 } else {
                     // Pesanan pending / belum dikerjakan

@@ -44,6 +44,6 @@ class RegistrationTest extends TestCase
 
         $this->assertAuthenticatedAs($user);
         $this->assertNotNull($user->fresh()->email_verified_at);
-        $verifyResponse->assertRedirect(route('pelanggan.dashboard', absolute: false));
+        $verifyResponse->assertRedirect(route('pelanggan.katalog', absolute: false));
     }
 }
