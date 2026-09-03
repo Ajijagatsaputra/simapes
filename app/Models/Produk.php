@@ -15,6 +15,7 @@ class Produk extends Model
         'harga',
         'deskripsi',
         'stok',
+        'tanggal_pembuatan',
         'gambar',
         'spesifikasi_bahan',
         'size_chart',
@@ -24,6 +25,7 @@ class Produk extends Model
     protected $casts = [
         'harga' => 'decimal:2',
         'stok' => 'integer',
+        'tanggal_pembuatan' => 'date',
     ];
 
     /**

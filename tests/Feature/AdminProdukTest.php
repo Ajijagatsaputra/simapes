@@ -157,4 +157,29 @@ class AdminProdukTest extends TestCase
             'stok' => 45,
         ]);
     }
+
+    public function test_admin_can_add_product_with_tanggal_pembuatan()
+    {
+        $admin = User::factory()->create([
+            'email' => 'admin@gmail.com',
+            'role' => 'admin',
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->post(route('admin.produk.store'), [
+                'nama_produk' => 'Baju Seragam Ber-Tanggal',
+                'jenis_seragam' => 'SD',
+                'harga' => 85000,
+                'stok' => 20,
+                'tanggal_pembuatan' => '2026-09-01',
+            ]);
+
+        $response->assertRedirect(route('admin.produk.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('produks', [
+            'nama_produk' => 'Baju Seragam Ber-Tanggal',
+            'tanggal_pembuatan' => '2026-09-01',
+        ]);
+    }
 }

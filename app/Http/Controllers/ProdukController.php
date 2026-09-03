@@ -30,6 +30,7 @@ class ProdukController extends Controller
             'harga' => 'required|numeric|min:0',
             'deskripsi' => 'nullable|string',
             'stok' => 'required|integer|min:0',
+            'tanggal_pembuatan' => 'nullable|date',
         ]);
 
         $produk = Produk::create($validated);
@@ -51,6 +52,7 @@ class ProdukController extends Controller
             'harga' => 'required|numeric|min:0',
             'deskripsi' => 'nullable|string',
             'stok' => 'required|integer|min:0',
+            'tanggal_pembuatan' => 'nullable|date',
         ]);
 
         $produk = Produk::findOrFail($id);

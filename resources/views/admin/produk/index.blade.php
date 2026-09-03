@@ -811,6 +811,7 @@
                     <th>Kategori</th>
                     <th>Harga</th>
                     <th style="width:60px" class="center">Stok</th>
+                    <th style="width:120px">Tgl Pembuatan</th>
                     <th style="width:130px">Spesifikasi Bahan</th>
                     <th style="width:110px">Size Chart</th>
                     <th style="width:110px">Estimasi BB/TB</th>
@@ -866,6 +867,10 @@
                             @php $stokClass = $p->stok === 0 ? 'stok-empty' : ($p->stok <= 10 ? 'stok-low' : 'stok-ok'); @endphp
                             <span class="stok-cell {{ $stokClass }}">{{ $p->stok }}</span>
                         </td>
+                        {{-- Tanggal Pembuatan --}}
+                        <td style="white-space:nowrap; font-size:.75rem; color: {{ $p->tanggal_pembuatan ? '#2d4060' : '#c0cce0' }};">
+                            {{ $p->tanggal_pembuatan ? $p->tanggal_pembuatan->format('d/m/Y') : '—' }}
+                        </td>
                         {{-- Spesifikasi Bahan --}}
                         <td style="max-width:130px; font-size:.75rem; color: {{ $hasBahan ? '#2d4060' : '#c0cce0' }};">
                             {{ $hasBahan ? Str::limit($p->spesifikasi_bahan, 40) : '—' }}
@@ -884,6 +889,7 @@
                                 <button class="btn-edit" title="Edit" data-id="{{ $p->id }}" data-nama="{{ $p->nama_produk }}"
                                     data-jenis="{{ $p->jenis_seragam }}" data-harga="{{ (int) $p->harga }}"
                                     data-deskripsi="{{ $p->deskripsi ?? '' }}" data-stok="{{ $p->stok }}"
+                                    data-tanggal_pembuatan="{{ $p->tanggal_pembuatan ? $p->tanggal_pembuatan->format('Y-m-d') : '' }}"
                                     data-gambar="{{ $p->gambar ?? '' }}"
                                     data-spesifikasi_bahan="{{ $p->spesifikasi_bahan ?? '' }}"
                                     data-size_chart="{{ $p->size_chart ?? '' }}"
@@ -911,7 +917,7 @@
 
                     {{-- ── Detail Row (expandable) ── --}}
                     <tr class="detail-row" id="{{ $rowId }}">
-                        <td colspan="9">
+                        <td colspan="10">
                             <div class="detail-inner" id="{{ $rowId }}-inner">
                                 <div class="detail-grid">
                                     {{-- Spesifikasi Bahan --}}
@@ -953,7 +959,7 @@
 
                 @empty
                     <tr>
-                        <td colspan="9">
+                        <td colspan="10">
                             <div class="empty-state">
                                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                     <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/>
@@ -1071,6 +1077,12 @@
                                 <option value="Umum">Umum</option>
                                 <option value="Atribut">Atribut</option>
                             </select>
+                        </div>
+
+                        {{-- Tanggal Pembuatan --}}
+                        <div class="form-group">
+                            <label class="form-label" for="tanggalPembuatan">Tanggal Pembuatan</label>
+                            <input class="form-input" type="date" id="tanggalPembuatan" name="tanggal_pembuatan">
                         </div>
 
                         {{-- Harga & Stok --}}
@@ -1248,6 +1260,7 @@
             document.getElementById('formMethod').value = 'POST';
             document.getElementById('formProduk').action = '{{ route("admin.produk.store") }}';
             document.getElementById('formProduk').reset();
+            document.getElementById('tanggalPembuatan').value = '';
             document.getElementById('btnSimpanText').textContent = 'Simpan Produk';
 
             // Reset image
@@ -1267,10 +1280,10 @@
 
         function editProdukFromBtn(btn) {
             const ds = btn.dataset;
-            editProduk(ds.id, ds.nama, ds.jenis, ds.harga, ds.deskripsi, ds.stok, ds.gambar, ds.spesifikasi_bahan, ds.size_chart, ds.estimasi_bb_tb);
+            editProduk(ds.id, ds.nama, ds.jenis, ds.harga, ds.deskripsi, ds.stok, ds.tanggal_pembuatan, ds.gambar, ds.spesifikasi_bahan, ds.size_chart, ds.estimasi_bb_tb);
         }
 
-        function editProduk(id, nama, jenis, harga, deskripsi, stok, gambarUrl, spesifikasiBahan, sizeChart, estimasiBbTb) {
+        function editProduk(id, nama, jenis, harga, deskripsi, stok, tanggalPembuatan, gambarUrl, spesifikasiBahan, sizeChart, estimasiBbTb) {
             document.getElementById('modalTitle').textContent = 'Edit Produk';
             document.getElementById('modalSubtitle').textContent = 'Perbarui informasi produk seragam';
             document.getElementById('formMethod').value = 'PUT';
@@ -1280,6 +1293,7 @@
             document.getElementById('jenisSeragam').value = jenis;
             document.getElementById('harga').value = formatRibuan(harga);
             document.getElementById('stok').value = stok;
+            document.getElementById('tanggalPembuatan').value = tanggalPembuatan || '';
             document.getElementById('deskripsi').value = deskripsi || '';
             document.getElementById('spesifikasiBahan').value = spesifikasiBahan || '';
             document.getElementById('sizeChart').value = sizeChart || '';
